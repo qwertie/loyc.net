@@ -3,6 +3,7 @@ title: "LeMP Macro Reference: Standard Macros"
 layout: article
 date: 20 Mar 2016
 toc: true
+redirectDomain: ecsharp.net
 ---
 
 ## LeMP namespace ##
