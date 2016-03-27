@@ -33,7 +33,7 @@ The necessary refactoring is:
 
 1. select the subexpression,
 2. cut it to the clipboard, 
-3. choose a variable name and write `subitems` in place of the original expression,
+3. choose a variable name (`subitems`) and write it in place of the original expression,
 4. insert a new line, and
 5. add `var subitems = ` and paste the subexpression.
 
