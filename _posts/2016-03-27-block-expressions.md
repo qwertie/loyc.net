@@ -81,13 +81,13 @@ if (flag) {
 	flag = subitems.Count > _threshold;
 }
 if (flag)
-	Foo(list[i].SubItems);
+	Foo(subitems);
 else {
 	...
 }
 ~~~
 
-Wow! That's ugly. Sometimes we have to go to great lengths just to factor out a common subexpression. The non-readability of this code is fairly obvious, but it is probably rare that you would need to do this.
+Wow! That's ugly. Sometimes we have to go to great lengths just to factor out a common subexpression. And there's a compiler error hidden in this refactoring - can you spot it?  The anti-readability of this code is obvious, since one line of code has ballooned to 7.
 
 As a real life example, consider this code, which I managed to find in a matter of seconds when I started looking through my own code:
 
@@ -140,9 +140,29 @@ else {
 }
 ~~~
 
-It's not just shorter, it has beter workflow, too. As soon as you write `Foo`, you notice that you're using the same expression again. So you simply go to the line above and add `::subitems` to save it to a temporary variable. No cutting and pasting, and the name "subitems" is repeated only twice, not three times as in the original code. 
+I call `::` the "quick binding operator". The `::` operator already exists in C#, but you could code for years without ever using it; I'm just proposing that we "overload" this operator with a new behavior, whenever its original behavior does not apply.
 
-In my opinion, `subitems` should also be available in the `else` clause, and even after the end of the `if` statement. After all, if you were writing the code by hand, it would be, and it's more generally useful if it's accessible afterward. So, should it be scoped to the first part of the `if` statement, the entire `if` statement, or to the outer block? Well, this seems like a decision I can put off until later. Let's move on.
+Using `::` is not just shorter, it has beter workflow, too. As soon as you write `Foo`, you notice that you're using the same expression again. So you simply go to the line above and add `::subitems` to save it to a temporary variable. No cutting and pasting, and the name "subitems" is repeated only twice, not three times as in the original code. Plus, the example above that uses `&&` stays simple:
+
+~~~csharp
+if (i < list.Count && list[i].SubItems::subitems.Count > _threshold)
+	Foo(subitems);
+else {
+	...
+}
+~~~
+
+In my opinion, `subitems` should (in general) also be available in the `else` clause, and even after the end of the `if` statement. After all, if you were writing the code by hand, it would be, and it's more generally useful if it's accessible afterward. So, should it be scoped to the first part of the `if` statement, the entire `if` statement, or to the outer block? Well, this seems like a decision I can put off until later.
+
+Here's how it looks for the `ChooseFieldName` example above:
+
+static Symbol ChooseFieldName(Symbol propName)
+{
+	string name = propName.Name;
+	if (char.ToLowerInvariant(name.FirstOrDefault()::first)::lower != first)
+		name = lower + name.Substring(1);
+	return GSymbol.Get("_" + name);
+}
 
 Implementing this in EC#
 ------------------------
@@ -187,12 +207,22 @@ All of these possibilities have an... issue. By using braces, the implication is
 
 I had thought of dealing with this problem with "variable renaming". The idea is: "let's eliminate the braces so we can use `Bar_13` in the call to `Foo`". Rather than actually using braces to create a new scope, we'll strip out the braces, but give each variable within the braces a new name so it doesn't conflict with anything outside. C# doesn't allow you to declare anything other than variables in an executable context, so renaming variables is sufficient (we need not watch out for methods and properties, for instance). However, in this particular case, `Bar_13` is already a unique name because it's a compiler-generated variable. This leads me to ask: hang on, do we really need the braces at all?
 
-The braces provide an obvious way of saying "I want to execute a statement inside an expression". However, end-users don't really need this feature; it's intended mainly as a mechanism to help macros work. So now I'm thinking, let's forget the braces and just have a pseudo-function called `#runSequence` or something like that:
+The braces provide an obvious syntax for saying "I want to execute a statement inside an expression". However, end-users don't really need this feature; it's intended mainly as a mechanism to help macros work. So now I'm thinking, let's forget the braces and just have a pseudo-function called `#runSequence` or something like that:
 
     Foo(#runSequence(var Bar_13 = Bar, Bar_13 != null ? Bar_13.Baz : null));
 
-Now, how does this connect to our "quick binding operator"?
+Now, how is all this related to our `::` quick binding operator?
 
-    Foo(#runSequence(var Bar_13 = Bar, Bar_13 != null ? Bar_13.Baz : null));
+Well, given a binding like this:
+
+~~~csharp
+if (list[i].SubItems::subitems.Count > _threshold)
+~~~
+
+It can be rewritten as 
+
+if (#runSequence(var subitems = list[i].SubItems, subitems).Count > _threshold)
+
+Therefore, it can be handled the same way as any other sequence of statements that a macro might produce.
 
 Whatever syntax we use, actually implementing it will be challenging. More on that when I write part 2.
