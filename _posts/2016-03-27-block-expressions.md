@@ -156,6 +156,7 @@ In my opinion, `subitems` should (in general) also be available in the `else` cl
 
 Here's how it looks for the `ChooseFieldName` example above:
 
+~~~csharp
 static Symbol ChooseFieldName(Symbol propName)
 {
    string name = propName.Name;
@@ -163,6 +164,7 @@ static Symbol ChooseFieldName(Symbol propName)
       name = lower + name.Substring(1);
    return GSymbol.Get("_" + name);
 }
+~~~
 
 Implementing this in EC#
 ------------------------
