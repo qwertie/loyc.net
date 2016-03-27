@@ -10,9 +10,9 @@ Many years ago I noticed a common pattern with my "if" statements. I would use a
 
 ~~~csharp
 if (list[i].SubItems.Count > _threshold)
-	Foo(list[i].SubItems);
+   Foo(list[i].SubItems);
 else {
-	...
+   ...
 }
 ~~~
 
@@ -21,9 +21,9 @@ When I'm coding, this pattern seems to happen multiple times a day. And so I hav
 ~~~csharp
 var subitems = list[i].SubItems;
 if (subitems.Count > _threshold)
-	Foo(subitems);
+   Foo(subitems);
 else {
-	...
+   ...
 }
 ~~~
 
@@ -41,9 +41,9 @@ Sometimes it's a lot more complicated, though. Consider a slightly modified vers
 
 ~~~csharp
 if (i < list.Count && list[i].SubItems.Count > _threshold)
-	Foo(list[i].SubItems);
+   Foo(list[i].SubItems);
 else {
-	...
+   ...
 }
 ~~~
 
@@ -52,9 +52,9 @@ The instructions above would give us code that is clearly wrong:
 ~~~csharp
 var subitems = list[i].SubItems; // ArgumentOutOfRangeException!!!
 if (i < list.Count && subitems.Count > _threshold)
-	Foo(list[i].SubItems);
+   Foo(list[i].SubItems);
 else {
-	...
+   ...
 }
 ~~~
 
@@ -62,12 +62,12 @@ Instead we have to "move up" the test for `i < list.Count`. Something like this:
 
 ~~~csharp
 if (i < list.Count) {
-	var subitems = list[i].SubItems;
-	if (i < list.Count && subitems.Count > _threshold)
-		Foo(list[i].SubItems);
-	else {
-		...
-	}
+   var subitems = list[i].SubItems;
+   if (i < list.Count && subitems.Count > _threshold)
+      Foo(list[i].SubItems);
+   else {
+      ...
+   }
 }
 ~~~
 
@@ -77,13 +77,13 @@ This is _still_ wrong, though. See the problem? It's the `else` clause. The `els
 SubItemType subitems;
 bool flag = i < list.Count;
 if (flag) {
-	subitems = list[i].SubItems;
-	flag = subitems.Count > _threshold;
+   subitems = list[i].SubItems;
+   flag = subitems.Count > _threshold;
 }
 if (flag)
-	Foo(subitems);
+   Foo(subitems);
 else {
-	...
+   ...
 }
 ~~~
 
@@ -94,12 +94,12 @@ As a real life example, consider this code, which I managed to find in a matter 
 ~~~csharp
 static Symbol ChooseFieldName(Symbol propName)
 {
-	string name = propName.Name;
-	char first = name.FirstOrDefault();
-	char lower = char.ToLowerInvariant(first);
-	if (lower != first)
-		name = lower + name.Substring(1);
-	return GSymbol.Get("_" + name);
+   string name = propName.Name;
+   char first = name.FirstOrDefault();
+   char lower = char.ToLowerInvariant(first);
+   if (lower != first)
+      name = lower + name.Substring(1);
+   return GSymbol.Get("_" + name);
 }
 ~~~
 
@@ -108,10 +108,10 @@ In this function I've explicitly factored out common subexpressions into local v
 ~~~csharp
 static Symbol ChooseFieldName(Symbol propName)
 {
-	string name = propName.Name;
-	if (char.ToLowerInvariant(name.FirstOrDefault()) != name.FirstOrDefault())
-		name = char.ToLowerInvariant(name.FirstOrDefault()) + name.Substring(1);
-	return GSymbol.Get("_" + name);
+   string name = propName.Name;
+   if (char.ToLowerInvariant(name.FirstOrDefault()) != name.FirstOrDefault())
+      name = char.ToLowerInvariant(name.FirstOrDefault()) + name.Substring(1);
+   return GSymbol.Get("_" + name);
 }
 ~~~
 
@@ -124,9 +124,9 @@ Some languages, such as Go, have a `:=` operator that [creates and assigns a var
 
 ~~~csharp
 if ((var subitems = list[i].SubItems).Count > _threshold)
-	Foo(subitems);
+   Foo(subitems);
 else {
-	...
+   ...
 }
 ~~~
 
@@ -134,9 +134,9 @@ But with the extra parentheses and everything, it is a little unweildy. Several 
 
 ~~~csharp
 if (list[i].SubItems::subitems.Count > _threshold)
-	Foo(subitems);
+   Foo(subitems);
 else {
-	...
+   ...
 }
 ~~~
 
@@ -146,9 +146,9 @@ Using `::` is not just shorter, it has beter workflow, too. As soon as you write
 
 ~~~csharp
 if (i < list.Count && list[i].SubItems::subitems.Count > _threshold)
-	Foo(subitems);
+   Foo(subitems);
 else {
-	...
+   ...
 }
 ~~~
 
@@ -158,10 +158,10 @@ Here's how it looks for the `ChooseFieldName` example above:
 
 static Symbol ChooseFieldName(Symbol propName)
 {
-	string name = propName.Name;
-	if (char.ToLowerInvariant(name.FirstOrDefault()::first)::lower != first)
-		name = lower + name.Substring(1);
-	return GSymbol.Get("_" + name);
+   string name = propName.Name;
+   if (char.ToLowerInvariant(name.FirstOrDefault()::first)::lower != first)
+      name = lower + name.Substring(1);
+   return GSymbol.Get("_" + name);
 }
 
 Implementing this in EC#
