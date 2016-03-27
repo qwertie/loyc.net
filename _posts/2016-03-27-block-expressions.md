@@ -167,7 +167,7 @@ static Symbol ChooseFieldName(Symbol propName)
 Implementing this in EC#
 ------------------------
 
-The motivation to support this feature goes beyond simple variable declarations, and it goes beyond the code you write yourself. Consider the `?.` operator. Today the `?.` is part of C# 6, but before that it was implemented as a LeMP macro for Enhanced C#. When you wrote
+The motivation to support this feature goes beyond simple variable declarations, and it goes beyond the code you write yourself. Consider the `?.` operator. Today the `?.` is part of C# 6, but before that it was implemented as a LeMP macro for [Enhanced C#](http://ecsharp.net). When you wrote
 
     Foo(Bar?.Baz);
 
@@ -221,7 +221,9 @@ if (list[i].SubItems::subitems.Count > _threshold)
 
 It can be rewritten as 
 
+~~~csharp
 if (#runSequence(var subitems = list[i].SubItems, subitems).Count > _threshold)
+~~~
 
 Therefore, it can be handled the same way as any other sequence of statements that a macro might produce.
 
