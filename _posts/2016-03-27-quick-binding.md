@@ -16,7 +16,7 @@ else {
 }
 ~~~
 
-When I'm coding, this pattern seems to happen multiple times a day. And so I have to rewrite it as
+When I'm coding, this pattern seems to happen multiple times a day. If I don't want to incur the cost of evaluating the expression twice (keeping in mind that in .NET, the optimizer doesn't factor out the common subexpression as reliably as you might like), I have to rewrite it as
 
 ~~~csharp
 var subitems = list[i].SubItems;
