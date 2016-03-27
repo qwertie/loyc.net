@@ -24,4 +24,4 @@ baseurl: ""                              # grep "site.baseurl" to see how it is 
 github:
   repo:  https://github.com/qwertie/ecsharp # "GitHub project" link on sidebar
   user: qwertie                          # For comments system (not Hyde)
-  project: loyc                          # For comments system (not Hyde)
+  project: ecsharp                       # For comments system (not Hyde)

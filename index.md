@@ -16,62 +16,48 @@ Coders are constrained in the way they express themselves by the language they a
 - You find a language that is excellent for A, B, and C, and start using it for a new project, only to discover that its IDE/Intellisense/Debugger/third party libraries are crap.
 - You want to use two libraries related to the same topic (whether it's graphics, GIS, math, persistence, GUIs...), written in the same language, but it's painful because the two libraries use completely different interfaces and conventions.
 
-Loyc is about finding ways to bring the world's programming languages closer together, looking for ways to solve problems like these with as little code as possible, and making developers more productive by giving them options they've never had before.
-
 # About Loyc
 
-Language of Your Choice (Loyc) is a group of projects related to cross-language interoperability:
+Loyc is the idea that all programming languages should interoperate with each other on a high level, so that you can code in the language of your choice without losing interoperability. The Loyc initiative is about finding ways to bring the world's programming languages closer together, and making developers more productive by giving them options they've never had before.
 
-- Code analysis and transformation
-- (_future_) Transforming source code between different languages
-- (_future_) Writing libraries (or entire programs) in multiple programming languages
-- (_future_) IDEs (code completion lists, various kinds of code visualization, intellisense)
+I, David Piepgrass, started the Loyc project in 2007, after I added a feature to a compiler and the makers of that language showed no interest in adding that feature to their language. It got me thinking that progress in the design of popular programming languages is held back by the gatekeepers we put in charge of them. It seemed to me that programming languages should offer ways for users to add features, in such a way that two features made by different people should ordinarily be compatible.
 
-Loyc is in its infancy, and probably will remain so until I attract either (A) volunteers to work on its components, or (B) a major sponsor. Current and potential Loyc projects include:
+Since Microsoft .NET was the only environment designed for multi-language interoperability, I started with the goal of making a .NET compiler that accepted multiple _syntactic styles_ (e.g. Visual Basic and C#) so that 
 
-- [Enhanced C#](https://github.com/qwertie/Loyc/wiki/Enhanced-C%23): a starting point for the Loyc framework, EC# will add new operators and many other new features to C#, starting with a LISP-inspired macro system (LeMP).
-- [LeMP](/lemp) (Lexical Macro Processor): a LISP-style macro preprocessor that operates on Loyc trees
-- [Loyc trees](https://github.com/qwertie/LoycCore/wiki/Loyc-trees): a generic in-memory representation for syntax trees of any language.
-- [LES](https://github.com/qwertie/LoycCore/wiki/Loyc-Expression-Syntax) (Loyc Expression Syntax): a superset of JSON, LES is an C-like interchange format for Loyc trees, suitable for representing normal programming languages, DSLs, configuration files, and intermediate representations.
-- [LLLPG](/lllpg) (Loyc LL(k) Parser Generator): The parser generator being used to parse Enhanced C# and LES
-- [MLSL](http://loyc.net/2014/design-elements-of-mlsl.html) (Multi-Language Standard Library): not yet started
-- [SIL](https://github.com/qwertie/Loyc/wiki/Standard-Imperative-Language) (Standard Imperative Language): not yet started
-- Visual studio integration: When you write a lexer & parser, you can get syntax highlighting almost for free.
+1. Code from multiple languages could combine into a single binary, with mutual dependencies between the languages. This would eliminate the need to write all your _new_ code in the same language as your _old_ code. It would also allow building or using "experimental" languages without hurting interoperability.
+2. Existing programming languages could be extended with new features. Most importantly, the hope was that new features could be created by third parties unaffiliated with the Loyc compiler, thus democratizing programming language design.
 
-At the moment, Loyc is limited to the .NET platform. Loyc has several general-purpose "core" libraries that you can read about at [core.loyc.net](http://core.loyc.net). The dependence tree of existing libraries is
+My project didn't get very far, because of the difficulty of creating sufficiently flexible extensibility mechanisms that would allow different programming language features written by different people and _unaware of each other_ to "get along" and work together. Eventually, in early 2012, I decided to tackle a simpler problem first, by designing [Enhanced C#](http://ecsharp.net), which has been a more successful project due to its narrower focus.
 
-     Loyc.Essentials.dll  (Collection interfaces, collection adaptors, extension 
-              ^            methods, UString, important utility classes, and more)
-              |
-     Loyc.Collections.dll (Handy mutable and immutable collections: RVList/RWList, 
-            ^   ^      AList/BList/BMultiMap/SparseAList, Set/Map/MSet/MMap, ...)
-            |   |      
-            |   +-----------------+
-            |                     |     
-            |                     |
-      Loyc.Utilities.dll    Loyc.Syntax.dll (LES, Loyc trees, helper types for LLLPG)
-    (more utility classes)     ^       ^ 
-            ^        ^         |       |
-            |        |         |       |
-            |   LoycCore.Tests and     |
-            |   LoycCore.Benchmarks    |
-            |                          |
-            |                    Loyc.Ecs.dll (Enhanced C# parser & printer)
-            |                          |
-            +-----------------------+  | 
-                                    |  | LeMP.StdMacros.dll (standard LeMP macros)
-                                    |  |  |
-                                    |  |  |
-                                   LeMP.exe (Lexical Macro Processor + macros)
-                                      |
-                                      |
-                                   LLLPG.exe (Loyc LL(k) Parser Generator)
+In the same time frame that I developed Enhanced C#, I also created
 
-    External libraries:
-    - Theraot.Core is a compatibility library used only in .NET 3.5 builds
-    - ICSharpCode.TextEditor is a text editor widget for LeMP's built-in editor
-    - OxyPlot is used by LoycCore.Benchmarks to results of the newest benchmarks
-    Note: Baadia is a prototype boxes-and-arrows diagram maker. It doesn't belong 
-      in this repo, but I haven't got around to separating it into its own repo.
+- A parser generator ([LLLPG](http://ecsharp.net/lllpg)) designed to help you write parsers with performance similar to hand-written parsers. I hoped to use this for EC# and all other parsing tasks.
+- [Loyc trees](/loyc-trees), a concept for a simple "universal" syntax tree designed for all programming languages in the Algol family (C++, Javascript, C#, etc.) Loyc trees are inspired by the simplicity of LISP s-expressions, adding just enough additional complexity to make them useful for representing any programming language, not just LISP languages.
+- [Loyc expression syntax](/les), a language for storing Loyc trees. LES is a superset of JSON that resembles Javascript, C#, D, and others.
+- [LeMP](http://ecsharp.net/lemp), a LISP-style Macro Processor for Enhanced C#
+- Visual Studio extensions for EC#/LES syntax highlighting and LLLPG/LeMP
+- General-purpose "core" libraries that you can read about at [core.ecsharp.net](http://core.ecsharp.net)
 
-Loyc is a concept with many parts and potential parts, and I am looking for volunteers to help create these parts. You can reach me at `gmail.com`, with account name `qwertie256`.
+I call these "Loyc projects" because they are all meant to contribute to the twin goals of 
+
+- Making programming languages interoperate better
+- Giving developers more powerful tools
+
+Here are some other projects that I have been thinking about:
+
+- [MLSL](http://loyc.net/2014/design-elements-of-mlsl.html) - a Multi-Language Standard Library
+- [SIL](https://github.com/qwertie/Loyc/wiki/Standard-Imperative-Language)
+- [The Ultimate Programming Language](http://loyc.net/2015/ultimate-language.html)
+
+These days I'm thinking the MLSL and SIL should be based on WebAssembly, which, if I have anything to say about it, will take over the world. So far, I haven't had much say in the matter.
+
+At the moment, all these "Loyc tools" are limited to the .NET platform, but Microsoft has refused to fix the [design flaws](http://loyc.net/2014/dotnet-annoyances.html) in .NET, and it is clear that they will not generalize .NET to support new programming languages, either. Therefore, I have decided to shift my focus to WebAssembly in the future.
+
+I'd like help to
+
+- Make programming languages more interoperable, especially by building a standard on top of WebAssembly
+- Make an extensible programming language
+- Write parsers/printers to parse a programming language into a Loyc tree or the reverse (print a Loyc tree as text)
+- Write a parser for LES for a language of your choice
+
+You can reach me at `gmail.com`, with account name `qwertie256`.
