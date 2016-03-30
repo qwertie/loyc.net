@@ -1,6 +1,6 @@
 ---
 title: "LeMP Home Page"
-layout: page
+layout: article
 tagline: "the Lexical Macro Processor for C#"
 toc: true
 redirectDomain: ecsharp.net

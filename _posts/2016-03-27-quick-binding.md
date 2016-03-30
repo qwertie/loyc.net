@@ -231,4 +231,4 @@ Therefore, it can be handled the same way as any other sequence of statements th
 
 Whatever syntax we use, actually implementing it will be challenging. More on that when I write part 2.
 
-[Comments at Reddit](https://www.reddit.com/r/programming/comments/4c521s/the_common_subexpression_problem_do_you_like_this/) - feedback was lukewarm, so I'll probably put this off a long time or only implement it partially.
+- [Comments at Reddit](https://www.reddit.com/r/programming/comments/4c521s/the_common_subexpression_problem_do_you_like_this/) - feedback was lukewarm, so I'll probably put this off a long time or only implement it partially.

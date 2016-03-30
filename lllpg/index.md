@@ -1,6 +1,6 @@
 ---
 title: "LLLPG Home Page"
-layout: page
+layout: article
 tagline: "The LL(k) Parser Generator for Coders"
 redirectDomain: ecsharp.net
 ---
