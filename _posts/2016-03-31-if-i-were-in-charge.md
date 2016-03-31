@@ -1,0 +1,57 @@
+---
+title: If I could change the world...
+layout: post
+commentIssueId: 29
+---
+
+I'm a foundations guy.
+
+The thread that unifies all my interests in life is "fixing the foundations", or more accurately and with less alliteration, "improving the foundations of the world". Here are some of the things I have in mind.
+
+Here's what I would do
+----------------------
+
+### If I were an executive developer at a big company... ###
+
+1. I'd build a standard on top of WebAssembly for interoperability between programming language, including a standard set of data types, which would include not just the usual arrays and hashtables but also mutable/immutable data structures like [those I created for .NET](http://core.ecsharp.net/collections/). There sould also be a cross-language story for file access, localization, access to Unicode tables, and other [pervasive services](http://www.codeproject.com/Articles/101411/DI-and-Pervasive-services).
+2. I'd make the [ultimate programming language](/2015/ultimate-language.html), but make it appealing to mainstream developers. I would hire folks that have already built a language to help, and ask research groups to suggest ways to make the language extensible. 
+3. Eventually I'd add a "graphical" syntax to the language that can show images inline, and represent some code in a diagrammatic fashion (imagine a wiring diagram of software components, showing data flow between components). I'd make an extensible graphical text editor to display these graphical text files (probably it'll need to be stored as plain text, given the massive existing ecosystem built around text files).
+4. I'd check to make sure those WebAssembly guys are building really flexible primitives for making powerful, portable software. I want runtime code generation, hooks for user-defined untrusted debuggers and profilers, sub-sandboxes with memory allocation and CPU time limits, stack switching support (fibers / lightweight "actors"), an optional garbage collection system that supports pointers that can freely point both to GC and non-GC objects, and supports GC'd array slices... I'm no GPU expert, but let's see what we can do to allow folks to write code that can freely migrate from CPUs to GPUs.
+5. I'd implement Bret Victor's fantastic ideas for [seeing how programs work](https://www.youtube.com/watch?v=PUv66718DII) and [Learnable Programming](http://worrydream.com/#!/LearnableProgramming). To make money, the free version would be less scalable, requiring payment to use the features with larger data sets.
+6. I'd start a group devoted to designing and gathering standard interfaces for mathematics, geometry, statistics, computatonal biology, and other scientific or practical fields. Our group would invite implementations of these interfaces, leading hopefully to a sort of "C++ Boost library" that is designed for interoperability with many programming languages, not just C++. One of the tools should be a compact rendering library based on a [subset of HTML](https://github.com/servo/servo/issues/3653).
+7. I'd remake the command-line interface into a graphical thing. Programs would communicate with streams of objects rather than bytes, and the output would be graphical and interactive, perhaps using a web browser to render. All standard tools would have a low-bandwidth mode so that slow remote connections can use it instead of traditional SSH.
+8. I'd investigate the best way to do cross-platform, programming-language-agnostic GUIs that are easy to create, easily resize to different screens, easy to style (I don't care much about style, but others care greatly so I guess we need a nice styling story), do automatic animations where appropriate, and synchronize easily with the underlying model. Ease of creation is the key element here; I repeat: _GUIs should be easy_. I haven't used React.js yet, but its architecture is good inspiration. Aside: I've been meaning to look at making a GUI and CLI generation library which would, given a function or class annotated with attributes or something, generate both a command-line interface and a GUI with autocomplete, and also make testing easy.
+9. I'd make a "gesture-based" note-taking program that allows you to draw (and annotate) diagrams very quickly (see the [Baadia prototype](https://github.com/qwertie/ecsharp/wiki/Baadia)). It would allow you to take notes in meetings or classrooms, including diagrams, with a tablet or notebook PC, faster than you could take notes on paper. It would avoid "tools" and minimize the number of "modes"; you would just draw what you want and the computer would understand, but it would still offer the usual benefits of computer editing (easily resizing and rearranging what you drew earlier). Finally, it would incorporate styling as a core feature. Rather than individually choosing the color, size, stroke style and font of graphical elements, you would choose a single thing called a "style", so that you can change the appearance of all elements with the same style simultaneously. Each style would inherit from another style and modify zero or more attributes such as color, size, etc. of the inherited style. In other words, a form of CSS designed for the masses to use.
+
+### I had a billion dollars... ###
+
+Then I'd do all of the above, except it would always be open source. Plus,
+
+1. I'd design a new _human_ language based on English, but simultaneously much simpler and much _clearer_. This language would translate reliably to English, and it machine translation software would be able to translate much more reliably than English does to other world languages. It would have an open source translator, and be simple and small enough that indie developers could write useful analysis and translation tools based on it, tools that work both online and offline. I'd create a set of lessons to teach it. I would pay a AAA game developer making an RPG set in a futuristic world, to use this language as the lingua franca of that game. The characters would all speak this language aloud, with plain English translations shown on-screen under subtitles. Next, I'd publish a couple of browser extensions to help people learn this language during their everyday browsing (e.g. with translation tooltips). Finally, I'd pick a multilingual country in which to promote the language as a "stepping stone" to learning English. If that works, the next step would be to push it as a national language in its own right, which, in the long run, would allow the people of that country to communicate more easily and also provide motivation for people around the world to learn the language.
+2. I'd lobby for federal corruption reform ([example](https://represent.us/)) to change U.S. political campaigns to be financed with public dollars.
+3. Once that's done, I'd lobby for [Direct Representation](http://directrep.org), [Simple Direct Representation](http://qism.blogspot.com/2015/04/enjoy-true-democracy-with-sdr.html) or (to a lesser extent) any popular movement that wants to abolish first-past-the-post.
+4. I'd lobby for copyright reform (target: 30 years), banning software patents, and a public financing system for the creation of free software, educational materials, medicine and entertainment. Alongside the public funding for open scientific research, there should be public funding for open engineering, open education and open entertainment.
+5. I'd lobby for revival of the manufacturing sectors of my countries (U.S. and Canada) and de-emphasis of the "knowledge economy" because it is based on the wrong-headed idea of privatizing _information_.
+6. I haven't figured out how to solve poverty and ensure all children have access to quality education, but I'd be on the lookout for solutions :D
+7. I'd look for ways to un-stigmatize and popularize naturism.
+8. I'd look for ways to promote empathy, and [less wrong](http://lesswrong.com/) ways of thinking.
+
+### If I were God... ###
+
+1. I'd announce that I exist. You're welcome. But I'd probably be fairly hands-off. After all, I'm just one Guy.
+2. I'd change the laws of physics to be a bit less... linear. It would be neat to design a more friendly physics in which atomic weapons cannot do so much damage, and when things collide it's not so destructive. Assuming I could solve the whole kinetic destruction problem, it would be tempting to bring the stars closer so people can visit nearby stars, but I suppose self-replicating technology (e.g. engineered plagues) is sufficiently dangerous that I wouldn't want travel between stars to be too easy, lest one lunatic be able to kill all life in the galaxy.
+3. I'd investigate [cognitive biases](https://en.wikipedia.org/wiki/Cognitive_bias) and reduce them substantially (this guy I'm taking over for caused a lot of strife this way, didn't He?).
+4. I'd explain to everyone what a soul is, and tell you whether or not lower animals have one.
+5. I'd change the naked body to look more elegant.
+6. I'd investigate how to change the body so it could support more weight and not get sore so easily.
+7. I'd add soft "loops" in certain locations, so that velcro "hooks" could be attached. This way, you would be able to attach light objects directly to your body without straps or clothes.
+8. I'd change the way skin works to regulate your temperature better (assuming I don't reconsider the whole "warm blood" approach). When you get hotter, your skin would get more reflective; when you get colder, it would get darker. The ability of your skin to conduct heat would also change depending on your environment, and you could also control these properties consciously.
+9. TBA. Many changes would require more data before making a decision, and should wait for civilization to stabilize around previous changes. I would try to take into account user feedback, too. Arguably I shouldn't make the changes myself, but just provide the information necessary for others to make the changes if they so choose. Or perhaps I should send down some magic booths where people can go to upgrade.
+
+A good question to ask myself, if I were a God, is "what's my goal?" Well, I used to be LDS, and I am inspired by some of the ideas in that religion (but it also has some disturbing ideas, especially those inherited from mainstream Christianity). For starters, I'd like life to be pleasant. And I'd like people to have immortality after death, at least as an option. Moving up the [hierarchy of needs](http://www.simplypsychology.org/maslow.html), though... I think generally what I'd want is to ensure the beings of the universe can learn and grow, ever increasing their understanding of "mathematics", where mathematics represents the space of all things that could ever exist.
+
+If there is any Creator, I'm convinced He's quite far removed from the God I would choose to be.
+
+### Et tu? ###
+
+So, what else is wrong with the foundations of the world? How would you fix them?
