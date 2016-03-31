@@ -1,7 +1,9 @@
 ---
 layout: page
 title: "LES: Loyc Expression Syntax"
+toc: true
 ---
+
 LES is an interchange format for syntax trees, comparable to s-expressions but designed for languages in the Algol family such as C, C++, C#, Java, EcmaScript, Rust and Python. It can be described as "XML for code": just as XML is a tree structure that assigns no particular meaning to tags and attributes, likewise LES represents syntax trees without assigning any particular meaning to them. It may be called LESv2 (the original [LESv1](/les/v1) is deprecated and discontinued.)
 
 LES is a C-like language with `{braced blocks}` and expressions that end in semicolons; its parser is much simpler than C itself. The output of the LES parser is a list of expressions, in the form of tree structures called [Loyc trees](loyc-trees). In comparison with the syntax trees inside most compilers, Loyc trees are designed to have an almost LISP-like simplicity.
@@ -460,7 +462,7 @@ LES supports the following kinds of literals:
 
 There is no literal notation for lists or tuples (note that a tuple such as `(1; "two")` is not a "literal"; it is a Loyc tree that some programming languages may or may not interpret as a tuple.) More literal types will probably be added in the future (such as unlimited-size integers, 8-bit and 16-bit ints, byte array literals).
 
-A few languages, including Ruby and LISP, have a symbol data type; symbols are singleton strings, and they are implemented by the `Symbol` class in [Loyc.Essentials](https://github.com/qwertie/LoycCore/wiki/Loyc.Essentials). Symbols have a performance advantage over strings in many cases. The advantage of symbols is that you never have to compare the _contents_ of two Symbols. Since each `Symbol` is unique, two `Symbol` references are equal if and only if they point to the same heap object. [[Loyc.Essentials]] allows derived classes of `Symbol` and "private" symbol pools, but LES supports only global symbols. Symbols are a [useful alternative to enums](http://www.codeproject.com/Articles/34753/Symbols-as-extensible-enums).
+A few languages, including Ruby and LISP, have a symbol data type; symbols are singleton strings, and they are implemented by the `Symbol` class in [Loyc.Essentials](https://github.com/qwertie/LoycCore/wiki/Loyc.Essentials). Symbols have a performance advantage over strings in many cases. The advantage of symbols is that you never have to compare the _contents_ of two Symbols. Since each `Symbol` is unique, two `Symbol` references are equal if and only if they point to the same heap object. Loyc.Essentials allows derived classes of `Symbol` and "private" symbol pools, but LES supports only global symbols. Symbols are a [useful alternative to enums](http://www.codeproject.com/Articles/34753/Symbols-as-extensible-enums).
 
 All three of the syntaxes for strings produce the same data type (System.String), and the two kinds of triple-quoted strings are otherwise identical. Double-quoted strings like `"this one"` must be entirely written on a single line, while triple-quoted strings can span an unlimited number of lines.
 
