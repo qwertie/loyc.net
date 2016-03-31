@@ -4,9 +4,7 @@ layout: post
 commentIssueId: 29
 ---
 
-I'm a foundations guy.
-
-The thread that unifies all my interests in life is "fixing the foundations", or more accurately and with less alliteration, "improving the foundations of the world". Here are some of the things I have in mind.
+I'm a foundations guy. The thread that unifies all my interests in life is "fixing the foundations", or more accurately and with less alliteration, "improving the foundations of the world". Here are some of the things I have in mind.
 
 Here's what I would do
 ----------------------
@@ -30,11 +28,12 @@ Then I'd do all of the above, except it would always be open source. Plus,
 1. I'd design a new _human_ language based on English, but simultaneously much simpler and much _clearer_. This language would translate reliably to English, and it machine translation software would be able to translate much more reliably than English does to other world languages. It would have an open source translator, and be simple and small enough that indie developers could write useful analysis and translation tools based on it, tools that work both online and offline. I'd create a set of lessons to teach it. I would pay a AAA game developer making an RPG set in a futuristic world, to use this language as the lingua franca of that game. The characters would all speak this language aloud, with plain English translations shown on-screen under subtitles. Next, I'd publish a couple of browser extensions to help people learn this language during their everyday browsing (e.g. with translation tooltips). Finally, I'd pick a multilingual country in which to promote the language as a "stepping stone" to learning English. If that works, the next step would be to push it as a national language in its own right, which, in the long run, would allow the people of that country to communicate more easily and also provide motivation for people around the world to learn the language.
 2. I'd lobby for federal corruption reform ([example](https://represent.us/)) to change U.S. political campaigns to be financed with public dollars.
 3. Once that's done, I'd lobby for [Direct Representation](http://directrep.org), [Simple Direct Representation](http://qism.blogspot.com/2015/04/enjoy-true-democracy-with-sdr.html) or (to a lesser extent) any popular movement that wants to abolish first-past-the-post.
-4. I'd lobby for copyright reform (target: 30 years), banning software patents, and a public financing system for the creation of free software, educational materials, medicine and entertainment. Alongside the public funding for open scientific research, there should be public funding for open engineering, open education and open entertainment.
+4. I'd lobby for copyright reform (goal: 30-year terms), banning software patents, and a public financing system for the creation of free software, educational materials, medicine and entertainment. Alongside the public funding for open scientific research, there should be public funding for open engineering, open education and open entertainment.
 5. I'd lobby for revival of the manufacturing sectors of my countries (U.S. and Canada) and de-emphasis of the "knowledge economy" because it is based on the wrong-headed idea of privatizing _information_.
-6. I haven't figured out how to solve poverty and ensure all children have access to quality education, but I'd be on the lookout for solutions :D
-7. I'd look for ways to un-stigmatize and popularize naturism.
-8. I'd look for ways to promote empathy, and [less wrong](http://lesswrong.com/) ways of thinking.
+6. I'd lobby for public ownership (via [eminent domain](https://en.wikipedia.org/wiki/Eminent_domain)) of all the wires and pipes underneath cities, and of radio frequencies, to promote efficient non-monopolistic access. All companies would have equal access to the wires and airwaves, to allow competition to flourish in the telecommunications sector. And of course, municipalities should be allowed to compete, or even provide universal access via taxes if the majority of voters so choose.
+7. I haven't figured out how to solve poverty and ensure all children have access to quality education, but I'd be on the lookout for solutions :D
+8. I'd look for ways to un-stigmatize and popularize naturism.
+9. I'd look for ways to promote empathy, and [less wrong](http://lesswrong.com/) ways of thinking.
 
 ### If I were God... ###
 
