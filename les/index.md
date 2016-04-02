@@ -592,7 +592,7 @@ Although LES supports JSON syntactically, the structure of the tree produced by 
 Using LES in .NET
 -----------------
 
-To use LES in .NET, simply call `LesLanguageService.Value` (in Loyc.Syntax.dll) to get an `ILanguageService` object that supports parsing LES text and printing Loyc trees as LES text. Call `Print(node)` to print and `Parse(text)` to parse:
+To use LES in .NET, simply call `LesLanguageService.Value` (in Loyc.Syntax.dll) to get an `IParsingService` object that supports parsing LES text and printing Loyc trees as LES text. Call `Print(node)` to print and `Parse(text)` to parse:
 
 ~~~C#
 IListSource<LNode> code = LesLanguageService.Value.Parse("Jump(); Ship();");
@@ -601,6 +601,6 @@ string code2 = LesLanguageService.Value.PrintMultiple(code); // "Jump(); Ship();
 string first = LesLanguageService.Value.Print(firstStmt);    // "Jump();"
 ~~~
 
-You can also call `Tokenize("text")` to use the lexer by itself (it implements `IEnumerator<Token>`, or just call `NextToken()` which returns [`Maybe<Token>`](http://loyc.net/doc/code/structLoyc_1_1Maybe_3_01T_01_4.html)).
+You can also call `Tokenize("text")` to use the lexer by itself (it implements `ILexer<Token>` and `IEnumerator<Token>`; just call `NextToken()` which returns [`Maybe<Token>`](http://loyc.net/doc/code/structLoyc_1_1Maybe_3_01T_01_4.html)).
 
 The parser returns a list of Loyc trees ([`IListSource`](http://loyc.net/doc/code/interfaceLoyc_1_1Collections_1_1IListSource_3_01out_01T_01_4.html)[`<LNode>`](http://loyc.net/doc/code/classLoyc_1_1Syntax_1_1LNode.html)). See "Using Loyc trees in .NET" at the bottom of [the page about Loyc trees](https://github.com/qwertie/LoycCore/wiki/Loyc-trees).
