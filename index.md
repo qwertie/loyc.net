@@ -60,4 +60,4 @@ I'd like help to
 - Write parsers/printers to parse a programming language into a Loyc tree or the reverse (print a Loyc tree as text)
 - Write a parser for LES for a language of your choice
 
-You can reach me at `gmail.com`, with account name `qwertie256`.
+Please send me a message if you want to help, or to inform me of any other interoperability-related initiatives. You can reach me at `gmail.com`, with account name `qwertie256`.

@@ -1,5 +1,5 @@
 ---
-layout: page
+layout: article
 title: "Converting LES to C#/.NET"
 toc: true
 ---
@@ -21,7 +21,7 @@ To gain access to LLLPG, add
     
     import macros Loyc.LLPG;
 
-### Differences & similarities between LeMP/LES and C#
+### Differences & similarities between LeMP/LES and C# ###
 
 I don't want to bore you with all the details, but the most striking difference between LES and C# is that LES has _no keywords whatsoever_.  Words like `if` and `while` are not parsed in a special way because of the actual word used, but because of the _how the statement is formatted_.
 
@@ -35,7 +35,9 @@ The following statements mean the same thing in LeMP/LES and C#:
     return x;
     continue;
     break;
-    var x = value;                  x = y++ * 10;                                   Console.Write("Hi");
+    var x = value;
+    x = y++ * 10;
+    Console.Write("Hi");
 
 #### Differences:
 
@@ -91,8 +93,10 @@ In many cases the difference is simply that you need an extra semicolon or brace
     try { } catch (Exception ex) { } finally { }; // C#
     try { } catch ex::Exception  { } finally { }; // LES
 
-In fact, in many of these cases the braces are not actually required, but you should include them as long as you don't fully understand how LES works. Many error messages that don't mention  a semicolon are actually referring to a missing semicolon; LeMP gets confused because code like
+Some error messages that don't mention a semicolon are actually referring to a missing semicolon; LeMP gets confused because certain sequences like
 
     if (a) { ... } if (b) { ... };
 
 is parsed successfully as a _single_ statement `if (a, {...}, if, b, {...})`, which the "if" macro does not understand because there are too many arguments.
+
+[Learn more about LES](http://loyc.net/les).
