@@ -25,4 +25,4 @@ If, like me, you're interested in understanding how and why the world is broken 
 
 ### [Depths of Corruption: TED Talks about Corruption](http://www.ted.com/playlists/148/depths_of_corruption) ###
 
-This list includes my favorite corruption talk, about the U.S. Federal Government. [Lawrence Lessig](http://www.ted.com/search?q=lawrence+lessig) explains [how corruption works in Washington D.C.](http://www.ted.com/talks/lawrence_lessig_we_the_people_and_the_republic_we_must_reclaim) and more importantly, how to fix it.
+This list includes my favorite corruption talk, about the U.S. Federal Government. [Lawrence Lessig](http://www.ted.com/search?q=lawrence+lessig) explains [how corruption works in Washington D.C.](http://www.ted.com/talks/lawrence_lessig_we_the_people_and_the_republic_we_must_reclaim) and more importantly, how to fix it. Two and a half years after recording that talk, Lessig experienced U.S. corruption first hand, when his anti-corruption bid for president was [shut down when the DNC changed its own rules to exclude him from the debates](http://www.vox.com/2015/11/2/9659014/lawrence-lessig-quits-presidential).
