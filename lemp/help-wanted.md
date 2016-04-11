@@ -40,10 +40,10 @@ Once a VB.NET printer exists, two cool things will be possible:
 
 The best example of an existing printer is `LesNodePrinter` (`EcsNodePrinter` is much too complex to base your printer on, and if I were to write it again, there would be some simplifications). Of course, now that `matchCode` exists, your printer can take advantage of it to deconstruct Loyc trees... or you could extend the existing validation code in `EcsValidators` to do deconstruction, too (e.g. extracting the class name and base classes from a class/struct/enum or other so-called "space declaration"). Note: I suspect that a good printer should use a data structure called a "rope" string so it can make smart decisions about line breaks and spacing, but I have not tried that approach before.
 
-Task: write Javascript or C++ printer
+Task: write JavaScript or C++ printer
 -------------------------------------
 
-Write a class that prints Loyc trees as C++, Javascript or Swift code, so that in the future LLLPG and LeMP can produce code in those languages. Since no one has defined a mapping between Loyc trees and these languages before, the first step is to plan out how each Javascript or C++ or Swift construct will be represented as a Loyc tree.
+Write a class that prints Loyc trees as C++, JavaScript or Swift code, so that in the future LLLPG and LeMP can produce code in those languages. Since no one has defined a mapping between Loyc trees and these languages before, the first step is to plan out how each Javascript or C++ or Swift construct will be represented as a Loyc tree.
 
 Sometimes you can just use the same mapping as Enhanced C#, and sometimes you'll have to extend it or modify it. For example, a C# class has a Loyc tree like this:
 
@@ -60,7 +60,7 @@ but what to do about `ClassName {} Foo;`? One possible solution is to nest the c
     class ClassName : public BaseClass { Body; } Foo;
     #var(#class(ClassName, #(public BaseClass), { Body; }), Foo);
 
-Designing a good and complete mapping could be pretty hard for C++, but Javascript by contrast should be quite straightforward.
+Designing a good and complete mapping could be pretty hard for C++, but JavaScript by contrast should be quite straightforward.
 
 Task: catalog bugs in EC# parser
 --------------------------------

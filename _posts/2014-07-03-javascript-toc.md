@@ -1,10 +1,10 @@
 ---
 layout: post
-title: Building a table of contents in Javascript
+title: Building a table of contents in JavaScript
 toc: true
 ---
 {% raw %}
-So you're publishing a long document online and don't have an easy mechanism to automatically add a table of contents on the server side? Well with Javascript, you enslave the web browser to do it instead! This TOC generator...
+So you're publishing a long document online and don't have an easy mechanism to automatically add a table of contents on the server side? Well with JavaScript, you enslave the web browser to do it instead! This TOC generator...
 
 - needs no jQuery or other third-party library
 - creates links to each heading, adding an `id` attribute to each heading that doesn't already have one

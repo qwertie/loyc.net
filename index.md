@@ -9,8 +9,8 @@ Coders are constrained in the way they express themselves by the language they a
 - You're working on a large project based on Language X. You probably have to keep using Language X, no matter how weak it is for the task at hand.
 - The best library for doing T is written in Language X, but you also need to do Y and X doesn't support Y very well.
 - You've chosen language X and realize later that you need a good library for doing T. Sadly, none of the libraries for doing T in X are any good.
-- Your code _might_, _just might_ need to run in a web browser. Now you can only use Javascript, or one of a handful of languages that transpile to Javascript.
-- You're not writing code for the browser, but you want to re-use code that _was_ designed for the browser. There's a strong pull toward Javascript, but it might not be the right fit for the new code you want to write.
+- Your code _might_, _just might_ need to run in a web browser. Now you can only use JavaScript, or one of the languages that transpile to JavaScript (where applicable, be careful to use only the parts that transpile properly).
+- You're not writing code for the browser, but you want to re-use code that _was_ designed for the browser. There's a strong pull toward JavaScript, but it might not be the right fit for the new code you want to write.
 - Your code needs high performance, but needs to interoperate with a slower language like Ruby, Python, etc. Now your design is highly constrained because it's hard to trade data between the two languages, due to fundamental mismatches between data types and memory management schemes. And if you don't choose C/C++, interoperability may be very hard in a language that doesn't understand C header files.
 - You want a language with strong support for A, B and C, but no language exists that is strong in all three areas at the same time.
 - You find a language that is excellent for A, B, and C, and start using it for a new project, only to discover that its IDE/Intellisense/Debugger/third party libraries are crap.
@@ -32,8 +32,8 @@ My project didn't get very far, because of the difficulty of creating sufficient
 In the same time frame that I developed Enhanced C#, I also created
 
 - A parser generator ([LLLPG](http://ecsharp.net/lllpg)) designed to help you write parsers with performance similar to hand-written parsers. I hoped to use this for EC# and all other parsing tasks.
-- [Loyc trees](/loyc-trees), a concept for a simple "universal" syntax tree designed for all programming languages in the Algol family (C++, Javascript, C#, etc.) Loyc trees are inspired by the simplicity of LISP s-expressions, adding just enough additional complexity to make them useful for representing any programming language, not just LISP languages.
-- [Loyc expression syntax](/les), a language for storing Loyc trees. LES is a superset of JSON that resembles Javascript, C#, D, and others.
+- [Loyc trees](/loyc-trees), a concept for a simple "universal" syntax tree designed for all programming languages in the Algol family (C++, JavaScript, C#, etc.) Loyc trees are inspired by the simplicity of LISP s-expressions, adding just enough additional complexity to make them useful for representing any programming language, not just LISP languages.
+- [Loyc expression syntax](/les), a language for storing Loyc trees. LES is a superset of JSON that resembles JavaScript, C#, D, and others.
 - [LeMP](http://ecsharp.net/lemp), a LISP-style Macro Processor for Enhanced C#
 - Visual Studio extensions for EC#/LES syntax highlighting and LLLPG/LeMP
 - General-purpose "core" libraries that you can read about at [core.ecsharp.net](http://core.ecsharp.net)

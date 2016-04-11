@@ -11,7 +11,7 @@ Now, I've noticed Microsoft's various strategic and technical mistakes lately, m
 
 Plus there's this Wasm thing, and I'd like to be part of a movement to define CLR-like infrastructure for it: garbage collection, sure, but above all, interoperability features. Not just any interoperability features, but something much more ambitious than the CLR in terms of the variety of potentially supported languages.
 
-I'm not sure what angle to take on it. Should I focus on the MLSL? On the binary interoperability aspect? On the programming language angle? I wish I could do it all. Maybe we could do a little bit of each, as a seed upon which a community might grow. But what programming language should that seed be written in? Well, wasm is focused on the web, and node.js is hugely popular. Do I dare switch to Javascript? Hmm... is there such a thing as IntelliSense for JS? I miss it when I code in EC#. Maybe Typescript?
+I'm not sure what angle to take on it. Should I focus on the MLSL? On the binary interoperability aspect? On the programming language angle? I wish I could do it all. Maybe we could do a little bit of each, as a seed upon which a community might grow. But what programming language should that seed be written in? Well, wasm is focused on the web, and node.js is hugely popular. Do I dare switch to JavaScript? Hmm... is there such a thing as IntelliSense for JS? I miss it when I code in EC#. Maybe Typescript?
 
 Besides all that, I would so much like to work on [Bret Victor's ideas](http://worrydream.com/#!/LearnableProgramming)...
 

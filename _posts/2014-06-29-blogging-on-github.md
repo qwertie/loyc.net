@@ -336,15 +336,15 @@ Note that all the text inside the `<div>` tag is treated as HTML, not Markdown. 
 
 ## Visitor data ##
 
-I am using [Google Analytics](http://www.google.ca/analytics/) to track page views. After you sign up you'll be give a Javascript snippet to put in your web pages; I inserted mine right before `</body>` in `/layouts/default.html`.
+I am using [Google Analytics](http://www.google.ca/analytics/) to track page views. After you sign up you'll be give a JavaScript snippet to put in your web pages; I inserted mine right before `</body>` in `/layouts/default.html`.
 
 ## Table-of-contents generation ##
 
-Kramdown has a feature for [automatic generation of a table of contents](http://kramdown.gettalong.org/converter/html.html#toc) for long posts like this one. Sadly I'm not using Kramdown so I don't have access to it. A javascript solution is more universal, but when I searched for a solution I didn't immediately find one I was happy with. So I made my own [Javascript table-of-contents builder](/2014/javascript-toc.html).
+Kramdown has a feature for [automatic generation of a table of contents](http://kramdown.gettalong.org/converter/html.html#toc) for long posts like this one. Sadly I'm not using Kramdown so I don't have access to it. A javascript solution is more universal, but when I searched for a solution I didn't immediately find one I was happy with. So I made my own [JavaScript table-of-contents builder](/2014/javascript-toc.html).
 
 ## Markdown everywhere ##
 
-By the way, no matter whether you're using GitHub or not or Jekyll or not, there's no need to write web sites in HTML anymore. No matter how crappy your web hosting provider might be, no matter whether you're allowed to run scripts or not, you can still author pages in Markdown, thanks to a nifty library called [mdwiki](http://dynalon.github.io/mdwiki/#!index.md). This thing uses Javascript to convert markdown to HTML, 100% client-side, so you don't have to worry about what your web host may or may not support. On GitHub, you may as well use Jekyll, but I must admit, it looks like mdwiki has a fantastic feature set, probably better than I'll get with Jekyll. But the important thing is, I don't have to write HTML anymore. Good riddance!
+By the way, no matter whether you're using GitHub or not or Jekyll or not, there's no need to write web sites in HTML anymore. No matter how crappy your web hosting provider might be, no matter whether you're allowed to run scripts or not, you can still author pages in Markdown, thanks to a nifty library called [mdwiki](http://dynalon.github.io/mdwiki/#!index.md). This thing uses JavaScript to convert markdown to HTML, 100% client-side, so you don't have to worry about what your web host may or may not support. On GitHub, you may as well use Jekyll, but I must admit, it looks like mdwiki has a fantastic feature set, probably better than I'll get with Jekyll. But the important thing is, I don't have to write HTML anymore. Good riddance!
 
 You can even use MDWiki without a web server, if you view `mdwiki.html` in Firefox (it doesn't work in Google Chrome), which means you can use it for offline Markdown previews (which is great because, at least on the Windows, tools for editing Markdown are generally quite limited.)
 
