@@ -82,7 +82,7 @@ It's not that bad, but I've written a lot of LES code already, and the new parse
 
 So I came up with a design I called LES version 2, and I wrote the [new specification](https://github.com/qwertie/LoycCore/wiki/Loyc-Expression-Syntax). Finally I had a solution that I felt was acceptable: yes, it has a whitespace rule, but the rule is very easy to understand. Yes, it requires more semicolons than C, but the parser can detect most missing semicolons, without whitespace rules (although in special cases, a validation postprocessor, or whatever compiler receives the parsed code, would have to detect the error instead.)
 
-LESv2 _looks_ nice; consider this function which is valid as Javascript as well as LES:
+LESv2 _looks_ nice; consider this function which is valid as JavaScript as well as LES:
 
     function length(s) {
         if (s == null) {

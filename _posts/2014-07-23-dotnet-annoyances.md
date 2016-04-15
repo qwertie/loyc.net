@@ -87,6 +87,6 @@ As the author of a library that is highly generic, the unnecessary incompatibili
 
 These are mostly limitations of the CLR. If we add limitations of C#, or limitations of the BCL, the list becomes considerably longer.
 
-I really believe a "managed environment" for software development should be available, in which developers can easily use dynamic loading, reflection, garbage collection and run-time code generation, and in which programs written in different languages are interoperable without hassles. But it is clear to me that both the Java and .NET implementations of this concept are flawed. That's why I have called for a [new VM to fix all these problems](/2014/open-letter.html) and supplant Javascript, to boot. Now if only someone would hire me to help build it...
+I really believe a "managed environment" for software development should be available, in which developers can easily use dynamic loading, reflection, garbage collection and run-time code generation, and in which programs written in different languages are interoperable without hassles. But it is clear to me that both the Java and .NET implementations of this concept are flawed. That's why I have called for a [new VM to fix all these problems](/2014/open-letter.html) and supplant JavaScript, to boot. Now if only someone would hire me to help build it...
 
 <small>Published on <a href="http://www.codeproject.com/script/Articles/BlogArticleList.aspx?amid=3453924" rel="tag">CodeProject</a></small>
