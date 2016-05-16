@@ -4,7 +4,7 @@ layout: post
 commentIssueId: 6
 ---
 
-With some C# 6 features semi-officially announced, it's time to comment on C# 6 and how it affects Enhanced C#.
+With some C# 6 features semi-officially announced, it's time to comment on C# 6 and how it affects [Enhanced C#](http://ecsharp.net).
 
 ## 1. New initializer syntax
 
