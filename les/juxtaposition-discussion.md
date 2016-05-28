@@ -126,7 +126,7 @@ Luckily, there is one more thing we could add to make this work: we could introd
 
 | Input                             | Meaning       
 | --------------------------------- | -------------------------------------
-| `#fn Foo(x: i32) {...}`           | `@#fn(Foo(x: i32), {...});
+| `#fn Foo(x: i32) {...}`           | `@#fn(Foo(x: i32), {...});`
 | `#fn Foo(x: i32) -> i32 {...}`    | `@#fn(Foo(x: i32) -> i32, {...});`
 | `#class Foo {...}`                | `@#class(Foo, {...});`
 | `#class Foo : IFoo {...}`         | `@#class(Foo : IFoo, {...});`
@@ -140,7 +140,7 @@ But `#` is a "heavy-looking" character. Perhaps a lighter alternative is better?
 
 | Input                             | Meaning       
 | --------------------------------- | -------------------------------------
-| `'fn Foo(x: i32) {...}`           | `@'fn(Foo(x: i32), {...});
+| `'fn Foo(x: i32) {...}`           | `@'fn(Foo(x: i32), {...});`
 | `'fn Foo(x: i32) -> i32 {...}`    | `@'fn(Foo(x: i32) -> i32, {...});`
 | `'class Foo {...}`                | `@'class(Foo, {...});`
 | `'class Foo : IFoo {...}`         | `@'class(Foo : IFoo, {...});`
@@ -191,7 +191,7 @@ A problem that re-emerges in this proposal is that you need a semicolon at the e
 
 If we're going to define keywords, then certainly we should define `null`, `false` and `true` (rather than using `@null`, `@false` and `@true` as in LESv2).
 
-In LESv2 with superexpressions, there was an ambiguity in `A - B` between the normal infix interpretation and the superexpression interpretation `A (-B)`. Perhaps this is why Haskell only has a single prefix operator in total - to limit the probability that someone would erroneously write things like `f !x` or `f ~x`, expecting their punctuation to be treated as a prefix operator. However, I don't think our new juxtaposition operator has an ambiguity related to this, nor does Haskell.
+In LESv2 with superexpressions, there was an ambiguity in `A - B` between the normal infix interpretation and the superexpression interpretation `A (-B)`. Perhaps this is why Haskell only has a single prefix operator in total - to limit the probability that someone would erroneously write things like `f !x` or `f ~x`, expecting their punctuation to be treated as a prefix operator. However, I don't think our new juxtaposition operator has an ambiguity related to this, nor does Haskell (because the precedence of the RHS of the juxtaposition excludes prefix operators).
 
 Currently in LES, `(a; b)` is a tuple. Arguably, `f (a.b; c)` should be illegal because it's not clear if this was meant to be a normal function call or a juxtaposition-call with one parameter that happens to be a tuple.
 
