@@ -53,7 +53,9 @@ Existing pain points in LESv2
 
  - Arguably, there should be a unary suffix operator that can be an arbitrary string (this was intentionally punted to a future version.)
 
- - Since there are an infinite number of operators, you need a space between any two operators, such as `x + -y` or `-*y`. IMO, that's fine. Compiler writers just need to be careful to give a good error message if the user types `x*-y`, maybe something like "There is no operator called `*-`. Consider adding a space between the operators: `* -`. You could even postprocess the code to transform, for example, `-*ptr` into `-(*ptr)`, with or without printing a warning.
+ - Since there are an infinite number of operators, you need a space between any two operators, such as `x * -y` or `-*y`. IMO, that's fine. Compiler writers just need to be careful to give a good error message if the user types `x*-y`, maybe something like "There is no operator called `*-`. Consider adding a space between the operators: `* -`. You could even postprocess the code to transform (for example) `-*ptr` into `-(*ptr)`, with or without printing a warning.
+
+- It should be possible to create negative literals, so given an input like `-7`, LESv2 (beta) produces a literal with value `-7` rather than a call to `-` with positive 7 as its argument. Also, it's important to be deliberate about how we handle `-0x8000_0000`, which appears to be a negative 32-bit number; if `-` is not treated as part of the literal then `0x8000_0000` must be treated a 64-bit number to avoid 32-bit overflow. Therefore the lexer includes `-` as part of the literal, but this has the side-effect that expressions like `x-1` are a syntax error, because the parser sees just sees an identifier `x` followed by a literal `-1`. (Perhaps this can be solved by defining a separate "negative literal" token and a special parser rule to reinterpret such a negative literal as a binary `-` operator followed by a positive number.)
 
 - In the output syntax tree, there's no quick and easy way to distinguish operators from normal identifiers. See my [earlier post](http://loyc.net/2016/put-back-the-sharp.html) about that.
 
@@ -282,13 +284,13 @@ Finally, `f32.store[$addr,0] = -0x0p0` will sometimes need parentheses around it
 
 We're not quite done yet: we have to consider the effect of the proposed changes in the [separate document](/les/juxtaposition-discussion.html). What effect would that have? 
 
-- the proposed syntax `br (exit => result_value) if (condition)` is no longer legal. But if we opt to include binary operators that start with `'`, and we decide that they have very low precedence, then we could use
+- the proposed syntax `br (exit => result_value) if (condition)` is no longer legal. But if we opt to include binary operators that start with the keyword marker `'`, and we decide that they have very low precedence, then we could use
 
         'br exit => result_value 'if condition
-    
+
     (syntax tree: `@'br(exit => @'if(result_value, condition))`)
 
-- For the other stuff we need some single quotes:
+- For the other stuff we need some keyword markers:
 
         'function foo($x : i32) : i32 {...}
         'br exit => result_value

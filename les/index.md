@@ -542,7 +542,7 @@ There is a slight semantic difference between `,` and `;`; a comma is always tre
 There are two reasons why elements of a tuple must be separated by semicolons instead of commas:
 
 1. The main reason is to make `Foo (X, Y)` into a syntax error, which prevents a programmer from accidentally treating `Foo` as a one-argument function.
-2. Note that `Foo(x,)` is considered to be a function of two arguments, but `Foo(x;)` is considered to be a function of one argument. We need a way to represent tuples of one argument. We could require one-arg tuples to be explicit (`#tuple(x)`), but some languages (e.g. Python) offer the syntax `(x,)` for this purpose. However, according the logic above, `(x,)` should be a tuple of _two_ items in LES, while `(x;)` is more logically understood as a tuple of size one.
+2. Note that `Foo(x,)` is considered to be a function of two arguments, but `Foo(x;)` is considered to be a function of one argument, because comma is a separator while semicolon is a terminator. We need a way to represent tuples of one argument. We could require one-arg tuples to be explicit (`#tuple(x)`), but some languages (e.g. Python) offer the syntax `(x,)` for this purpose. However, according the logic above, `(x,)` should be a tuple of _two_ items in LES, while `(x;)` is more logically understood as a tuple of size one.
 
 ### Grammar classification ###
 
