@@ -231,7 +231,7 @@ But this doesn't entirely solve the problem, because round-tripping is imperfect
 
 So, we should have a plan for how new literal types can be added, and where possible, old versions of the parser should be able to handle new literals. Bonus points if new literal types can be round-tripped by old code. Here's my idea about that:
 
-- Numbers can be followed immediately by an identifier indicating the type of number, e.g. `0x1234u128` or `100_000_unum`. If the LES parser doesn't support the number suffix used, a warning (error?) will be printed and the number will be interpreted in the default way (as an integer or double, as applicable). The output will include a `#trivia_literalType()` attribute with the suffix attached as a symbol (e.g. `123.0u128` => `@[#trivia_literalType(@@unum)] 123.0`).
+- Numbers can be followed immediately by an identifier indicating the type of number, e.g. `0x1234u128` or `100_000_unum`. If the LES parser doesn't support the number suffix used, a warning (error?) will be printed and the number will be interpreted in the default way (as an integer or double, as applicable). The output will include a `#trivia_literalType()` attribute with the suffix attached as a symbol (e.g. `123.0unum` => `@[#trivia_literalType(@@unum)] 123.0`).
 
 - Strings can be preceded by an identifier indicating the type of string, e.g. `bytes'''BA AD'''` or `re"[a-zA-Z]"`. If the LES parser doesn't support the prefix used, a warning (error?) will be printed and the string will be parsed in the default way. The output will include a `#trivia_literalType()` attribute with the prefix attached as a symbol (e.g. `bytes'''BA AD'''` => `@[#trivia_literalType(@@bytes)] '''BA AD'''`)
 
@@ -246,7 +246,7 @@ I've always wanted a programming language that supported unit types like "metres
 Precedence issues with WebAssembly
 ----------------------------------
 
-LES doesn't permit custom syntax, but you can exploit its built-in syntax creatively. That's what I did when I proposed the following ways to express certain operators:
+LES does not permit custom syntax, but you can exploit its built-in syntax creatively. That's what I did when I proposed the following ways to express certain operators:
 
     function foo($x : i32) : i32 {...}
     br exit => result_value                // unconditional branch
@@ -301,4 +301,6 @@ We're not quite done yet: we have to consider the effect of the proposed changes
 
         $x * f32.store [$addr,0] = $y
 
-Okay. Thanks for reading! Comments? Visit [#697](https://github.com/WebAssembly/design/issues/697).
+### End. ###
+
+See also: [Wasm issue](https://github.com/WebAssembly/design/issues/697)
