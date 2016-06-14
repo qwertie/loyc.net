@@ -5,32 +5,36 @@ date: Edited 14 Jun 2016
 toc: true
 ---
 
-## Introduction
+Introduction
+------------
 
-A major part of my plans for Loyc is the concept of an "interchange format" for source code. In three words, the concept is "XML for code"--a general representation of syntax trees for any language. The interchange format will:
+A major part of my plans for Loyc is the concept of an "interchange format" for source code. In three words, the concept is "XML for code"--a general representation of syntax trees for any language.  Just to be clear, I do not advocate XML as an interchange format. In fact, I find XML's syntax very annoying (who among you likes typing `&lt;`?) Rather, I believe there should be a standard language for describing syntax trees, just as XML or JSON is used to describe data. In fact, the language I developed is useful for describing data too, as it is a superset of JSON (though this [might change](http://loyc.net/2016/potential-new-les.html) in version 3).
+
+The interchange format will:
 
 - Assist tools that convert code between different languages, by providing a way to change a tree incrementally from one language until it conforms to the rules of another language.
 
-- Promote compile-time metaprogramming to the entire software industry. With Loyc trees, it is straightforward to add macro-based metaprogramming on top of any existing programming language. For example, [the LeMP](http://ecsharp.net/lemp) appears to be a macro processor for C# only, but in fact it could support any programming language for which a parser and printer has been written. LeMP can be compared to the C/C++ preprocessor: you _could_ use the C/C++ preprocessor with any programming language, but it's clunky, its usefulness is limited, and it integrates poorly into the host language. LeMP is a preprocessor too, but it operates on syntax trees rather than text, so it integrates much better into the programming language, and its macros can run arbitrary code at compile time, so it is more powerful (also more dangerous, but I digress.)
+- Promote compile-time metaprogramming to the entire software industry. With Loyc trees, it is straightforward to add macro-based metaprogramming on top of any existing programming language. For example, [the LeMP](http://ecsharp.net/lemp) appears to be a macro processor for C# only, but in fact it could support any programming language for which a parser and printer has been written. LeMP can be compared to the C/C++ preprocessor: you _could_ use the C/C++ preprocessor with any programming language, but it's clunky, its usefulness is limited, and it integrates poorly into the host language. LeMP is a preprocessor too, but it operates on syntax trees rather than text, so it integrates much better into the "host" language, and its macros can run arbitrary code at compile time, so it is more powerful (also more dangerous, but I digress.)
 
 - If a compiler uses Loyc trees internally, it can assist people writing compilers and compiler extensions by
  
     1. providing a simple textual representation of the compiler's intermediate output at various stages. Intermediate output will make it easier to see and discuss the processes going on inside a compiler. 
     2. via LeMP, allowing pattern matching on syntax (the [C# implementation is a proof of concept](http://ecsharp.net/lemp/lemp-code-gen-and-analysis.html)). 
 
-Let me be clear, I do not advocate XML as an interchange format. In fact, I find XML's syntax extremely annoying! If I have to type "`&lt;`"  one more time I could scream. Rather, I want to create a standard language for describing syntax trees, just as XML or JSON is used to describe data. In fact, my language is useful for describing data too; it is a superset of JSON (though this might change in version 3).
+The key concept for representing code from different programming languages is the Loyc tree. "Loyc tree" refers both to the conceptual structure that I invented, and to its _in-memory_ representation. An interchange format (typically [LES](/les) or [EC#](http://ecsharp.net/)) will allow Loyc trees to be converted to plain text and vice versa.
 
-The key concept for representing code from different programming languages is the Loyc tree. "Loyc tree" refers both to the conceptual structure that I have invented, and to its _in-memory_ representation. An interchange format (typically [LES](/les) or [EC#](http://ecsharp.net/)) will allow Loyc trees to be converted to plain text and vice versa.
+Definition
+----------
 
-Every node in a Loyc tree is one of three things:
+A Loyc tree, also known as a Loyc node, is one of three things:
 
-* An identifier, such as the name of a variable, type, method or keyword.
+* An identifier, such as the name of a variable, type, method, operator or keyword.
 * A literal, such as an integer, double, string or character.
 * A "call", which represents either a method call, or a construct like a "class" or a "for loop".
 
-Unlike in most programming languages, Loyc identifiers can be any string--any string at all. Even identifiers like `\n\0` (a linefeed and a null character) are supported. This design guarantees that a Loyc tree can represent an identifier from any programming language on Earth. Literals, similarly, can be any object whatsoever, but when I say that I am referring to a Loyc tree that exists in memory. When a Loyc tree is serialized to text, obviously it will be limited to certain kinds of literals (depending on the language used for serialization).
+Unlike in most programming languages, Loyc identifiers can be any string--any string at all. Even identifiers like `\n\0` (a linefeed and a null character) are supported. This design guarantees that a Loyc tree can represent an identifier from any programming language on Earth. Literals, similarly, can be anything, but when I say that I am referring to a Loyc tree that exists in memory. When a Loyc tree is serialized to text, obviously it will be limited to certain kinds of literals (depending on what is supported by the language used for serialization).
 
-Each Loyc node also has a list of "attributes" (usually empty), and each attribute is itself a Loyc tree. Loyc trees also contain position information (location within a source file).
+Each Loyc node also has a list of "attributes" (usually empty), and each attribute is itself a Loyc tree. Loyc nodes also contain position information (location within a source file).
 
 In other words, a Loyc tree (or Loyc "node") is a data structure with these properties (potential parts):
 
@@ -38,28 +42,30 @@ In other words, a Loyc tree (or Loyc "node") is a data structure with these prop
 2. `Attrs`: a list of attributes (metadata)
 3. One of: a literal (`Value`), an identifier (`Name`), or a call (`Target` plus `Args`).
 
-Call nodes are the most interesting. A "call" represents either a method call, or a construct like a "class" or a "for loop". By convention, constructs that are built into a language use a special identifier that starts with `#`, such as `#class` or `#for` or `#public`. By convention, then, `foo(x, y)` (where `Target` is `foo` and `Args` is a list of two items) would be a normal function call, while `#foo(x, y)` would represent some kind of special construct, e.g. `#var(Foo, x)` could represent a declaration for a variable `x` of type `Foo`.
+Call nodes are the most interesting. A "call" represents either a method call, or a construct like a "class" or a "for loop". By convention, constructs that are built into a language use a special identifier that starts with `#`, such as `#class` or `#for` or `#public`. By convention, then, `foo(x, y)` (where `Target` is `foo` and `Args` is a list of two items) would be a normal function call, while `#foo(x, y)` would represent some kind of special construct, e.g. `#var(Foo, x)` could represent a declaration for a variable `x` of type `Foo`. However, for the sake of convenience, this convention about `#` may be broken when using LES directly as a programming language.
 
-## Loyc trees versus s-expressions ##
+Loyc trees versus s-expressions
+-------------------------------
 
 Loyc trees are inspired by LISP trees, but designed for non-LISP languages. If you've heard of [LISP](http://en.wikipedia.org/wiki/Lisp_(programming_language)), well, Loyc Expression Syntax (LES) is basically a 21st century version of the [S-expression](http://en.wikipedia.org/wiki/S-expressions). The main differences between s-expressions and Loyc trees are:
 
 * Loyc trees are a data structure, whereas s-expressions are a _syntax_ whose underlying data structure _could_ be a singly-linked list. LES is to Loyc trees as s-expressions are to singly-linked lists.
 * Each "call" has a "target". Whereas LISP represents a method call with `(method arg1 arg2)`, Loyc represents a method call with `method(arg1, arg2)`. In LISP, the method name is simply the first item in a list, and there is no way to tell if `(x y z)` is a list of three items or a function call that takes two arguments. In contrast, most other programming languages separate the "target" from the argument list, with the notation `target(arg1, arg2)`. In a Loyc tree, a specific target would be used to denote a list (e.g `#tuple(item1, item2)`).
-* Each node has a list of attributes. The concept of attributes was inspired by .NET attributes, so it will not surprise you to learn that a .NET attribute will be represented in a Loyc tree by a Loyc attribute. But also, "trivia" such as comments and blank lines can be represented by attaching attributes to nodes, and modifiers like "public", "private", "override" and "static" are conventionally represented by attributes.
-* Each node has an associated source file and two integers that identify the range of characters that the original construct occupied in source code. If a Loyc tree is created programmatically, a dummy source file and a zero-length range will be used.
+* Each node has a list of attributes. The concept of attributes was inspired by .NET attributes, so naturally a .NET or Java attribute would be represented in a Loyc tree by a Loyc attribute. But also, "trivia" such as comments and blank lines can be represented by attaching attributes to nodes, and modifiers like "public", "private", "override" and "static" are conventionally represented by attributes.
+* Each node has an associated source file and two integers that identify the range of characters that the original construct occupied in source code. If a Loyc tree is created programmatically, a dummy source file and a zero-length range can be used.
 
-## Loyc trees: text representation ##
+Loyc trees: text representation
+-------------------------------
 
 Obviously, a text format is needed for Loyc trees.
 
-My original plan was to use a subset of [Enhanced C#](http://ecsharp.net) as my "XML for code". However, since EC# is based on C# it inherits some very strange syntax elements. Consider the fact that `(a<b>.c)(x)` is classified a "cast" while `(a<b>+c)(x)` is classified as a method call. EC# has a lot of oddball rules like that, which create unnecessary complication that should not exist in an AST interchange format.
+My original plan was to use a subset of [Enhanced C#](http://ecsharp.net) as my "XML for code". However, since EC# is based on C#, it inherits some very strange syntax elements. Consider the fact that `(a<b>.c)(x)` is classified a "cast" while `(a<b>+c)(x)` is classified as a method call. EC# has a lot of oddball rules like that, which create unnecessary complication that should not exist in an AST interchange format.
 
 Threfore I invented ([Loyc Expression Syntax](/les)). However, we can do better than _just_ an interchange format; I've made LES flexible enough to be used as a modern programming language in its own right.
 
 Since LES can represent syntax from any language, I thought it was sensible to design it with no keywords. So currently, LES has no reserved words whatsoever, and is made almost entirely of "expressions". But "expressions" support a type of syntactic sugar called "superexpressions", which resemble keyword-based statements in several other languages.
 
-Here is a simple Loyc tree in LES:
+Here is a simple Loyc tree expressed in LES:
 
     #if(c < 0, Print(@[en] "negative"), Print(@[en] "non-negative"));
 
@@ -82,7 +88,8 @@ In this case, one could imagine writing a compiler extension that helps do inter
 
 Please see the [LES](/les) and [EC#](http://ecsharp.net) pages for more information.
 
-## Node styles and trivia attributes ##
+Node styles and trivia attributes
+---------------------------------
 
 My implementation of Loyc trees has a concept of "node style", an 8-bit number that represents something stylistic and non-semantic about the source code. For example, 0xC and 12 are the same integer in two different styles. It is semantically the same—the compiler always produces the same program regardless of which form you choose. But it's a striking visual difference that should be preserved during conversion between languages. In my implementation, this difference is preserved in a node's `NodeStyle` property, using the bit flag `NodeStyle.Alternate`. `NodeStyle.Alternate` indicates that a number is hex, that a C# string is [verbatim](http://msdn.microsoft.com/en-us/library/aa691090(v=vs.71).aspx), or that an LES string is triple-quoted. 
 
@@ -93,23 +100,24 @@ A trivia attribute is a Loyc node in an attribute list whose `Name` starts with 
 Probably the most important use of trivia attributes is to denote comments. My plan is that when my parsers are complete, comments like
 
 ~~~C#
-    // Before
-    result = /* in the middle */ Func(); // after
+// Before
+result = /* in the middle */ Func(); // after
 ~~~
 
 will be represented using the following Loyc tree:
 
 ~~~
-    [#trivia_SLCommentBefore(" Before")]
-    [#trivia_SLCommentAfter(" after")]
-    result = ([#trivia_MLCommentBefore(" in the middle ")] Func());
+@[#trivia_SLCommentBefore(" Before")]
+@[#trivia_SLCommentAfter(" after")]
+result = (@[#trivia_MLCommentBefore(" in the middle ")] Func());
 ~~~
 
 `#trivia_SLCommentBefore` and `#trivia_SLCommentAfter` are for single-line comments, while `#trivia_MLCommentBefore` and `#trivia_MLCommentAfter` are for multi-line comments.
 
 If you manually insert a `#trivia_` attribute in your source code, it may disappear or change form when the code is printed out (it affects the output in some special way if the printer understands it, as with comments.)
 
-## The mapping between Loyc trees and programming languages ##
+Mappings between Loyc trees and programming languages
+-----------------------------------------------------
 
 It is necessary to standardize the Loyc trees that are used to represent code in a particular language, or there will be confusion and less interoperability.
 
@@ -152,7 +160,10 @@ For now, I suggest these rough guidelines:
 
 These rules are sometimes in conflict, so if two people both try to define mappings they will inevitably make different decisions. That's why we'll need to standardize the mappings eventually.
 
-## Using Loyc trees in .NET ##
+Using Loyc trees in .NET
+------------------------
+
+The .NET implementation is the only one that exists as of May 2016.
 
 You can create Loyc trees programmatically using the [`LNodeFactory`](http://ecsharp.net/doc/code/classLoyc_1_1Syntax_1_1LNodeFactory.html) class. You have to provide a "source file" object that will be associated with each of the [`LNode`s](http://ecsharp.net/doc/code/classLoyc_1_1Syntax_1_1LNode.html) created by the factory; since you are creating nodes programmatically, just use `EmptySourceFile.Default` or create a `new EmptySourceFile("my source file's name")`. (If you feed your nodes into a compiler later, the source file name may be used by the compiler to display error messages regarding the nodes you created.)
 
