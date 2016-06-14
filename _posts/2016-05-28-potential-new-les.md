@@ -2,7 +2,7 @@
 title: A potential new LES
 layout: post
 toc: true
-commentIssueId: 30
+commentIssueId: 37
 tagline: for great LISPification
 ---
 I've proposed that [WebAssembly adopt LES as the basis for its text format](https://github.com/WebAssembly/design/issues/697) (or at least, to constrain the Wasm text format such that LES is a superset of it.) As part of that proposal, I've agreed to modify LES to suit the tastes of CG members. So far, only a couple of people have weighed in; in the meantime, I've been thinking preemptively about what changes to LES might make it more liked as a text format.
