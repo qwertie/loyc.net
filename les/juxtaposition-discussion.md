@@ -20,7 +20,7 @@ I suppose `foo x y` could mean `(foo(x))(y)` or `foo(x(y))` or even `foo(x, y)`,
 
  - `i32.reinterpret_f32 $N` should mean `(i32.reinterpret_f32)($N)`. It does.
  - Ideally, `x = new Foo()` would mean `x = (new(Foo()))` - but since we're eliminating whitespace sensitivity, `new Foo ()` would mean the same thing, which implies it wouldn't work quite the same as Haskell's juxtaposition operator - not _necessarily_ because the operator itself is any different, but because Haskell doesn't have a separate "call-with-parens" operator. By the way, note that `x(y)(z)` _must_ continue to mean `(x(y))(z)`, since that's what it means in all mainstream languages.
-- `x y z` could mean `(x(y))(z)` (left associaticve) or `x(y(z))` (right associative). The first interpretation follows what Haskell does, while the second is the logical interpretation if we want to treat `x` and `y` as unary operators (as in `log sqrt $N` or `not isHappy camper`)... and that seems to be what we want here.
+- `x y z` could mean `(x(y))(z)` (left associative) or `x(y(z))` (right associative). The first interpretation follows what Haskell does, while the second is the logical interpretation if we want to treat `x` and `y` as unary operators (as in `log sqrt $N` or `not isHappy camper`)... **and that seems to be what we want here**.
 
 To make this work, we could introduce the juxtaposition operator with a precedence somewhere between `**` and `::`. This operator would work as a backup to the normal function-call operator, and would only apply when the normal function operator doesn't. That is, if you write `f (a.b).c`, it's a normal function call parsed as `(f(a.b)).c`. However, if you write `f a.b.c`, it's a juxtaposition parsed as `f((a.b).c)`. A related case is `a [i]`, which would be an indexing operation; you would have to write `a([i])` instead in order to pass a list `[i]` to `a`.
 
@@ -37,7 +37,7 @@ Examples:
 | `x y z`                  | `x(y(z))`
 | `(Foo) x`                | `Foo(x)`
 
-Juxtaposition would have the curious effect of making `(Foo) x` (the cast operator of C languages) equivalent to `int(x)`, which is an ordinary call but also acts as a cast operator in other languages including C++. So that seems ... okay.
+Juxtaposition would have the curious effect of making `(int) x` (the cast operator of C languages) equivalent to `int(x)`, which is an ordinary call but also acts as a cast operator in other languages including C++. So that seems ... okay.
 
 ### Block calls
 
@@ -63,7 +63,7 @@ To reduce potential confusion, we could restrict the left-hand side of the juxta
     Juxtaposition: Identifier Juxtaposition;
     Juxtaposition: Particle   Juxtaposition;
 
-Then confusing expressions like `if (c) {a} else {b} foo` would be illegal, and `(Foo) x` would be illegal if we picked the first version of the rule. However, this restriction would also prohibit things like `f32.sqrt` which, due to the `.` operator, are not particles. It would be possible to carve out an exceptionto allow that, though.
+Then confusing expressions like `if (c) {a} else {b} foo` would be illegal, and `(Foo) x` would be illegal if we picked the first version of the rule. However, this restriction would also prohibit things like `f32.sqrt` which, due to the `.` operator, are not particles. It would be possible to carve out an exception to allow that, though.
 
 The result is nice, because it allows C-like expressions such as 
 
@@ -111,7 +111,7 @@ I think `(var(x)) = z * z` is actually a perfectly reasonable syntax tree for a 
 
 The worst problem IMO is what happens to function and type declarations:
 
-| Input                             | Meaning       
+| Input                             | Strange Meaning
 | --------------------------------- | -------------------------------------
 | `fn Foo(x: i32) {...}`            | `fn( (Foo(x: i32, {...})) )`
 | `fn Foo(x: i32) -> i32 {...}`     | `fn( (Foo(x: i32)) -> (i32({...})) )`
@@ -136,7 +136,7 @@ Here, the `@` simply indicates that identifiers like `#fn` are not to be treated
 
 In LESv2, `#` is an ordinary identifier character, treated no differently than `_` or a letter, but by convention it is used to represent keywords in Loyc trees. So it's a very appropriate choice to use `#` here to denote a "keyword statement".
 
-But `#` is a "heavy-looking" character. Perhaps a lighter alternative is better? We could use a single quote, because a single quote is normally used for character literals - but by definition a character is only _one_ character, whereas every keyword I've ever seen is at least two characters, so there's no ambiguity.
+But `#` is a "heavy-looking" character - it draws attention to itself, and is also clumsy to write on a whiteboard. Perhaps a lighter alternative is better? We could use a single quote, because a single quote is normally used for character literals - but by definition a character is only _one_ character, whereas every keyword I've ever seen is at least two characters, so there's no ambiguity.
 
 | Input                             | Meaning       
 | --------------------------------- | -------------------------------------
@@ -148,9 +148,9 @@ But `#` is a "heavy-looking" character. Perhaps a lighter alternative is better?
 
 Parsing this requires a little hack: the expression parser needs to be told it's in "superexpression" mode so that it can stop at the braced block, which it would ordinarily consume.
 
-The syntax definition would be something like this:
+The grammar would be something like this:
 
-    Superexpression : Keyword ExpressionWithoutBraces? BracesWithContinuators;
+    Superexpression : Keyword ExpressionWithoutBraces? BracesWithContinuators?;
     BracesWithContinuators : BracedBlock Continuator*;
     Continuator : ContinuatorKeyword (BracedBlock | Parentheses BracedBlock?);
     BracedBlock: "{" StatementList "}";
@@ -159,7 +159,7 @@ The syntax definition would be something like this:
 
 ### Should there be a keyword list?
 
-Unfortunately, the `#` (or `'`) would make LES look different from most C-like languages. If it's super important for the code to look "natural", we could introduce a set of keywords to cover the most common cases where this syntax would be needed: `fn function property struct class enum interface type data trait alias namespace` - with two function keywords to cover the Javascript and Rust camps. These keywords would be treated as if they started with `#`/`'`, and ordinary identifiers with those names could be specified with `@`, i.e. `class` means `#class` or `'class`, and `@class` means `class`.
+Unfortunately, the `#` (or `'`) would make LES look different from most C-like languages. If it's super important for the code to look "natural", we could introduce a set of keywords to cover the most common cases where this syntax would be needed: `fn function proc property struct class enum interface type data template trait alias namespace` - with two function keywords to cover the Javascript and Rust camps, and perhaps `proc` for good measure. These keywords would be treated as if they started with `#`/`'`, and ordinary identifiers with those names could be specified with `@`, i.e. `class` means `#class` or `'class`, and `@class` means `class`.
 
 We could also add a few others like `return import using case throw`, but we have to draw the line somewhere since it's impossible to specify a set with enough stuff to satisfy everyone.
 
@@ -181,9 +181,11 @@ And it would be a reasonable way to write "word operators":
 
     Dinner = pizza 'with anchovies 'and stuff;
 
-However, using `'` this way has a small price: it requires a space _before_ the `'`, because `'` is also a legal character in identifiers (an idea taken from Haskell). The existing syntax with backticks can actually be more compact:
+However, using `'` this way has a small price: it requires a space _before_ the `'` as well as after, because `'` is also a legal character in identifiers (an idea taken from Haskell). Therefore, the existing syntax with backticks can actually be more compact:
 
     Dinner = pizza`with`anchovies`and`stuff;
+
+On the whole I like this idea, because the `'` could be defined as the way to identify operators and keywords in the syntax tree. If `'` in the syntax corresponds to a `'` in the AST, it makes LES easier to learn and understand.
 
 ### Minor points
 
