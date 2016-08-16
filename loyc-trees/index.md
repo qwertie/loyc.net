@@ -165,7 +165,7 @@ Using Loyc trees in .NET
 
 The .NET implementation is the only one that exists as of May 2016.
 
-You can create Loyc trees programmatically using the [`LNodeFactory`](http://ecsharp.net/doc/code/classLoyc_1_1Syntax_1_1LNodeFactory.html) class. You have to provide a "source file" object that will be associated with each of the [`LNode`s](http://ecsharp.net/doc/code/classLoyc_1_1Syntax_1_1LNode.html) created by the factory; since you are creating nodes programmatically, just use `EmptySourceFile.Default` or create a `new EmptySourceFile("my source file's name")`. (If you feed your nodes into a compiler later, the source file name may be used by the compiler to display error messages regarding the nodes you created.)
+You can create Loyc trees programmatically using the [`LNodeFactory`](http://ecsharp.net/doc/code/classLoyc_1_1Syntax_1_1LNodeFactory.html) class. You have to provide a "source file" object that will be associated with each of the [`LNode`s](http://ecsharp.net/doc/code/classLoyc_1_1Syntax_1_1LNode.html) created by the factory; since you are creating nodes programmatically, just use `EmptySourceFile.Default` or create a `new EmptySourceFile("my source file's name")`. (If you feed your nodes into a compiler programmatically, the source file name may be used by the compiler to display error messages regarding the nodes you created.)
 
 An `LNodeFactory` is often named `F`:
 
