@@ -1,9 +1,7 @@
 ---
 title: The six week hole
 layout: post
-toc: true
-commentIssueId: 37
-tagline: for great LISPification
+tagline: Is time still money when you have no income?
 ---
 
 ![](../blog/2016-08-16.png)
@@ -32,7 +30,7 @@ So it was that six weeks after initially ordering the SSD, I got the exact model
 
 Virtually no commits and no lines of code written in 6 weeks. Worst upgrade ever.
 
-24 hours later, Visual Studio is finally installed. With my old hard disk, it took 2-3 minutes to load Visual Studio and open a solution. How long now? **Nearly 60 seconds**? Damn it, what's wrong with this SSD?  It never reaches full performance except in massive sequential writes. I notice all my Valve games are slower, too: TF2 and L4D2 are now almost unplayable. Is Windows 10 to blame?
+20 hours later, Visual Studio is finally installed. With my old hard disk, it took 2-3 minutes to load Visual Studio and open a solution. How long now? **Nearly 60 seconds**? Damn it, that is not the kind of performance I hoped for. It never reaches full speed except when copying massive files. I notice all my Valve games are slower, too: TF2 and L4D2 are now almost unplayable. Is Windows 10 to blame?
 
 But I like Windows 10. Task Manager shows useful information like per-process network traffic that I never had access to before. The new Alt+Tab popup is way better. Character Map still sucks. Do I dare? Two weeks later I decide to downgrade back to Windows 7. I had no idea if it would improve my SSD performance but it seemed worth the risk. After the downgrade, Visual Studio is broken and needs another 8 hours to install (including 3 hours when, it turned out, it was deadlocked and I had to terminate a certain subinstaller, but never mind).
 
