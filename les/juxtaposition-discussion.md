@@ -4,6 +4,8 @@ layout: article
 toc: false
 ---
 
+Out of date: some syntactic elements have changed since this was written; see [the new plan](http://loyc.net/2016/lesv3-and-wasm.html). Last update: June 14, 2016
+
 This document explores a potential new version LES with a different set of syntactic sugars than LESv2 has. It is more complex than LESv2, but it satisfies two desires that LESv2 does not:
 
 ### "I want no separate '`(`' and '` (`' tokens.", and ###
