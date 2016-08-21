@@ -299,22 +299,22 @@ Juxtaposition
 
 LESv3 introduces a unary juxtaposition operator, which allows any unadorned identifier (i.e. no `$`, no `.`) to act like a (high-precedence) unary operator:
 
-    ~~~
-    // These two lines are equivalent
-    $x = log sqrt $y * $z;
-    $x = log(sqrt($y)) * $z;
-    ~~~
+~~~
+// These two lines are equivalent
+$x = log sqrt $y * $z;
+$x = log(sqrt($y)) * $z;
+~~~
 
 Juxtaposition is a handy feature, but it's a fallback. It's not compatible with everything else and if another interpretation applies, the other interpretation will be used instead. The identifier that you want to use as an operator can only be followed by an identifier or a nonnegative literal. For example:
 
-    ~~~
-    foo 12     // Juxtaposition:      foo(12)
-    foo $x     // Juxtaposition:      foo($x)
-    foo -x     // Normal subtraction: (foo) - x
-    foo x.y    // Juxtaposition:      foo(x.y)
-    foo (x).y  // Normal call:        (foo(x)).y
-    foo $bar() // Juxtaposition:      foo($bar())
-    ~~~
+~~~
+foo 12     // Juxtaposition:      foo(12)
+foo $x     // Juxtaposition:      foo($x)
+foo -x     // Normal subtraction: (foo) - x
+foo x.y    // Juxtaposition:      foo(x.y)
+foo (x).y  // Normal call:        (foo(x)).y
+foo $bar() // Juxtaposition:      foo($bar())
+~~~
 
 In the postorder code above, you may have noticed that the names of some operators have changed: `i32.lt_s` is now `i32'lt_s` and `i32.add` is now `i32'add`. That's because LES, like most other programming languages, defines dot (`.`) as an operator and not as part of an identifier. In most contexts the dot causes no trouble, but it's not compatible with juxtaposition notation since the left-hand side must be an identifier. The single-quote, on the other hand, is permitted in identifiers (it's treated the same way as a digit.) Alternately we could use inderscores: `i32_add`.
 
@@ -499,7 +499,7 @@ Proposed literal type markers (not necessarily supported by Wasm):
 - `ux`, `ua`, `ub`: possible codes for exact [unum](http://motherboard.vice.com/read/a-new-number-format-for-computers-could-nuke-approximation-errors-for-good) and interval [unum](http://www.johngustafson.net/presentations/Multicore2016-JLG.pdf) (`ua` above, `ub` below). 
 ` `` `@@` ``: named literal (multiple data types)
 
-Ordinary strings do not have a type marker, but we could reserve the empty type marker `` for strings.
+Ordinary strings do not have a type marker, but we could reserve the empty type marker ``` `` ``` for strings.
 
 If the parser recognizes the type marker but the value fails to parse into that type (e.g. `0xFFFF0000i32`, which overflows), the parser may print an error and should store it as a string in a `CustomLiteral` object.
 
