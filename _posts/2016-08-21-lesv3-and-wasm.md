@@ -24,7 +24,7 @@ Keep in mind that LES is also designed for general-purpose non-Wasm uses. That's
 Hopefully you'll agree that the changes are not onerous. Even when writing Wasm code by hand, LES is much easier to use than either the s-expression syntax or any traditional assembly language.
 
 Wasm stack machine in LESv3, by example
-=======================================
+---------------------------------------
 
 Let's consider the C example 
 
@@ -139,12 +139,11 @@ br_if loop;
 ~~~
 
 LESv3 syntax elements
-=====================
+---------------------
 
 Now that you know what it looks like, let's discuss the details.
 
-Semicolons
-----------
+### Semicolons ###
 
 I need feedback about whether semicolons should be required to terminate statements. If semicolons **are** required then a LESv3 parser can read JSON files; if statements are terminated by newlines then JSON isn't really supported because 
 
@@ -155,19 +154,17 @@ will be parsed like `{ "foo"; (:"bar"); }` which is quite different. Maybe a pos
 
 For various technical reasons, it seems easier if newline is a terminator, so I am inclined to drop JSON support. If newline is a terminator, semicolon can still be used as a separator or terminator, which is useful when writing postorder notation or declaring multiple variables.
 
-### Optional semicolons ###
+#### Optional semicolons
 
 The LES parser needs a way to detect the end of each expression, of course. If we decide newline isn't a terminator, semicolons will inevitably be forgotten. While novice programmers often forget semicolons everywhere, experienced ones forget them specifically after closing braces.
 
 To solve this problem, semicolons could be generally optional after a closing brace, provided that the next token after the closing brace _cannot_ continue the expression. This _usually_ works since it is rare to start an expression with a token that can continue the last one. One thing that might help further is to assume if there is a newline after the closing brace, the user intended to end the statement, except if there is a "continuator" (a syntax element that is introduced below).
 
-Keywords
---------
+### Keywords ###
 
 LESv2 has no keywords. Although Wasm doesn't need this, in LESv3 I decided to introduce exactly three keywords, `true`, `false` and `null`, because I found that writing a special notation like `@true` was cumbersome for end-users, while relying on a postprocessing step to translate `true` into a true _literal_ made it difficult or impossible to make an _identifier_ that happened to be named `true`. In LESv3, `true` is a literal and `` `true` `` is an identifier named `true`.
 
-Fancy identifiers
------------------
+### Fancy identifiers ###
 
 Normal identifiers have letters, digits, underscores (`_`) and/or apostrophes (`'`). The first character must be a letter or `_`.
 
@@ -179,8 +176,7 @@ In LESv3, my plan had a problem. If `true` is a keyword then we need a way to wr
 
 Instead, I decided that rather than escaping each individual character, identifiers can be enclosed in backquotes and parsed exactly as a string, e.g. `` `I'm a whole sentence!` `` is an identifier. Compared to the alternative, this rule gives longer identifiers in some cases and shorter ones in others. It's good for representing C++ mangled names like `` `?Fmyclass_v@@YAXVmyclass@@@Z` ``, and less inefficient when there's single strange byte like `` `\x1B` ``.
 
-Dot-expressions
----------------
+### Dot-expressions ###
 
 LES has no keywords for creating functions, classes or other things. In lieu of keywords, LESv2 used two different kinds of left parenthesis (one with a space in front, the other without), which help distinguish "superexpressions" (such as a function declaration) from normal expressions. 
 
@@ -239,8 +235,7 @@ Does this function take four arguments, or two? The same issue arises if we want
 
 The dot in the dot-expression becomes part of the name of the identifier that is called.
 
-Block calls
------------
+### Block calls ###
 
 LESv3 borrows a feature from [Enhanced C#](http://ecsharp.net/) and takes it one step further. In Enhanced C#, you can write a "block call" which is a function call with a pair of braces afterward:
 
@@ -291,8 +286,7 @@ Just so we're clear, continuators are not keywords, they are just words that you
     try({ a; }, `'catch`(e: Exception, { b; }));
 ~~~
 
-Juxtaposition
--------------
+### Juxtaposition ###
 
 LESv3 introduces a unary juxtaposition operator, which allows any unadorned identifier (i.e. no `$`, no `.`) to act like a (high-precedence) unary operator:
 
@@ -323,8 +317,7 @@ But I don't think we _should_, because it either increases the complexity of the
 
 What about opcodes like `i32.trunc_s/f64` and `i32.reinterpret/f32`? Naturally, slash is an operator, so it'll have to change. I suggest `i32'trunc_s_f64` and `i32'reinterpret_f32`.
 
-Labels
-------
+### Labels ###
 
 Remember that `:` is a _binary_ operator, as in `$x: i32`. How is it possible to also use it for labels? The answer is not simple. In fact, I originally planned to use labels with a colon _prefix_, as in `:label`, but if newlines do not act as end-of-statement markers, then this plan doesn't really work as I will explain later. So I gave it some thought and found a combination of novel tricks that will allow the familiar `label:` syntax.
 
@@ -374,8 +367,7 @@ An uglier alternative is to avoid the colon entirely. For example, if `#` is def
     br #stop 'if { $input '<s 1 }
     #label;
 
-Custom/alphanumeric operators
------------------------------
+### Custom/alphanumeric operators ###
 
 LES has always had an "infinite" number of operators, since any combination of operator characters (`[!%^*+=|<>/?:.$&~-]`) can be an operator, whose precedence is chosen by [baked-in rules](https://github.com/qwertie/ecsharp/blob/master/Core/Loyc.Syntax/LES/LesPrecedence.cs).
 
@@ -425,8 +417,7 @@ Instead of or in addition to a "friendly" branch syntax, I think there should be
 
 Currently, operators that are `'words` cannot be used as prefix or suffix operators, e.g. `'drop $foo()` is illegal. This restriction leaves the door open to having `'` as a prefix for arbitrary continuators in dot-expressions (to avoid ambiguity between unary `'word-ops` and continuators).
 
-Attributes
-----------
+### Attributes ###
 
 "Attributes" are nodes that are independently attached to other nodes. Any node in the syntax tree (whether it's an identifier, literal or call) can have associated attributes. This allows attributes to store "out-of-band" metadata such as debug information and comments, and "attributes" in the C# sense or "annotations" in the Java sense.
 
@@ -455,8 +446,7 @@ Currently, in order to apply an attribute to a child node, parentheses are requi
 
 **Note**: Java annotations can have an argument list, e.g. `@Foo(123)`. In LES this is not allowed, because (unless we pay attention to whitespace) there would be an ambiguity between `@Foo(123) (f())()` (`Foo` has an argument list) and `@Foo (f())()` (no argument list intended). You must write `@(Foo(123))` instead.
 
-Custom Literals
----------------
+### Custom Literals ###
 
 This isn't especially important for Wasm, but I'd like to mention my plan for literals. As a format for future programming languages, LES should have a mechanism to allow new kinds of literals to be defined. Meanwhile, LES parsers that don't support a given kind of literal should be able to round-trip it from text to text.
 
@@ -496,7 +486,8 @@ Proposed literal type markers (not necessarily supported by Wasm):
 - `z`: unlimited-size integer
 - `c`: character (e.g. `c"X"` means `'X'`)
 - `s`: symbol (e.g. `s"foo"` would be `:foo` in Ruby and `Symbol.for("foo")` in ES6)
-` `` `@@` ``: named literal (multiple data types)
+- `re"[a-zA-Z0-9]"`: regular expression
+- `` `@@` ``: named literal (multiple data types)
 
 Ordinary strings do not have a type marker, but we could reserve the empty type marker ``` `` ``` for strings.
 
@@ -507,8 +498,7 @@ Other ideas:
 
 If the parser recognizes the type marker but the value fails to parse into that type (e.g. `0xFFFF0000i32`, which overflows), the parser may print an error and should store it as a string in a `CustomLiteral` object.
 
-Room to grow
-------------
+### Room to grow ###
 
 The following syntactic elements are unused, allowing potential future use:
 
@@ -523,8 +513,7 @@ Plus:
 - `@` only appears at the beginning of an expression, for attributes. What if it appears later? One idea is to also allow it as a suffix, as in `size = 64@KB + x`. The effect would still be used to attach an attribute, but the suffix version would bind more tightly, equivalent to `size = (@KB 64) + x`.
 - Certain pairs of operators are immiscible (cannot be mixed), like `x & 1 == 0`, which illustrates Dennis Ritchie's [C precedence mistake](www.lysator.liu.se/c/dmr-on-or.html). A future version could lift the immiscibility rule while raising the precedence of `&` to what it should have been all along. Another example is `x << 1 + 1`, which a developer might think of as "x times two plus one" but in C is `x << 2`.
 
-Miscellaneous issues
---------------------
+### Miscellaneous issues ###
 
 - One possible friendly syntax for loads and stores would be `type[address, offset]` and `type[address, offset] := value` respectively, e.g. `f32[$addr, 4] := 0xFFp0`. This should probably be in addition to an ugly "base" form like `f32'store(12 /*offset*/, 1 /*alignment*/)`.
 - In all the examples so far, local variables have started with `$` to avoid all potential _future_ conflicts between variable names and opcode names. The alternative, of course, is to specially mark opcode names instead. This makes some sense, as the text format will rarely use named opcodes, preferring instead to use operators like `=` and `+`. On the other hand, numeric "identifiers" like $2 need to be specially marked anyway to distinguish them from integers, so perhaps removing the `$` has little benefit. Then again, users might often rely on debug information to eliminate such anonymous variables, or even heuristics (e.g. a debugger could detect that `$2` is used as a pointer and name it `ptr2` instead.)
@@ -533,12 +522,11 @@ Miscellaneous issues
 - Probably `$` should only be allowed at the beginning of an operator, so that `-$x` is a negation of `$x` rather than a single `-$` operator.
 
 Conclusion
-==========
+----------
 
 I'm finishing up my parser and unit tests for LESv3 in C#. Before writing/porting parsers for other langauges I'd like to settle some of the open questions:
 
-Questions for the Community
-----------------------------
+### Questions for the Community ###
 
 - Are there any elements of LESv3 - or the way I've suggested Wasm be encoded in LES - that you disagree with, or don't understand?
 - Newlines: should they terminate statements? If so, how can LES code show its intent for an expression to span multiple lines? (My thoughts in brief: newlines don't count inside `()` or `[]`, or immediately after `{` or an infix operator. For other situations we'll need a line continuation marker such as `\`.)
