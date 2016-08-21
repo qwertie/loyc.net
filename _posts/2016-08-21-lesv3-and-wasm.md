@@ -5,9 +5,6 @@ toc: true
 commentIssueId: 41
 ---
 
-Introduction
-============
-
 This post summarizes my current plan for LESv3 syntax, especially as it relates to WebAssembly, and it highlights a couple of questions for the Wasm CG.
 
 What is LES? A one-paragraph summary
@@ -17,8 +14,8 @@ LES is what would happen if LISP had been invented in the 90s as a native member
 
 Like LESv2, LESv3 will support general C-like expressions with function calls, infix, prefix, and suffix (`++ --`) operators and indexing (possible syntax for stores: `i32[$x] = $y`). It will have JS-like `[lists]`, maybe `{dictionaries}`, and tuples. Operators are represented by calls to identifiers that start with a single quote, e.g. `2 + 3` is a call with a target called `'+`. In the current notation, `2 + 3` could also be written as `` `'+`(2, 3)``.)
 
-Relationship to Wasm
---------------------
+Relationship to WebAssembly
+---------------------------
 
 I've been optimizing LESv3 to make it a good basis for the WebAssembly text format and I am publishing this in the hope of getting your feedback, opinions and preferences. **I'd much rather have your opinion now than after I've written separate parsers for multiple languages!**
 
@@ -141,10 +138,10 @@ $length = $length + -1;
 br_if loop;
 ~~~
 
-Now that you know what it looks like, let's discuss the details.
-
 LESv3 syntax elements
 =====================
+
+Now that you know what it looks like, let's discuss the details.
 
 Semicolons
 ----------
@@ -197,7 +194,7 @@ fn Foo(x: i32);  // Superexpression equivalent to `fn(Foo(x: i32));`
 fn Foo (x: i32); // Syntax error with suggestion to remove the space
 ~~~
 
-Although no one from the Wasm group objected to this, I decided to use a different design for v3 that avoids possible confusion. At first I planned to use `#` to denote "keywords":
+Although no one from the Wasm group objected to this, no one supported it either. I decided to use a different design for v3 that avoids possible confusion. At first I planned to use `#` to denote "keywords":
 
 ~~~
 #fn Foo(x: int32) {...}
@@ -329,7 +326,7 @@ What about opcodes like `i32.trunc_s/f64` and `i32.reinterpret/f32`? Naturally, 
 Labels
 ------
 
-Remember that `:` is a _binary_ operator, as in `$x: i32`. How is it possible to also use it for labels? There is no simple answer. In fact, I originally planned to use labels with a colon _prefix_, as in `:label`, but if newlines do not act as end-of-statement markers, then this plan doesn't really work as I will explain later. So I gave it some thought and found a combination of novel tricks that will allow the familiar `label:` syntax.
+Remember that `:` is a _binary_ operator, as in `$x: i32`. How is it possible to also use it for labels? The answer is not simple. In fact, I originally planned to use labels with a colon _prefix_, as in `:label`, but if newlines do not act as end-of-statement markers, then this plan doesn't really work as I will explain later. So I gave it some thought and found a combination of novel tricks that will allow the familiar `label:` syntax.
 
 First, I realized that if `:` has a higher precedence on the left side than the right side, it be used for labels and produce a sane syntax tree. This is basically the same trick used in C# so that
 
@@ -368,12 +365,14 @@ Then unless we treat the newline specially, this will get parsed in a silly way:
 
     (br stop) 'if ({ $input '<s 1 } : label);
 
-An alternative is to avoid the colon entirely. For example, if `#` is defined as an ordinary identifier character (like a letter of the alphabet) but is reserved for use by labels, the following code is parsed as two separate statements as we desire:
+Note that labels, unlike local variables, don't need for a `$` to mark them as labels, since they appear in restricted contexts and there's no harm in defining a label named after an opcode (e.g. `grow_memory:`).
+
+**Update:** I should point out that if we use newlines as terminators, only one trick is required: allowing colon as a suffix at the end of an expression.
+
+An uglier alternative is to avoid the colon entirely. For example, if `#` is defined as an ordinary identifier character (like a letter of the alphabet) but is reserved for use by labels, the following code is parsed as two separate statements as we desire:
 
     br #stop 'if { $input '<s 1 }
     #label;
-
-Note that labels, unlike local variables, don't need for a `$` to mark them as labels, since they only appear in restricted contexts.
 
 Custom/alphanumeric operators
 -----------------------------
@@ -454,6 +453,8 @@ Currently, in order to apply an attribute to a child node, parentheses are requi
    $x = (@plus (@why $y) + (@zed $z));
 ~~~
 
+**Note**: Java annotations can have an argument list, e.g. `@Foo(123)`. In LES this is not allowed, because (unless we pay attention to whitespace) there would be an ambiguity between `@Foo(123) (f())()` (`Foo` has an argument list) and `@Foo (f())()` (no argument list intended). You must write `@(Foo(123))` instead.
+
 Custom Literals
 ---------------
 
@@ -461,7 +462,7 @@ This isn't especially important for Wasm, but I'd like to mention my plan for li
 
 In addition to `true`, `false`, `null` and character literals, LES has three other literal syntaxes:
 
-1. Numbers with optional type suffix, e.g. `1234`, `0x1234_5678_9ABCi64`
+1. Numbers with optional type suffix, e.g. `-1234`, `0x1234_5678_9ABCi64`
 2. Strings with optional type prefix, e.g. `"Hello, world!"`, `s"symbol"`
 3. `@@` literals, e.g. `@@nan.f`, which is intended for named literals and includes booleans like `@@false` and inifinities like `@@inf.d`. These literals are parsed the same way as the single-quoted operators introduced above.
 
@@ -495,11 +496,14 @@ Proposed literal type markers (not necessarily supported by Wasm):
 - `z`: unlimited-size integer
 - `c`: character (e.g. `c"X"` means `'X'`)
 - `s`: symbol (e.g. `s"foo"` would be `:foo` in Ruby and `Symbol.for("foo")` in ES6)
-- `over`_N_ : rational number with denominator N, e.g. `3over4`
-- `ux`, `ua`, `ub`: possible codes for exact [unum](http://motherboard.vice.com/read/a-new-number-format-for-computers-could-nuke-approximation-errors-for-good) and interval [unum](http://www.johngustafson.net/presentations/Multicore2016-JLG.pdf) (`ua` above, `ub` below). 
 ` `` `@@` ``: named literal (multiple data types)
 
 Ordinary strings do not have a type marker, but we could reserve the empty type marker ``` `` ``` for strings.
+
+Other ideas:
+
+- `over`_N_ : rational number with denominator N, e.g. `3over4`
+- `ux`, `ua`, `ub`: possible codes for exact [unum](http://motherboard.vice.com/read/a-new-number-format-for-computers-could-nuke-approximation-errors-for-good) and interval [unum](http://www.johngustafson.net/presentations/Multicore2016-JLG.pdf) (`ua` above, `ub` below). 
 
 If the parser recognizes the type marker but the value fails to parse into that type (e.g. `0xFFFF0000i32`, which overflows), the parser may print an error and should store it as a string in a `CustomLiteral` object.
 
@@ -511,33 +515,40 @@ The following syntactic elements are unused, allowing potential future use:
 - Non-ASCII characters (currently supported only in strings).
 - `\` (backslashes are not used outside strings).
 - `'{...}`, `'(...)`, `'[...]`, `@@[...]`, `@@(...)`.
-- `.123`: Numbers require a leading digit, which simplifies the lexer slightly and ensures that a number doesn't resemble a "dot keyword".
+
+Plus:
+
 - It's not clear what to do with `#`. In LESv2 it was an ordinary identifier character, treated the same as a letter of the alphabet.
+- `.123`: Numbers require a leading digit, which simplifies the lexer slightly and ensures that a number doesn't resemble a "dot keyword".
+- `@` only appears at the beginning of an expression, for attributes. What if it appears later? One idea is to also allow it as a suffix, as in `size = 64@KB + x`. The effect would still be used to attach an attribute, but the suffix version would bind more tightly, equivalent to `size = (@KB 64) + x`.
+- Certain pairs of operators are immiscible (cannot be mixed), like `x & 1 == 0`, which illustrates Dennis Ritchie's [C precedence mistake](www.lysator.liu.se/c/dmr-on-or.html). A future version could lift the immiscibility rule while raising the precedence of `&` to what it should have been all along. Another example is `x << 1 + 1`, which a developer might think of as "x times two plus one" but in C is `x << 2`.
 
 Miscellaneous issues
 --------------------
 
 - One possible friendly syntax for loads and stores would be `type[address, offset]` and `type[address, offset] := value` respectively, e.g. `f32[$addr, 4] := 0xFFp0`. This should probably be in addition to an ugly "base" form like `f32'store(12 /*offset*/, 1 /*alignment*/)`.
-- In all the examples so far, local variables have started with `$` to avoid conflicts (and all potential future conflicts) between variable names and opcode names. The alternative, of course, is to specially mark opcode names instead. This makes some sense, as the text format will rarely use named opcodes, preferring instead to use operators like `=` and `+`. On the other hand, numeric "identifiers" like $2 need to be specially marked anyway to distinguish them from integers, so perhaps removing the `$` has little benefit. Then again, users might often rely on debug information to eliminate such anonymous variables, or even heuristics (e.g. a debugger could detect that `$2` is used as a pointer and name it `ptr2` instead.)
+- In all the examples so far, local variables have started with `$` to avoid all potential _future_ conflicts between variable names and opcode names. The alternative, of course, is to specially mark opcode names instead. This makes some sense, as the text format will rarely use named opcodes, preferring instead to use operators like `=` and `+`. On the other hand, numeric "identifiers" like $2 need to be specially marked anyway to distinguish them from integers, so perhaps removing the `$` has little benefit. Then again, users might often rely on debug information to eliminate such anonymous variables, or even heuristics (e.g. a debugger could detect that `$2` is used as a pointer and name it `ptr2` instead.)
 - For readability, LES supports digit separators. Two digit separators are possible: `_` as in `0x6789_ABCD + 123_456_789`, or `'` as in `0x6789'ABCD + 123'456'789`. Which do you prefer?
 - Should `/* /* foo */ */` be one nested comment, or one comment plus a `*/` operator?
 - Probably `$` should only be allowed at the beginning of an operator, so that `-$x` is a negation of `$x` rather than a single `-$` operator.
 
-In closing
+Conclusion
 ==========
 
-I'm finishing up my parser and unit tests for LESv3 in C#. Before writing/porting parsers for other langauges I'd like to settle some questions.
+I'm finishing up my parser and unit tests for LESv3 in C#. Before writing/porting parsers for other langauges I'd like to settle some of the open questions:
 
-Questions for CG members
-------------------------
+Questions for the Community
+----------------------------
 
 - Are there any elements of LESv3 - or the way I've suggested Wasm be encoded in LES - that you disagree with, or don't understand?
 - Newlines: should they terminate statements? If so, how can LES code show its intent for an expression to span multiple lines? (My thoughts in brief: newlines don't count inside `()` or `[]`, or immediately after `{` or an infix operator. For other situations we'll need a line continuation marker such as `\`.)
 - If the name of `i32.trunc_s/f64` must be changed to make it into an ordinary identifier, what name should it have instead? `i32_trunc_s_f64`? `i32'trunc_s_f64`?
-- Is it important to support non-ascii identifiers like `ThíŝÖnè` in the LES standard? If so, can the standard be written in such a way that all LES parsers recognize and reject the same set of characters as letters? What about [normalization](http://unicode.org/reports/tr15/)? (I'm inclined to say no, arbitrary identifiers are already supported in string form.)
-- Labels: should we avoid the three tricks required to support colon-terminated `labels:`? We can use colon as a prefix instead of a suffix if the parser is newline-sensitive. Another option is to use a block statement like `block(label) {...}`, but I am not in favor because it can lead to excessive nesting of braces and puts the label at the top instead of its logical location at the bottom.
+- Is it important to support non-ascii identifiers like `ThíŝÖnè` in the LES standard? If so, can the standard be written in such a way that all LES parsers recognize and reject the same set of characters as letters? What about [normalization](http://unicode.org/reports/tr15/)? (I'm inclined to say no, because arbitrary identifiers are already supported as backquoted strings.)
+- Should dot-expressions support comma-separated arguments despite the ambiguity?
+- Labels: should we avoid the extra rule(s) required to support colon-terminated `labels:`? We can use colon as a prefix instead of a suffix if the parser is newline-sensitive. Another option is to use a block statement like `block(label) {...}`, but I am not in favor because it can lead to excessive nesting of braces and puts the label at the top instead of its logical location at the bottom.
 - Should the hash sign `#` be treated as a normal identifier character. If not, should it be reserved for future use?
 - Continuator clauses: besides `if`, `elsif`, `elseif`, `catch` and `finally`, what should the set of continuators include? Expanding this set in the future would break backward compatibility, so it should be generous from the start. I'm inclined to include `where`, the conjunctions `and or but so then`, and some English prepositions, especially short ones like `to`, `on`, `at` and `via`. Note that the set cannot include `while` and `for` since these already tend to be used at the beginning of expressions.
 - Which is better: `123L` or `123i64`?
+- What infix operators should represent `set_local` and `tee_local`?
 - Any comments on the "miscellaneous issues"?
 - And the $64,000,000 question: are you in favor of using LES for the Wasm text format? Before or after MVP?
