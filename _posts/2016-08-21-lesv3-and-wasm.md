@@ -1,5 +1,5 @@
 ---
-title: LESv3 and Wasm: the current plan
+title: "LESv3 and Wasm: the current plan"
 layout: post
 toc: true
 commentIssueId: 41
@@ -517,11 +517,11 @@ The following syntactic elements are unused, allowing potential future use:
 Miscellaneous issues
 --------------------
 
-- I'm thinking `$` should only appear at the start of an operator, so that `-$x` is a negation of `$x` rather than a `-$` operator.
 - One possible friendly syntax for loads and stores would be `type[address, offset]` and `type[address, offset] := value` respectively, e.g. `f32[$addr, 4] := 0xFFp0`. This should probably be in addition to an ugly "base" form like `f32'store(12 /*offset*/, 1 /*alignment*/)`.
 - In all the examples so far, local variables have started with `$` to avoid conflicts (and all potential future conflicts) between variable names and opcode names. The alternative, of course, is to specially mark opcode names instead. This makes some sense, as the text format will rarely use named opcodes, preferring instead to use operators like `=` and `+`. On the other hand, numeric "identifiers" like $2 need to be specially marked anyway to distinguish them from integers, so perhaps removing the `$` has little benefit. Then again, users might often rely on debug information to eliminate such anonymous variables, or even heuristics (e.g. a debugger could detect that `$2` is used as a pointer and name it `ptr2` instead.)
 - For readability, LES supports digit separators. Two digit separators are possible: `_` as in `0x6789_ABCD + 123_456_789`, or `'` as in `0x6789'ABCD + 123'456'789`. Which do you prefer?
 - Should `/* /* foo */ */` be one nested comment, or one comment plus a `*/` operator?
+- Probably `$` should only be allowed at the beginning of an operator, so that `-$x` is a negation of `$x` rather than a single `-$` operator.
 
 In closing
 ==========
@@ -531,7 +531,7 @@ I'm finishing up my parser and unit tests for LESv3 in C#. Before writing/portin
 Questions for CG members
 ------------------------
 
-- Are there any elements of LESv3 that you disagree with, or don't understand?
+- Are there any elements of LESv3 - or the way I've suggested Wasm be encoded in LES - that you disagree with, or don't understand?
 - Newlines: should they terminate statements? If so, how can LES code show its intent for an expression to span multiple lines? (My thoughts in brief: newlines don't count inside `()` or `[]`, or immediately after `{` or an infix operator. For other situations we'll need a line continuation marker such as `\`.)
 - If the name of `i32.trunc_s/f64` must be changed to make it into an ordinary identifier, what name should it have instead? `i32_trunc_s_f64`? `i32'trunc_s_f64`?
 - Is it important to support non-ascii identifiers like `ThíŝÖnè` in the LES standard? If so, can the standard be written in such a way that all LES parsers recognize and reject the same set of characters as letters? What about [normalization](http://unicode.org/reports/tr15/)? (I'm inclined to say no, arbitrary identifiers are already supported in string form.)
