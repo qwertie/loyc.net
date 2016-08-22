@@ -5,7 +5,16 @@ toc: true
 commentIssueId: 41
 ---
 
-This post summarizes my current plan for LESv3 syntax, especially as it relates to WebAssembly, and it highlights a couple of questions for the Wasm CG.
+Now that Wasm is moving toward a stack machine, I think that LES is now more relevant than ever, because there seems to be a need for not _one_ Wasm language but two: one for Wasm itself, and another for the pseudo-wasm AST used by producers (i.e. binaryen). Both languages would support expressions, but each would interpret them differently. In the "official" Wasm, `$a() + $b()` could be syntactic sugar for the sequence `$a(); $b(); i32.add` if both functions return `i32`, whereas in binaryen, the same text would represent the AST `i32.add($a(), $b())`.
+
+While only one Wasm variation is expected so far, it's not hard to imagine others:
+
+- People will need to prototype new Wasm features.
+- I'm interested in making some kind of higher-level language using wasm's AST variant as a semantic foundation.
+
+A general-purpose syntax like LESv3 allows people to do all this without touching the parser or the printer (serializer), let alone writing new ones. 
+
+This post summarizes my current plan for LESv3 syntax, especially as it relates to WebAssembly, and it highlights a few questions for the Wasm CG.
 
 What is LES? A one-paragraph summary
 ------------------------------------
@@ -487,6 +496,7 @@ Proposed literal type markers (not necessarily supported by Wasm):
 - `c`: character (e.g. `c"X"` means `'X'`)
 - `s`: symbol (e.g. `s"foo"` would be `:foo` in Ruby and `Symbol.for("foo")` in ES6)
 - `re"[a-zA-Z0-9]"`: regular expression
+- `m`: decimal (.NET 102-bit number with floating _decimal_ point)
 - `` `@@` ``: named literal (multiple data types)
 
 Ordinary strings do not have a type marker, but we could reserve the empty type marker ``` `` ``` for strings.
@@ -536,7 +546,7 @@ I'm finishing up my parser and unit tests for LESv3 in C#. Before writing/portin
 - Labels: should we avoid the extra rule(s) required to support colon-terminated `labels:`? We can use colon as a prefix instead of a suffix if the parser is newline-sensitive. Another option is to use a block statement like `block(label) {...}`, but I am not in favor because it can lead to excessive nesting of braces and puts the label at the top instead of its logical location at the bottom.
 - Should the hash sign `#` be treated as a normal identifier character. If not, should it be reserved for future use?
 - Continuator clauses: besides `if`, `elsif`, `elseif`, `catch` and `finally`, what should the set of continuators include? Expanding this set in the future would break backward compatibility, so it should be generous from the start. I'm inclined to include `where`, the conjunctions `and or but so then`, and some English prepositions, especially short ones like `to`, `on`, `at` and `via`. Note that the set cannot include `while` and `for` since these already tend to be used at the beginning of expressions.
-- Which is better: `123L` or `123i64`?
+- Which is better: `123L` or `123i64`? Or should both be supported?
 - What infix operators should represent `set_local` and `tee_local`?
 - Any comments on the "miscellaneous issues"?
 - And the $64,000,000 question: are you in favor of using LES for the Wasm text format? Before or after MVP?
