@@ -19,7 +19,7 @@ This post summarizes my current plan for LESv3 syntax, especially as it relates 
 What is LES? A one-paragraph summary
 ------------------------------------
 
-LES is what would happen if LISP had been invented in the 90s as a native member of the C family. Like the s-expression, LES is parsed into a simple data structure called a [Loyc tree](http://loyc.net/loyc-trees/), but unlike s-expressions, the data structure is designed to hold code. Instead of using a "list" as the recursive element, Loyc trees use a "call": `f(x, y)` instead of `(f x y)`. `f` is called the "target" of the call and although most targets are identifiers, a target can be any node, including another call (e.g. `f(x)(y)`). Also, every node has an (optional) list of attributes attached (which can include "trivia" such as comments, and in Wasm might be used for debug info), and should also hold a source code range for use in error messages (e.g. `~/code/my_code.les:1012:12:1012:19`)
+If LISP had been invented in the 90s as a native member of the C family, LES would be its parser. Like the s-expression, LES is parsed into a simple data structure called a [Loyc tree](http://loyc.net/loyc-trees/), but unlike s-expressions, the data structure is designed to hold code. Instead of using a "list" as the recursive element, Loyc trees use a "call": `f(x, y)` instead of `(f x y)`. `f` is called the "target" of the call and although most targets are identifiers, a target can be any node, including another call (e.g. `f(x)(y)`). Also, every node has an (optional) list of attributes attached (which can include "trivia" such as comments, and in Wasm might be used for debug info), and should also hold a source code range for use in error messages (e.g. `~/code/my_code.les:1012:12:1012:19`)
 
 Like LESv2, LESv3 will support general C-like expressions with function calls, infix, prefix, and suffix (`++ --`) operators and indexing (possible syntax for stores: `i32[$x] = $y`). It will have JS-like `[lists]`, maybe `{dictionaries}`, and tuples. Operators are represented by calls to identifiers that start with a single quote, e.g. `2 + 3` is a call with a target called `'+`. In the current notation, `2 + 3` could also be written as `` `'+`(2, 3)``.)
 
@@ -519,7 +519,6 @@ The following syntactic elements are unused, allowing potential future use:
 Plus:
 
 - It's not clear what to do with `#`. In LESv2 it was an ordinary identifier character, treated the same as a letter of the alphabet.
-- `.123`: Numbers require a leading digit, which simplifies the lexer slightly and ensures that a number doesn't resemble a "dot keyword".
 - `@` only appears at the beginning of an expression, for attributes. What if it appears later? One idea is to also allow it as a suffix, as in `size = 64@KB + x`. The effect would still be used to attach an attribute, but the suffix version would bind more tightly, equivalent to `size = (@KB 64) + x`.
 - Certain pairs of operators are immiscible (cannot be mixed), like `x & 1 == 0`, which illustrates Dennis Ritchie's [C precedence mistake](www.lysator.liu.se/c/dmr-on-or.html). A future version could lift the immiscibility rule while raising the precedence of `&` to what it should have been all along. Another example is `x << 1 + 1`, which a developer might think of as "x times two plus one" but in C is `x << 2`.
 
@@ -530,6 +529,7 @@ Plus:
 - For readability, LES supports digit separators. Two digit separators are possible: `_` as in `0x6789_ABCD + 123_456_789`, or `'` as in `0x6789'ABCD + 123'456'789`. Which do you prefer?
 - Should `/* /* foo */ */` be one nested comment, or one comment plus a `*/` operator?
 - Probably `$` should only be allowed at the beginning of an operator, so that `-$x` is a negation of `$x` rather than a single `-$` operator.
+- What should the syntax be for an invalid UTF-8 byte? My original idea was `\uNNNN` and `\uNNNNN` for unicode, `\xNN` for latin-1 characters and `\?NN` for a byte that is invalid UTF-8. But now I'm leaning toward `\u` for unicode and `\xNN` for any single byte, including valid UTF-8 control characters and invalid bytes above 127.
 
 Conclusion
 ----------

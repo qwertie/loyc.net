@@ -2,6 +2,7 @@
 layout: default
 title: Home
 ---
+
 # <center>The Power of Choice</center>
 
 Coders are constrained in the way they express themselves by the language they are using. Different languages have different strengths and weaknesses, but expert coders are often unable to choose a programming language or library with the combination of strengths they desire. There are many scenarios that produce this result...
@@ -36,7 +37,7 @@ In the same time frame that I developed Enhanced C#, I also created
 - [Loyc expression syntax](/les), a language for storing Loyc trees. LES is a superset of JSON that resembles JavaScript, C#, D, and others.
 - [LeMP](http://ecsharp.net/lemp), a LISP-style Macro Processor for Enhanced C#
 - Visual Studio extensions for EC#/LES syntax highlighting and LLLPG/LeMP
-- General-purpose "core" libraries that you can read about at [core.ecsharp.net](http://core.ecsharp.net)
+- General-purpose "core" libraries that you can read about at [core.loyc.net](http://core.loyc.net)
 
 I call these "Loyc projects" because they are all meant to contribute to the twin goals of 
 
