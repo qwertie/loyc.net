@@ -167,7 +167,7 @@ For various technical reasons, it seems easier if newline is a terminator, so I 
 
 The LES parser needs a way to detect the end of each expression, of course. If we decide newline isn't a terminator, semicolons will inevitably be forgotten. While novice programmers often forget semicolons everywhere, experienced ones forget them specifically after closing braces.
 
-To solve this problem, semicolons could be generally optional after a closing brace, provided that the next token after the closing brace _cannot_ continue the expression. This _usually_ works since it is rare to start an expression with a token that can continue the last one. One thing that might help further is to assume if there is a newline after the closing brace, the user intended to end the statement, except if there is a "continuator" (a syntax element that is introduced below).
+To solve this problem, semicolons could be generally optional after a closing brace, provided that the next token after the closing brace _cannot_ continue the expression. This doesn't always work though, especially if we use dot-keywords as introduced below; the old `#hash-keyword` idea was more compatible with this plan. One thing that might help further is to assume if there is a newline after the closing brace, the user intended to end the statement, except if there is a "continuator" (a syntax element that is introduced below).
 
 ### Keywords ###
 
@@ -183,7 +183,7 @@ Dan Gohman's prototype used backslashes to escape individual characters in an id
 
 In LESv3, my plan had a problem. If `true` is a keyword then we need a way to write an _identifier_ called `true`. Using `\true` to represent the _identifier_ called `true` is a no-go because `\t` conventionally represents a tab character, so this particular identifier wouldn't have its obvious meaning of "tab character followed by `rue`".
 
-Instead, I decided that rather than escaping each individual character, identifiers can be enclosed in backquotes and parsed exactly as a string, e.g. `` `I'm a whole sentence!` `` is an identifier. Compared to the alternative, this rule gives longer identifiers in some cases and shorter ones in others. It's good for representing C++ mangled names like `` `?Fmyclass_v@@YAXVmyclass@@@Z` ``, and less inefficient when there's single strange byte like `` `\x1B` ``.
+Instead, I decided that rather than escaping each individual character, identifiers can be enclosed in backquotes and parsed exactly as a string, e.g. `` `I'm a whole sentence!` `` is an identifier. Compared to the alternative, this rule gives longer identifiers in some cases and shorter ones in others. It's good for representing C++ mangled names like `` `?Fmyclass_v@@YAXVmyclass@@@Z` ``, and less efficient when there's single strange byte like `` `\x1B` ``.
 
 ### Dot-expressions ###
 
