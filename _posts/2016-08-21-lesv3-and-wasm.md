@@ -185,7 +185,7 @@ In LESv3, my plan had a problem. If `true` is a keyword then we need a way to wr
 
 Instead, I decided that rather than escaping each individual character, identifiers can be enclosed in backquotes and parsed exactly as a string, e.g. `` `I'm a whole sentence!` `` is an identifier. Compared to the alternative, this rule gives longer identifiers in some cases and shorter ones in others. It's good for representing C++ mangled names like `` `?Fmyclass_v@@YAXVmyclass@@@Z` ``, and less efficient when there's single strange byte like `` `\x1B` ``.
 
-### Dot-expressions ###
+### Keyword expressions ###
 
 LES has no keywords for creating functions, classes or other things. In lieu of keywords, LESv2 used two different kinds of left parenthesis (one with a space in front, the other without), which help distinguish "superexpressions" (such as a function declaration) from normal expressions. 
 
@@ -230,7 +230,7 @@ Potentially, a keyword statement could take comma-separated arguments:
 .memory initial=1, maximum=10, exported=true;
 ~~~
 
-However, LESv3 is a flexible language, so a dot-expression is allowed anywhere that a normal expression is allowed, including as a function argument, which makes this ambiguous:
+However, LESv3 is a flexible language, so a keyword-expression is allowed anywhere that a normal expression is allowed, including as a function argument, which makes this ambiguous:
 
 ~~~
 foo(bar, .baz a, b, c);
@@ -242,7 +242,7 @@ Does this function take four arguments, or two? The same issue arises if we want
 {"key":"value", .baz a, b, c}
 ~~~
 
-The dot in the dot-expression becomes part of the name of the identifier that is called.
+The dot in the keyword-expression becomes part of the name of the identifier that is called.
 
 ### Block calls ###
 
@@ -268,7 +268,7 @@ In Wasm, this feature could be used for loops:
    loop (label) { infinite(); br label; }
 ~~~
 
-LESv3 adds a new feature: the braced block can be followed by a continuator clause. These clauses will have the same syntax as the continuator clauses on the dot-expressions you saw earlier:
+LESv3 adds a new feature: the braced block can be followed by a continuator clause. These clauses will have the same syntax as the continuator clauses on the keyword-expressions you saw earlier:
 
 ~~~csharp
     x = if (c) { a; } else { b; };
@@ -285,7 +285,7 @@ When building a language on top of LES you can choose between two styles:
 
 For Wasm, I've chosen to prefer the first syntax style for the contents of function bodies, and the second style outside functions. Note that the two forms have different call targets (the first one calls `if` while the second calls `` `.if` ``.)
 
-Currently, dot-expressions cannot start mid-expression, i.e. you can't write `x = .foo y {...}` and must write `x = (.foo y {...})` instead, but this restriction could be lifted.
+Currently, keyword-expressions cannot start mid-expression, i.e. you can't write `x = .foo y {...}` and must write `x = (.foo y {...})` instead, but this restriction could be lifted.
 
 Just so we're clear, continuators are not keywords, they are just words that you wouldn't expect to see after `}` except for the purpose of continuing the previous statement. The exact syntax and output tree for a continuator clause has not been finalized; here's one possibility:
 
@@ -316,13 +316,15 @@ foo (x).y  // Normal call:        (foo(x)).y
 foo $bar() // Juxtaposition:      foo($bar())
 ~~~
 
-In the postorder code above, you may have noticed that the names of some operators have changed: `i32.lt_s` is now `i32'lt_s` and `i32.add` is now `i32'add`. That's because LES, like most other programming languages, defines dot (`.`) as an operator and not as part of an identifier. In most contexts the dot causes no trouble, but it's not compatible with juxtaposition notation since the left-hand side must be an identifier. The single-quote, on the other hand, is permitted in identifiers (it's treated the same way as a digit.) Alternately we could use inderscores: `i32_add`.
+In the postorder code above, you may have noticed that the names of some operators have changed: `i32.lt_s` is now `i32'lt_s` and `i32.add` is now `i32'add`. That's because LES, like most other programming languages, defines dot (`.`) as an operator and not as part of an identifier. In most contexts the dot causes no trouble, but it's not compatible with juxtaposition notation since the left-hand side must be an identifier. The single-quote, on the other hand, is permitted in identifiers (it's treated the same way as a digit.) Alternatively we could use inderscores: `i32_add`. 
 
 Technically it's _possible_ to parse code like this, dots and all:
 
     i32.eqz i32.clz $x
 
 But I don't think we _should_, because it either increases the complexity of the LES parser's grammar from LL(2) to LL(*), or requires challenging tricks in grammar actions. In fact, my parser already relies on a couple of tricks and I want to avoid adding more (one trick efficiently supports an infinite number of operators with over 20 precedence levels; another is a flag that changes how `{braces}` work inside a `.dot` expression.)
+
+Other options: we could avoid using the juxtaposition feature, or drop it from the language entirely.
 
 What about opcodes like `i32.trunc_s/f64` and `i32.reinterpret/f32`? Naturally, slash is an operator, so it'll have to change. I suggest `i32'trunc_s_f64` and `i32'reinterpret_f32`.
 
@@ -424,7 +426,7 @@ Instead of or in addition to a "friendly" branch syntax, I think there should be
     br_if exit;
     br_table(1 /*arity*/, [a, b, c], d /*default branch target*/);
 
-Currently, operators that are `'words` cannot be used as prefix or suffix operators, e.g. `'drop $foo()` is illegal. This restriction leaves the door open to having `'` as a prefix for arbitrary continuators in dot-expressions (to avoid ambiguity between unary `'word-ops` and continuators).
+Currently, operators that are `'words` cannot be used as prefix or suffix operators, e.g. `'drop $foo()` is illegal. This restriction leaves the door open to having `'` as a prefix for arbitrary continuators in keyword-expressions (to avoid ambiguity between unary `'word-ops` and continuators).
 
 ### Attributes ###
 
@@ -530,6 +532,7 @@ Plus:
 - Should `/* /* foo */ */` be one nested comment, or one comment plus a `*/` operator?
 - Probably `$` should only be allowed at the beginning of an operator, so that `-$x` is a negation of `$x` rather than a single `-$` operator.
 - What should the syntax be for an invalid UTF-8 byte? My original idea was `\uNNNN` and `\uNNNNN` for unicode, `\xNN` for latin-1 characters and `\?NN` for a byte that is invalid UTF-8. But now I'm leaning toward `\u` for unicode and `\xNN` for any single byte, including valid UTF-8 control characters and invalid bytes above 127.
+- If a numeric literal starts with a dot as in `.125`, this perhaps should be treated as an error, because `x+.125` would parse as `x +. 125`, probably not what the user wanted.
 
 Conclusion
 ----------
@@ -542,7 +545,8 @@ I'm finishing up my parser and unit tests for LESv3 in C#. Before writing/portin
 - Newlines: should they terminate statements? If so, how can LES code show its intent for an expression to span multiple lines? (My thoughts in brief: newlines don't count inside `()` or `[]`, or immediately after `{` or an infix operator. For other situations we'll need a line continuation marker such as `\`.)
 - If the name of `i32.trunc_s/f64` must be changed to make it into an ordinary identifier, what name should it have instead? `i32_trunc_s_f64`? `i32'trunc_s_f64`?
 - Is it important to support non-ascii identifiers like `ThíŝÖnè` in the LES standard? If so, can the standard be written in such a way that all LES parsers recognize and reject the same set of characters as letters? What about [normalization](http://unicode.org/reports/tr15/)? (I'm inclined to say no, because arbitrary identifiers are already supported as backquoted strings.)
-- Should dot-expressions support comma-separated arguments despite the ambiguity?
+- Do you prefer that keyword-expressions begin with an explicit marker as in `.fn X() {}`, or would the implicit design used in LESv2 be better, as in `fn X() {}`? (**Note**: the implicit design is incompatible with juxtaposition expressions, and it produces a syntax error for input like `foo (x, y)`, as explained earlier.)
+- Should keyword-expressions support comma-separated arguments despite the ambiguity?
 - Labels: should we avoid the extra rule(s) required to support colon-terminated `labels:`? We can use colon as a prefix instead of a suffix if the parser is newline-sensitive. Another option is to use a block statement like `block(label) {...}`, but I am not in favor because it can lead to excessive nesting of braces and puts the label at the top instead of its logical location at the bottom.
 - Should the hash sign `#` be treated as a normal identifier character. If not, should it be reserved for future use?
 - Continuator clauses: besides `if`, `elsif`, `elseif`, `catch` and `finally`, what should the set of continuators include? Expanding this set in the future would break backward compatibility, so it should be generous from the start. I'm inclined to include `where`, the conjunctions `and or but so then`, and some English prepositions, especially short ones like `to`, `on`, `at` and `via`. Note that the set cannot include `while` and `for` since these already tend to be used at the beginning of expressions.
