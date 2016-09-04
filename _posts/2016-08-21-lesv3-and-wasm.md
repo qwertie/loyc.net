@@ -161,7 +161,7 @@ Now that you know what it looks like, let's discuss the details.
 
 ### Semicolons ###
 
-Should semicolons should be required to terminate statements. If semicolons **are** required then a LESv3 parser can read JSON files; if statements are terminated by newlines then JSON isn't supported because 
+Should semicolons should be required to terminate statements? If semicolons **are** required then a LESv3 parser could read JSON files; if statements are terminated by newlines then JSON isn't supported because 
 
     { "foo"
       : "bar" }
