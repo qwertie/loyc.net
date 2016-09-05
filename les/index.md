@@ -4,7 +4,7 @@ title: "LES: Loyc Expression Syntax"
 toc: true
 ---
 
-LES is an interchange format for syntax trees, comparable to s-expressions but designed for languages in the Algol family such as C, C++, C#, Java, EcmaScript, Rust and Python. It can be described as "XML for code": just as XML is a tree structure that assigns no particular meaning to tags and attributes, likewise LES represents syntax trees without assigning any particular meaning to them. It may be called LESv2 (the original [LESv1](/les/v1) is deprecated and discontinued.)
+LES is an interchange format for syntax trees, comparable to s-expressions but designed for languages in the Algol family such as C, C++, C#, Java, EcmaScript, Rust and Python. It can be described as "JSON for code": just as XML/YAML/JSON are tree structures that assign no particular meaning to the data inside, likewise LES represents syntax trees without assigning any particular meaning to them. It may be called LESv2 (the original [LESv1](/les/v1) is deprecated and discontinued.)
 
 LES is a C-like language with `{braced blocks}` and expressions that end in semicolons; its parser is much simpler than C itself. The output of the LES parser is a list of expressions, in the form of tree structures called [Loyc trees](loyc-trees). In comparison with the syntax trees inside most compilers, Loyc trees are designed to have an almost LISP-like simplicity.
 
