@@ -5,7 +5,7 @@ layout: post
 ---
 <small><p><i>This post was imported from <a href='http://loyc-etc.blogspot.com/2012/02/design-flaws-in-net.html'>blogspot</a>.</i></p></small>
 {% raw %}
-I made this list of the flaws in .NET for StackOverflow, but then I noticed that <a href="http://stackoverflow.com/questions/411906/c-sharp-net-design-flaws">the question</a> is closed. Whatever, I may as well CC to my blog. All of these flaws except #3 have irked me personally. .NET is my favorite platform, yet it is still far from ideal.
+I made this list of the flaws in .NET (CLR+BCL) for StackOverflow, but then I noticed that <a href="http://stackoverflow.com/questions/411906/c-sharp-net-design-flaws">the question</a> is closed. Whatever, I may as well CC to my blog. All of these flaws except #3 have irked me personally. .NET is my favorite platform, yet it is still far from ideal.
 
 <ol>
 <li>There are no subsets of <code>ICollection&lt;T&gt;</code> and <code>IList&lt;T&gt;</code>; at minimum, a covariant read-only collection interface <code>IListSource&lt;out T&gt;</code> (with an enumerator, indexer and Count) would have been extremely useful.</li><br/>
@@ -20,13 +20,11 @@ I made this list of the flaws in .NET for StackOverflow, but then I noticed that
 
 <li>.NET doesn't seem able to support ad-hoc interfaces (like those offered in Go or Rust) in a performant manner. Such interfaces would have allowed you to cast <code>List&lt;T&gt;</code> to a hypothetical <code>IListSource&lt;U&gt;</code> (where T:U) even though the class doesn't explicitly implement that interface. There are at least <a href="http://www.codeproject.com/Articles/35900/C-Object-to-Interface-Caster-Utility" rel="nofollow">three</a> <a href="http://www.codeproject.com/Articles/122827/DynamicObjects-Duck-Typing-in-NET" rel="nofollow">different</a> <a href="http://www.codeproject.com/Articles/87991/Dynamic-interfaces-in-any-NET-language" rel="nofollow">libraries</a> (written independently) to supply this functionality (with performance drawbacks, of course--if a perfect workaround were possible, it wouldn't be fair to call it a flaw in .NET).</li><br/>
 
-<li>Other performance issues: IEnumerator requires two interface calls per iteration. Plain method pointers (IntPtr-sized open delegates) or value-typed delegates (IntPtr*2) are not possible. Fixed-size arrays (of arbitrary type T) cannot be embedded inside classes. There is no <code>WeakReference&lt;T&gt;</code> (you can easily write your own, but it will use casts internally.)</li><br/>
+<li>Other performance issues: <code>IEnumerator</code> requires two interface calls per iteration. Plain method pointers (IntPtr-sized open delegates) or value-typed delegates (IntPtr*2) are not possible. Fixed-size arrays (of arbitrary type T) cannot be embedded inside classes.</li><br/>
 
 <li>The fact that identical delegate types are considered incompatible (no implicit conversion) has been a nuisance for me on some occasions (e.g. <code>Predicate&lt;T&gt;</code> vs <code>Func&lt;T,bool&gt;</code>). I often wish we could have <a href="http://en.wikipedia.org/wiki/Structural_type_system" rel="nofollow">structural typing</a> for interfaces and delegates, to achieve looser coupling between components, because in .NET it is not enough for classes in independent DLLs to implement the same interface--they must also share a common reference to a third DLL that defines the interface.</li><br/>
 
 <li><code>DBNull.Value</code> exists even though <code>null</code> would have served the same purpose equally well.</li><br/>
-
-<li>C# has no ??= operator; you must write <code>variable = variable ?? value</code>. Indeed, there are a few places in C# that needlessly lack symmetry. For example you can write <code>if (x) y(); else z();</code> (without braces), but you can't write <code>try y(); finally z();</code>.</li><br/>
 
 <li>When creating a thread, it is impossible to cause the child thread to inherit thread-local values from the parent thread. Not only does the BCL not support this, but you can't implement it yourself unless you create all threads manually; even if there were a thread-creation event, .NET <a href="http://stackoverflow.com/questions/4214492/net-is-there-a-way-to-get-the-parent-thread-id">can't tell you the "parents" or "children"</a> of a given thread.</li><br/>
 
@@ -39,4 +37,7 @@ I made this list of the flaws in .NET for StackOverflow, but then I noticed that
 <li>I'm often been bitten by the needless coupling between property getters and setters: In a derived class or derived interface, you can't simply add a setter when the base class or base interface only has a getter; if you override a getter then you are not allowed to define a setter; and you can't define the setter as virtual but the getter as non-virtual.</li><br/>
 
 </ol>
+
+If we broaden this list to include flaws of C#, it would be a lot longer. For instance, C# has no ??= operator; you must write <code>variable = variable ?? value</code>. Indeed, there are a few places in C# that needlessly lack symmetry. For example you can write <code>if (x) y(); else z();</code> (without braces), but you can't write <code>try y(); finally z();</code>.<br/>
+
 {% endraw %}
