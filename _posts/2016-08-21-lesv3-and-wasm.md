@@ -574,3 +574,20 @@ I'm finishing up my parser and unit tests for LESv3 in C#. Before writing/portin
 - And the $64,000,000 question: are you in favor of using LES for the Wasm text format?
 
 [**Take the survey!**](https://goo.gl/forms/XYRV1NrxfOB4IHNu1)
+
+Update: 2016-09-11
+------
+
+Based on the survey results, 
+
+- the juxtaposition operator has been dropped 
+- newline is now a terminator (in addition to semicolon), except inside parentheses or square brackets, after "{", and after binary operators, with the exception of a colon.
+- when followed by a terminating newline, colon acts as a suffix operator called `':suf`. In effect, it has a precedence lower than everything else including keyword-expressions.
+
+In other news,
+
+- I'm considering eliminating block-call expressions.
+- I've added the capability of using plain identifiers, and identifiers conjoined with operators, as binary operators. This makes the following two expressions synonyms:
+
+        .br stop if x s<= 0
+        .br stop 'if x 's<= 0
