@@ -134,7 +134,7 @@ For C# I chose a Loyc tree representation that closely mimics the original sourc
 | `class List<T> : IList<T> { }` | ``#class(#of(List,T), #(#of(IList,T)), @`{}`());`` | `#class List!T #(IList!T) { };` |
 | `x = (int)y;`           | `@=(x, #cast(y, #int32));`     | `x = #cast(y, #int32);` |
 
-As you can see, there's a clear and obvious relationship between the Loyc tree and the original source code (read [LES](Loyc Expression Syntax) to understand the second notation better). Most keywords are represented by `#` plus the keyword name (I'm translating "int" as "#int32", however, which makes sense as a standard name common to all programming languages, or at least, all programming languages that support 32-bit integers.) Note: the names of operators [will change in the future](http://loyc.net/2016/put-back-the-sharp.html).
+As you can see, there's a clear and obvious relationship between the Loyc tree and the original source code (read [LES](/les) to understand the second notation better). Most keywords are represented by `#` plus the keyword name (I'm translating "int" as "#int32", however, which makes sense as a standard name common to all programming languages, or at least, all programming languages that support 32-bit integers.) Note: the prefix on operator names has changed to apostrophe, as [planned](http://loyc.net/2016/put-back-the-sharp.html).
 
 Occasionally, it is not possible (or not ideal) to use the original keyword. For example, C# has two unrelated statements that are both called "using":
 
