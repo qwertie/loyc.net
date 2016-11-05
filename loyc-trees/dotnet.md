@@ -1,5 +1,5 @@
 ---
-layout: page
+layout: article
 title: Using Loyc trees in .NET (C#)
 date: 5 Nov 2016
 toc: true
