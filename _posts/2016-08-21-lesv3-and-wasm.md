@@ -591,3 +591,10 @@ In other news,
 
         .br stop if x s<= 0
         .br stop 'if x 's<= 0
+
+Note: Normally, a newline is allowed after a binary operator. However, in order to decrease the chance of the parser accepting code with a mistake in it, like
+
+         x = y + z z
+         y = z
+
+A newline will not be allowed after one of these word-operators and will cause a syntax error. Also, since word operators allow almost any sequence of names and punctuation to parse as a valid expression, as a default lint, the parser could print a warning if a single source file uses the same symbol as an identifier and also as an operator.
