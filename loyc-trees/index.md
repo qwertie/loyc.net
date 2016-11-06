@@ -1,7 +1,7 @@
 ---
 layout: page
 title: Loyc trees
-date: Edited 14 Jun 2016
+date: Edited 5 Nov 2016
 toc: true
 ---
 
@@ -14,9 +14,9 @@ The term "Loyc tree" refers to the conceptual or in-memory representation of the
 
 The goals of LES and Loyc trees are:
 
-- To provide a common language for humans to talk about syntactic structure
-
 - To define a neutral standard syntax for expressions, for use in diverse applications
+
+- To provide a common language for humans to talk about syntactic structure
 
 - To help jump-start development of programming languages and DSLs by eliminating the need to design a new syntax or write a new parser
 
@@ -35,9 +35,9 @@ A Loyc tree, also known as a Loyc node, is one of three things:
 * A literal, such as an integer, double, string or character.
 * A "call", which represents either a method call, or a construct like a "class" or a "for loop".
 
-Unlike in most programming languages, Loyc identifiers can be any string--any string at all. Even identifiers like `\n\0` (a linefeed and a null character) are supported. This design guarantees that a Loyc tree can represent an identifier from any programming language on Earth. To support WebAssembly, LESv3 takes this a step further, supporting not just _any string_ but _any sequence of bytes_. 
+Unlike in most programming languages, Loyc identifiers can be any string--any string at all. Even identifiers like `\n\0` (a linefeed and a null character) are supported. This design guarantees that a Loyc tree can represent an identifier from any programming language on Earth. To support WebAssembly, LESv3 takes this a step further, supporting not just _any string_ but _any sequence of bytes_.
 
-Normally, literals can be any value representable in the language in which Loyc trees being used, but this is only true of Loyc trees that exists in memory. When a Loyc tree is serialized to text, some in-memory data may not be representable, although LESv3 defines a system for serializing "custom" literals.
+Normally, literals can be any value representable in the language in which Loyc trees being used, but this is only true of Loyc trees that exists in memory. When a Loyc tree is serialized to text, some in-memory data may not be representable, although LESv3 has a system for defining "custom" literals.
 
 Each Loyc node also has a list of "attributes" (usually empty), and each attribute is itself a Loyc tree. Loyc nodes also contain position information to keep track of the location within a source file where the node was stored.
 
@@ -48,6 +48,8 @@ In other words, a Loyc tree (or Loyc "node") is a data structure with these prop
 3. One of: a literal (`Value`), an identifier (`Name`), or a call (`Target` and `Args`).
 
 Call nodes are the most interesting. A "call" represents either a method call, or a construct like a "class" or a "for loop". By convention, constructs that are built into a language use a special identifier that starts with `#` or `.` or `'`, such as `.class` or `#public` or `'==`. By convention, then, `foo(x, y)` (where `Target` is `foo` and `Args` is a list of two items) would be a normal function call, while `#foo(x, y)` would represent some kind of special construct, e.g. `#var(Foo, x)` could represent a declaration for a variable `x` of type `Foo`. **Note:** these naming conventions aren't quite settled yet.
+
+![](loyc-tree-diagram.png)
 
 Loyc trees versus s-expressions
 -------------------------------

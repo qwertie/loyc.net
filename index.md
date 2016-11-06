@@ -3,62 +3,125 @@ layout: default
 title: Home
 ---
 
-# <center>The Power of Choice</center>
+# <center>Loyc: Language conversion & interoperability</center> #
 
-Coders are constrained in the way they express themselves by the language they are using. Different languages have different strengths and weaknesses, but expert coders are often unable to choose a programming language or library with the combination of strengths they desire. There are many scenarios that produce this result...
+Loyc is a label for standards, code libraries, and programming tools that 
 
-- You're working on a large project based on Language X. You probably have to keep using Language X, no matter how weak it is for the task at hand.
-- The best library for doing T is written in Language X, but you also need to do Y and X doesn't support Y very well.
-- You've chosen language X and realize later that you need a good library for doing T. Sadly, none of the libraries for doing T in X are any good.
-- Your code _might_, _just might_ need to run in a web browser. Now you can only use JavaScript, or one of the languages that transpile to JavaScript (where applicable, be careful to use only the parts that transpile properly).
-- You're not writing code for the browser, but you want to re-use code that _was_ designed for the browser. There's a strong pull toward JavaScript, but it might not be the right fit for the new code you want to write.
-- Your code needs high performance, but needs to interoperate with a slower language like Ruby, Python, etc. Now your design is highly constrained because it's hard to trade data between the two languages, due to fundamental mismatches between data types and memory management schemes. And if you don't choose C/C++, interoperability may be very hard in a language that doesn't understand C header files.
-- You want a language with strong support for A, B and C, but no language exists that is strong in all three areas at the same time.
-- You find a language that is excellent for A, B, and C, and start using it for a new project, only to discover that its IDE/Intellisense/Debugger/third party libraries are crap.
-- You want to use two libraries related to the same topic (whether it's graphics, GIS, math, persistence, GUIs...), written in the same language, but it's painful because the two libraries use completely different interfaces and conventions.
+- Are programming-language **agnostic** (universal or multi-language),
+- Help programs and programming languages to **interoperate** (talk to each other),
+- Help **convert** code between programming languages, or
+- Are built out of other Loyc tools and libraries (e.g. a "Loyc parser" converts text to a Loyc tree.)
 
-# About Loyc
+We believe that programming languages should interoperate with each other on a high level and share as much technology and terminology as possible. Poor interoperability is a serious problem today, and we want to fix that.
 
-Loyc is the idea that all programming languages should interoperate with each other on a high level, so that you can code in the language of your choice without losing interoperability. The Loyc initiative is about finding ways to bring the world's programming languages closer together, and making developers more productive by giving them options they've never had before.
+We also believe interoperability is a serious problem _within_ individual languages, because of a lack of standardization of data types and interfaces, and in some cases, standard types being poorly-designed: inefficient, limited, etc. We want to fix that too, but haven't really gotten started on it yet.
 
-I, David Piepgrass, started the Loyc project in 2007, after I added a feature to a compiler and the makers of that language showed no interest in adding that feature to their language. It got me thinking that progress in the design of popular programming languages is held back by the gatekeepers we put in charge of them. It seemed to me that programming languages should offer ways for users to add features, in such a way that two features made by different people should ordinarily be compatible.
+The Loyc initiative is about finding ways to bring the world's programs and programming languages closer together, to grease the wheels of developers everywhere.
 
-Since Microsoft .NET was the only environment designed for multi-language interoperability, I started with the goal of making a .NET compiler that accepted multiple _syntactic styles_ (e.g. Visual Basic and C#) so that 
+Currently, all Loyc projects are written in C# because the .NET platform is the only one specifically designed for multiple languages. Eventually though, we hope to shift our focus to WebAssembly, especially since Microsoft has refused to fix the CLR's [design flaws](http://loyc.net/2014/dotnet-annoyances.html).
 
-1. Code from multiple languages could combine into a single binary, with mutual dependencies between the languages. This would eliminate the need to write all your _new_ code in the same language as your _old_ code. It would also allow building or using "experimental" languages without hurting interoperability.
-2. Existing programming languages could be extended with new features. Most importantly, the hope was that new features could be created by third parties unaffiliated with the Loyc compiler, thus democratizing programming language design.
+Core projects
+-------------
 
-My project didn't get very far, because of the difficulty of creating sufficiently flexible extensibility mechanisms that would allow different programming language features written by different people and _unaware of each other_ to "get along" and work together. Eventually, in early 2012, I decided to tackle a simpler problem first, by designing [Enhanced C#](http://ecsharp.net), which has been a more successful project due to its narrower focus.
+### Loyc trees ###
 
-In the same time frame that I developed Enhanced C#, I also created
+<div class="sidebox" markdown="1">![](/loyc-trees/loyc-tree-diagram-sm.png)
+</div>
 
-- A parser generator ([LLLPG](http://ecsharp.net/lllpg)) designed to help you write parsers with performance similar to hand-written parsers. I hoped to use this for EC# and all other parsing tasks.
-- [Loyc trees](/loyc-trees), a concept for a simple "universal" syntax tree designed for all programming languages in the Algol family (C++, JavaScript, C#, etc.) Loyc trees are inspired by the simplicity of LISP s-expressions, adding just enough additional complexity to make them useful for representing any programming language, not just LISP languages.
-- [Loyc expression syntax](/les), a language for storing Loyc trees. LES is a superset of JSON that resembles JavaScript, C#, D, and others.
-- [LeMP](http://ecsharp.net/lemp), a LISP-style Macro Processor for Enhanced C#
-- Visual Studio extensions for EC#/LES syntax highlighting and LLLPG/LeMP
-- General-purpose "core" libraries that you can read about at [core.loyc.net](http://core.loyc.net)
+[Loyc trees](/loyc-trees) are a general-purpose tree structure designed to represent source code. They are comparable to LISP syntax trees, with just enough added complexity to represent programming languages from the Algol family, such as C#.
 
-I call these "Loyc projects" because they are all meant to contribute to the twin goals of 
+### LES ###
 
-- Making programming languages interoperate better
-- Giving developers more powerful tools
+[LES](/les) is a syntax/data interchange format for Loyc trees, designed to resemble other languages in the C family, such as Javascript.
 
-Here are some other projects that I have been thinking about:
+### LeMP ###
 
-- [MLSL](http://loyc.net/2014/design-elements-of-mlsl.html) - a Multi-Language Standard Library
-- [SIL](https://github.com/qwertie/Loyc/wiki/Standard-Imperative-Language)
-- [The Ultimate Programming Language](http://loyc.net/2015/ultimate-language.html)
+[LeMP](http://ecsharp.net/lemp) is a programming-language agnostic LISP-style lexical macro processor.
 
-These days I'm thinking the MLSL and SIL should be based on WebAssembly, which, if I have anything to say about it, will take over the world. So far, I haven't had much say in the matter.
+## Flame ##
 
-At the moment, all these "Loyc tools" are limited to the .NET platform, but Microsoft has refused to fix the [design flaws](http://loyc.net/2014/dotnet-annoyances.html) in .NET, and it is clear that they will not generalize .NET to support new programming languages, either. Therefore, I have decided to shift my focus to WebAssembly in the future.
+[Flame](http://github.com/jonathanvdc/flame) is a set of "middle-end" components to help write compilers.
 
-I'd like help to
+### Loyc Core Libraries for .NET ###
 
-- Make programming languages more interoperable, especially by building a standard on top of WebAssembly
-- Make an extensible programming language
+The [Loyc Core Libraries](http://core.loyc.net) are libraries of general-purpose stuff, most of which fits the theme "things that should be built into the .NET framework, but aren't". These libraries also include the LES parser and the standard base classes for LLLPG parsers.
+
+Projects built on Loyc technology
+---------------------------------
+
+### LLLPG ###
+
+The [Loyc LL(k) Parser Generator](http://ecsharp.net/lllpg) is a parser generator designed to help you write parsers with performance similar to hand-written parsers. The parsers for LES and Enhanced C# use LLLPG.
+
+### Enhanced C# ###
+
+[Enhanced C#](http://ecsharp.net/) is a programming language that is backward-compatible with C#. It's nowhere near done, but you can add Enhanced C# code to any vanilla C# project via the LeMP Custom Tool for Visual Studio.
+
+Future core projects
+--------------------
+
+### API standardization projects ####
+
+Interoperability within a single language is often limited. For example, there's no standard for how to represent "points" and "vectors" (X-Y and X-Y-Z groups) in C++. Typically, two geometric libraries that both operate on "points" and/or "vectors" are not directly compatible and require conversion steps between them. Even strings in C++ aren't standardized: `wchar_t` and `wstring` is UTF-16 on Windows and UCS-4 on Linux.
+
+Even when something is standardized, it may be misdesigned and deserves a new and better design. For example, in the .NET BCL, points are not treated as general concepts but as GUI-specific concepts. The types `Point` (int coordinates) and `PointF` (float coordinates) are defined in the namespace for GDI+ (Windows Forms), while WPF has its own `Point` type with `double` coordinates and a somewhat different API. All these APIs are limited in some ways.
+
+So we would like to start a movement to create standard APIs that attempt to simultaneously achieve 
+
+1. high performance (e.g. A 2D or 3D `Point` should be a value type with coordinates stored directly in the structure, rather than as a heap-allocated array)
+2. Type safety (e.g. separating the concepts of `Vector` and `Point` even though they are physically identical)
+3. Ease-of-use (e.g. taking advantage of operator overloading: `(p - q) * 2`)
+4. Generality (e.g. `Point<Coord>` rather than baking in a particular coordinate type, and somehow generalizing points to N dimensions)
+5. Interoperability (e.g. a point or vector should implement interfaces that let it act like a list of numbers)
+
+### Multi-Lanuage Standard Library ####
+
+The [MLSL](http://loyc.net/2014/design-elements-of-mlsl.html) would form the basis of a system for writing code that can be converted automatically to many languages.
+
+### Standard Imperative Language ###
+
+When converting code from one programming language to another, [SIL](https://github.com/qwertie/Loyc/wiki/Standard-Imperative-Language) is the concept of a schema for Loyc trees that would lie at the midway point between two languages. SIL has not been designed yet; the plan is to base it on conventions created by WebAssembly and by Enhanced C#.
+
+### The Ultimate Programming Language ###
+
+The [ultimate programming language](http://loyc.net/2015/ultimate-language.html) would be designed for all purposes:
+
+- High performance (similar to C++)
+- Scripting and prototyping
+- Powerful, flexible, easy to use genericity
+- Metaprogrammable
+- Extensible by end-users, perhaps even with type system extensibility
+- Many-paradigm (functional, object-oriented, and generic, declarative/goal-driven, aspect-oriented, matrix-oriented)
+- IDE-friendly (code completion is assisted by syntactic design and by minimizing the cost of gathering information about a program's structure.)
+- A reasonably large subset of the language should be suitable for automatic conversion to many other languages
+- Could support multiple unrelated syntax "styles" (e.g. C# + Swift code) to aid migration from other languages
+
+Obviously, Loyc would need a lot of funding to do this, and it currently has - let's see now - zero.
+
+Related projects
+----------------
+
+We'd like to list other projects here related to interoperability, API standardization and code conversion, even if they are unaffiliated with Loyc. Do you think a project should be listed here? You can [make it an issue](https://github.com/qwertie/loyc.net/issues) or reach me at `gmail.com`, with account name `qwertie256`. All standards and tools listed here have an open source implementation.
+
+- Cross-language interoperability projects
+    - [SWIG](http://www.swig.org/): use C/C++ libraries from almost any other language
+- General-purpose data formats
+    - [JSON](http://www.json.org/): a very simple interchange format for the world's most common data types
+    - [Protocol buffers](https://developers.google.com/protocol-buffers/): a standard for binary data storage that tolerates changes between versions.
+    - [Cap'n proto](https://capnproto.org/)
+- Other important standards
+    - [Language server protocol](https://github.com/Microsoft/language-server-protocol) provides interoperability between an IDE and a code-completion service written in any language. Initial users include [Rust Language Server](https://internals.rust-lang.org/t/introducing-rust-language-server-source-release/4209) and [VS Code](https://code.visualstudio.com/Docs/extensions/example-language-server).
+    - [HTTP/1.1](https://www.w3.org/Protocols/rfc2616/rfc2616.html) and [HTTP/1.0](http://www8.org/w8-papers/5c-protocols/key/key.html): rudimentary HTTP servers are relatively easy to write and can talk to web browsers and other standard tools, making HTTP the most popular standard built on [TCP/IP](https://en.wikipedia.org/wiki/Internet_protocol_suite).
+    - [WebAssembly](http://github.com/webassembly/design): the new standard virtual machine for web browsers. Provides "write once run anywhere" but lacks interoperability features.
+
+Help wanted
+-----------
+
+We need help to
+
+- Design general-purpose APIs with high performance, type safety, ease-of-use, generality and interoperability
+- Design a Multi-Language Standard Library and Standard Imperative Language
 - Write parsers/printers to parse a programming language into a Loyc tree or the reverse (print a Loyc tree as text)
-- Write a parser for LES for a language of your choice
+- Write an LES parser for a language of your choice
 
-Please send me a message if you want to help, or to inform me of any other interoperability-related initiatives. You can reach me at `gmail.com`, with account name `qwertie256`.
+Currently, we are severely undermanned and have no sponsors. If you'd like to help, [make an issue](https://github.com/qwertie/loyc.net/issues) or reach me at `gmail.com`, with account name `qwertie256`.
