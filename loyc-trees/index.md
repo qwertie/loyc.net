@@ -133,16 +133,16 @@ It is necessary to standardize the Loyc trees that are used to represent code in
 
 For C# I chose a Loyc tree representation that closely mimics the original source code. Here are some examples:
 
-| C# code                 | Loyc tree (LES prefix notation) | Loyc tree (friendly notation in LESv2) |
-|-------------------------|---------------------------------|-----------------------------------|
-| `if (c) A(); else B();` | `#if(c, A(), B())`              | N/A                               |
-| `x = y + 1;`            | `@=(x, @+(y, 1));`              | `x = y + 1;`                      |
-| `switch (c) { case '1': break; }` | ``#switch(c, @`{}`(#case('1'), #break));`` | `#switch c { #case '1'; #break; }` |
-| `public string name = "John Doe";` | `[#public] #var(#string, @=(name, "John Doe"));` | `[#public] #var(#string, name = "John Doe");` |
-| `int Square(int x) { return x*x; }` | ``#fn(#int32, Square, #(#var(#int32, x)), @`{}`(#return(@*(x, x))));`` | `#fn(#int32, Square, #(#var(#int32, x)) { return x * x; });` |
-| `class Point { public int X, Y; }` | ``#class(Point, #(), @`{}`(@[#public] #var(#int32, x, y)));`` | `#class(Point, #(), { @[#public] #var(#int32, x, y); };` |
-| `class List<T> : IList<T> { }` | ``#class(#of(List,T), #(#of(IList,T)), @`{}`());`` | `#class List!T #(IList!T) { };` |
-| `x = (int)y;`           | `@=(x, #cast(y, #int32));`     | `x = #cast(y, #int32);` |
+| C# code                 | Loyc tree (LESv2 prefix notation) | Loyc tree (friendly notation in LESv2) |
+|-------------------------|-----------------------------------|-----------------------------------|
+| `if (c) A(); else B();` | `#if(c, A(), B())`                | N/A                               |
+| `x = y + 1;`            | `@'=(x, @'+(y, 1));`              | `x = y + 1;`                      |
+| `switch (c) { case '1': break; }` | ``#switch(c, @`'{}`(#case('1'), #break));`` | `#switch c { #case '1'; #break; }` |
+| `public string name = "John Doe";` | `[#public] #var(#string, @'=(name, "John Doe"));` | `[#public] #var(#string, name = "John Doe");` |
+| `int Square(int x) { return x*x; }` | ``#fn(#int32, Square, #(#var(#int32, x)), @`'{}`(#return(@'*(x, x))));`` | `#fn(#int32, Square, #(#var(#int32, x)) { return x * x; });` |
+| `class Point { public int X, Y; }` | ``#class(Point, #(), @`'{}`(@[#public] #var(#int32, x, y)));`` | `#class(Point, #(), { @[#public] #var(#int32, x, y); };` |
+| `class List<T> : IList<T> { }` | ``#class(#of(List,T), #(#of(IList,T)), @`'{}`());`` | `#class List!T #(IList!T) { };` |
+| `x = (int)y;`           | `@'=(x, #cast(y, #int32));`       | `x = #cast(y, #int32);` |
 
 As you can see, there's a clear and obvious relationship between the Loyc tree and the original source code (read [LES](/les) to understand the second notation better). Most keywords are represented by `#` plus the keyword name (I'm translating "int" as "#int32", however, which makes sense as a standard name common to all programming languages, or at least, all programming languages that support 32-bit integers.) Note: the prefix on operator names has changed to apostrophe, as [planned](http://loyc.net/2016/put-back-the-sharp.html).
 

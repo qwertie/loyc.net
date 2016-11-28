@@ -40,7 +40,7 @@ Core projects
 
 ## Flame ##
 
-[Flame](http://github.com/jonathanvdc/flame) is a set of "middle-end" components to help write compilers.
+[Flame](http://github.com/jonathanvdc/flame) is a set of "middle-end" components designed to help write managed (C#-like) compilers. It has is own IR (separate from Loyc trees) which it can optimize, and it supports static linking of Flame IR files. The CLR backend is the only stable one; a WebAssembly backend is in early stages.
 
 ### Loyc Core Libraries for .NET ###
 
@@ -84,17 +84,20 @@ When converting code from one programming language to another, [SIL](https://git
 
 ### The Ultimate Programming Language ###
 
+Humans have puzzled over the question of how programming languages should work for about 65 years, and explored innumerable solutions. Now is the time for consolidation: to create a language in which you can quickly become comfortable, whether you're used to Java, C#, C++, Javascript, Go, Lisp, OCaml, Erlang, Julia or Python.
+
 The [ultimate programming language](http://loyc.net/2015/ultimate-language.html) would be designed for all purposes:
 
-- High performance (similar to C++)
+- High performance (C-like)
 - Scripting and prototyping
 - Powerful, flexible, easy to use genericity
 - Metaprogrammable
 - Extensible by end-users, perhaps even with type system extensibility
 - Many-paradigm (functional, object-oriented, and generic, declarative/goal-driven, aspect-oriented, matrix-oriented)
 - IDE-friendly (code completion is assisted by syntactic design and by minimizing the cost of gathering information about a program's structure.)
+- Good for parallel, distributed, and constrained/IoT computing
 - A reasonably large subset of the language should be suitable for automatic conversion to many other languages
-- Could support multiple unrelated syntax "styles" (e.g. C# + Swift code) to aid migration from other languages
+- Could support multiple unrelated syntax "styles" (e.g. C# + Swift code) and "skins" (e.g. a growable array whose API is "skinned" to work like C++ `std::vector<T>`) to aid migration from other languages
 
 Obviously, Loyc would need a lot of funding to do this, and it currently has - let's see now - zero.
 

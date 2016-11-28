@@ -21,11 +21,11 @@ LNode fooDecl = F.Fn(F.Void, F.Id("foo"),
                      F.Braces(F.Call(S.Return)));
 ~~~
 
-An easier way to create nodes is to parse LES code, although this can be costly because it happens at runtime. If you're using EC# then you can use [`quote {...}`](http://ecsharp.net/lemp/ref-other.html#quote) to produce code at compile time that will construct a Loyc tree directly.
-
-To parse LES into a Loyc tree, call `LesLanguageService.Value.Parse("your expression here;")` (this is an extension method, so you'll also need `using Loyc.Syntax;`). To convert a node (or list of nodes) to a string with the LES printer, call `LesLanguageService.Value.Print(node)`.
+An easier way to create nodes is to parse LES or EC# code, although this can be costly because it happens at runtime. If you're using EC# then you can use [`quote {...}`](http://ecsharp.net/lemp/ref-other.html#quote) to produce code at compile time that will construct a Loyc tree directly.
 
 To parse EC# into a Loyc tree, call `Loyc.Ecs.EcsLanguageService.Value.Parse("your code here;")` (this is an extension method so you'll also need `using Loyc.Syntax;`). To treat a node (or list of nodes) as EC# code and print them with the EC# printer, call `EcsLanguageService.Value.Print(node)`. Don't worry, the EC# printer is fairly reliable at printing Loyc trees that do not represent EC# code; Loyc trees almost always round-trip correctly from a Loyc tree to EC# code and back.
+
+Similarly, to parse LES into a Loyc tree, call `LesLanguageService.Value.Parse("your expression here;")`.
 
 The LES printer is the default when you call `LNode.ToString()`. To use EC# as the default instead, set `LNode.Printer` to `EcsLanguageService.Value.Printer`, or better yet, use code like this:
 
@@ -62,6 +62,13 @@ You should also be aware of these helper methods:
 * `ReplaceRecursive(node => {...})` performs a find-and-replace operation, as discussed below.
 
 Node comparisons with `Equals()` test for structural equality rather than reference equality, and tend to be expensive. `GetHashCode()` can be expensive when first called, but the hashcode is cached.
+
+Loyc tree imitators
+-------------------
+
+Any .NET class can "pretend" to be a Loyc tree by implementing the `ILNode` interface. This read-only interface is missing much of the functionality of `LNode` itself; most notably, it is meant for read-only use and has none of the "With" or "Plus" methods for creating modified nodes. This interface also lacks the `Attrs` and `Args` properties, although they are available as the extension methods `Attrs()` and `Args()`. `ILNode` has an indexer, which allows you to access both arguments and attributes as explained [here](http://loyc.net/loyc-trees/#single-list-perspective).
+
+Most code in the Loyc libraries is designed to work with `LNode`, not `ILNode`, but the LESv2 and LESv3 node printers can print `ILNode` objects directly, and there is a method, `LNodeExt.ToLNode(ILNode)`, to convert any `ILNode` to `LNode`.
 
 Modifying nodes
 ---------------
@@ -109,7 +116,7 @@ Since `LNode`s are immutable, you don't modify them directly. Instead you'll typ
 
 Argument lists are stored in [VList data structures](http://www.codeproject.com/Articles/26171/VList-data-structures-in-C).
 
-#### Find, find-and-replace, and pattern matching
+### Find, find-and-replace, and pattern matching ###
 
 `ReplaceRecursive(node => {...})` performs a recursive find-and-replace operation; see the [documentation](http://ecsharp.net/doc/code/classLoyc_1_1Syntax_1_1LNode.html#ad887a82823c62a4b4fc5c8bbc51b0603) for full details, but here is an example that replaces all instances of `0xFFFF` or `65535` with `ushort.MaxValue`:
 
