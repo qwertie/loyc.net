@@ -120,7 +120,16 @@ Keyword expressions have up to four parts, in this order:
 3. A braced block (`{ Foo() }`)
 4. A sequence of "continuators" (`else ...`), which is a special word like `else` followed by an expression, a braced block or both.
 
-Parts 2, 3, and 4 are optional. Examples:
+Parts 2, 3, and 4 are optional, so the core grammar is
+
+    KeywordExpression :
+      keyword
+      // 'greedy' reflects the fact that the grammar is otherwise ambiguous
+      greedy( Expr[StartStmt] )?
+      greedy( "\n"? BracedBlock )?
+      greedy( Continuator )*;
+
+Examples:
 
 - Keyword alone: `.break`
 - Keyword with expression: `.return null`
@@ -191,7 +200,7 @@ As mentioned, if a keyword expression like `.keyword expression` is followed by 
 
 Of course, an LES printer is forced to deal with this issue. It cannot print a keyword expression on one line (in the usual way) and a braced block on the next line, lest the two expressions be merged upon reparsing. The conservative solution to this problem is to add a semicolon to every expression within a braced block.
 
-A more careful solution is to add a semicolon on expressions that contain (or end with) a keyword expression (e.g. `x = .foo x { };`) if they are followed by an expression that begins with a braced block (e.g. `{x} = {5}` or `{}()`). It's best for a printer not to try to get more clever than this, because you can't necessarily avoid a semicolon when the keyword expression ended with a closing brace. That's because a braced block is an expression in its own right and can count as one of the "expression" parts of a keyword expression instead of as the "braced block" part. For example, `.if {x} {y} else {z}` ends with a closing brace but could be followed by another braced block because `{z}` counts as the "expression" part of the else clause, not as the "braced block part".
+A more careful solution is to add a semicolon on expressions that contain (or end with) a keyword expression (e.g. `x = .foo x { };`) if they are followed by an expression that begins with a braced block (e.g. `{x} = {5}` or `{}()`). It's best for a printer not to try to be more clever than this, because you can't necessarily avoid a semicolon when the keyword expression ends with a closing brace. That's because a braced block is an expression in its own right and can count as one of the "expression" parts of a keyword expression instead of as the "braced block" part. For example, `.if {x} {y} else {z}` ends with a closing brace, but could be followed by another braced block because `{z}` counts as the "expression" part of the else clause, not as the "braced block part".
 
 We don't want end-users to think about this, of course. You can design an LES-based language where this is not an issue; for example, if a language is designed so that a braced block cannot appear at the beginning of an expression, the issue does not arise. And let's consider what happens if we built a C-like language on top of LES. Only six statements in C begin with a specific keyword and _do not_ have an associated braced block:
 
@@ -206,7 +215,7 @@ All of these except `case` and `typedef` alter control flow, so if there is a br
 
 Typically, languages will often have some reason why a braced block at the beginning of a statement (and after a keyword-expression) could be valid code, but no good reason for users to actually write that code. As another example, if you use braced blocks to define dictionaries then
 
-    {"print": x=>stdout.print(x)}["print"](123)
+    {"print": x => stdout.print(x)}["print"](123)
 
 might be a valid statement that prints `123`, yet there is no real-world reason to write a statement of that form.
 
@@ -214,9 +223,7 @@ might be a valid statement that prints `123`, yet there is no real-world reason 
 
 LES itself won't have a mechanism to define traditional keywords (with no "." in front of them), but it should be straightforward to add them programmatically. For instance, the .NET `Les3LanguageService` lets you perform lexing and parsing as two separate steps, which lets you insert a lexer filter in between the lexer and the parser. Within this filter you could find identifiers that you want to treat as keywords, and replace those identifiers with keyword tokens (changing `class` to `.class`, while leaving `` `class` `` alone.) Perhaps in the future I'll add a filter class to the Loyc.Syntax library so you can do this more easily.
 
-A nice property of this particular tweak to LES is that 
-
-If you customize LES, be sure to use a different file extension (not .les) since an unmodified LES parser won't handle it.
+However, I'm considering whether to pick a set of predefined keywords so that typical languages built on LES won't want to resort to such tricks.
 
 Word Operators
 --------------
@@ -281,7 +288,7 @@ After realizing that word operators were a workable concept, I was delighted to 
 
 This is _not_ ambiguous. `s` appears right after an expression so it cannot be interpreted as a normal identifier. It cannot be word operator either, because word operators must be followed by a space or tab and `s` is not. Instead, the identifier `s` and the punctuation `>` are merged by the parser into a single unit called a _combo operator_. The punctuation portion of the operator determines its precedence; thus `s>` has the same precedence as `>`.
 
-The word and punctuation have unlimited length, and the operator must be followed by a space, tab, or newline character to clearly mark where it ends.
+The word and punctuation have unlimited length, and the operator must be followed by a space, tab, or newline character to clearly mark where it ends. In the final syntax tree, the operator gets a single quote in front of it, so `$y s> $z` means `` `'s>`($y, $y) ``.
 
 The disambiguation marker
 -------------------------
