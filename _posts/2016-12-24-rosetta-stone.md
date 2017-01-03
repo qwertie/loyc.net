@@ -221,7 +221,7 @@ Other boring parts of Rosetta Stone:
 
 - having to study words you know already, like words in Tagalog that were taken directly from English.
 - the lack of interesting things happening in the pictures.
-- the ridiculously easy "Reading" parts in the early lessons. In these sections you are given single syllables like "ko" and "ka". A voice will say "ko" and then you have to choose whether he just said "ko" or "ka". How dumb do they think we are? To me, what's really boring is not so much that the questions are easy, but the fact that you have to wait for the animations and voice enuncation between each question. Can we get on with it please?
+- the ridiculously easy "Reading" parts in the early lessons. In these sections you are given single syllables like "ko" and "ka". A voice will say "ko" and then you have to choose whether he just said "ko" or "ka". How dumb do they think we are? To me, what's really boring is not so much that the questions are easy, but the fact that you have to wait for the animations and voice enunciation between each question. Can we get on with it please?
 
 Conclusion
 ----------

@@ -1,6 +1,7 @@
 ---
 layout: page
 title: "LES: Loyc Expression Syntax"
+tagline: "Programming language builder & syntax interchange format"
 toc: true
 ---
 
