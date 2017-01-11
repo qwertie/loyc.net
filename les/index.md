@@ -72,6 +72,10 @@ The C# code, in turn, looks like this when printed as LES code:
 
 A complete grammar of LES has not yet been published; the [current grammar](https://github.com/qwertie/LoycCore/blob/master/Loyc.Syntax/LES/LesParserGrammar.les) isn't fully cleaned up. This document defines LES in a less formal manner. The specification is in beta, not finalized.
 
+### Note: A new LES is coming ###
+
+This document describes LESv2. The design of [LESv3 is nearing completion](http://loyc.net/2017/lesv3-update.html) and will be the recommended version going forward. However, unlike LESv2, LESv3 is not a superset of JSON. Both versions of LES are available in the .NET NuGet package Loyc.Syntax.dll.
+
 ### LES for configuration files ###
 
 As a superset of JSON, LES is useful for configuration files. LES is more compact and flexible than JSON and XML. Compare these representations of the same data:

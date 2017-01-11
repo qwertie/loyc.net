@@ -335,17 +335,17 @@ But this is less convenient; there will be no syntax highlighting, for example.
 
 The main disadvantage of token literals is that they are not Loyc trees; they are a separate data structure that would have to be defined in detail if LES were a widely-used standard. It would be simpler and easier, I think, to store custom syntax as a Loyc tree. Therefore, I propose a mapping from token lists to Loyc trees.
 
-I propose the unary single quote operator (`'`) to introduce a token list. The single quote by itself would creates a call to `` `'`, with each token afterward treated as an arguments. For example, this code:
+I propose the unary single quote operator (`'`) to introduce a token list. The single quote by itself would creates a call to `` `'` ``, with each token afterward treated as an arguments. For example, this code:
 
     x = ' <div style="...">123</div>;
 
 would be equivalent to
 
-    x = `'`(`'<`, div, style, `'=`, "...", `'>`, 123, `'</`, div, `'>`)
+    x = `'`( `'<`, div, style, `'=`, "...", `'>`, 123, `'</`, div, `'>` )
 
 To understand this, remember that LES lets you write special identifiers in backquotes and operators in LES are already stored with an initial single quote, e.g. `2 + 2` really means `` `'+`(2, 2)``.
 
-**Note**: Although I used HTML code as an example, you should _not_ try to represent HTML this way since the syntax is too different. LES, for example, uses C-style escapes like `"\""` while HTML does not. Instead, use a custom string like `html'''<p></p>'''` and parse it with a dedicated HTML parser.
+**Note**: I used HTML code as an example because it is easily recognized, but you should _not_ try to represent HTML this way since the syntax is too different. LES, for example, uses C-style escapes like `"\""` while HTML does not. Instead, use a custom string like `html'''<p></p>'''` and parse it with a dedicated HTML parser. While token lists could be used to _approximate_ another language like C or HTML, they are mainly intended for DSLs (domain-specific languages) designed to be LES-compatible.
 
 The single quote can be followed immediately by a sequence of characters in the same character set as `@@`-literals. This becomes part of the name of the operator, e.g.
 
@@ -361,9 +361,9 @@ If the token list contains parentheses, it creates a sublist with, perhaps, a ta
     // equivalent to
     x = `'`(`'*`, `'()`(a, b, c), `'()`(Foo))
 
-These token lists work significantly differently from s-expressions, mainly because spaces are not generally required between arguments: `Foo*` is two arguments, not one. Still, you could write very LISP-like code this way.
+These token lists work significantly differently from s-expressions, mainly because spaces are not generally required between arguments: `Foo*` is two arguments, not one. Still, you could write very Lisp-like code this way.
 
-One cannot directly write a prefix expression like `+ x (* y z)` that means `x + (y * z)` in LES, but this can be made possible with a post-processing step such as a [LeMP](http://ecsharp.net/lemp) macro.
+One cannot directly write a Lisp-style prefix expression like `+ x (* y z)` that would mean `x + (y * z)` in LES, but this can be made possible with a simple post-processing step such as a [LeMP](http://ecsharp.net/lemp) macro.
 
 By the way, it's possible to examine the output from LES to find out if two tokens were adjacent - a fact which postprocessing steps might exploit for their own reasons. For example, in `' Foo*`, the `*` `Range.EndIndex` of the identifier `Foo` equals the `Range.StartIndex` of the identifier `'*`.
 
@@ -381,15 +381,15 @@ The stuff like `maxLen: int` and `len++` would be parsed as normal expressions, 
 
 Additional details:
 
+- The `'` operator "takes over" parsing the rest of an expression, until reaching a semicolon, EOF, a significant newline, or an unmatched ')', ']' or '}'. If you want to be able to end a token list prior to the end of the current "statement", enclose it in parentheses.
 - As usual, comments are ignored within a token list
 - The token `@` becomes an identifier called `'@`.
 - Keywords like `.foo` become identifiers like ` `.foo` `.
 - Empty parentheses `()` are stored as `` `'()`()``.
-- Opening and closing brackets and braces must match. Combinations such as `'(]`, `'[}`, and `'{)` will produce a syntax error.
+- Opening and closing brackets and braces must match. Combinations such as `' (]`, `' [}`, and `' {)` will produce a syntax error.
 - Commas and semicolons terminate a token list just as a normal expression; for example `f(' x, y)` and `f(' x; y)` will produce the same syntax tree as `f((@@ ' x), y)`. However, inside parentheses, commas and semicolons can be part of the token list and they are stored as the identifiers `',` and `';` respectively. For example, `'(x , ; y)` will produce the following syntax tree: `` `'`(x, `',`, `';`, y)``.
-- The `'` operator "takes over" parsing the rest of an expression, until reaching a semicolon, EOF, a significant newline, or an unmatched ')', ']' or '}'. If you want to be able to end a token list prior to the end of the statement, enclose it in parentheses.
-- What would the `'` operator mean when used within a token list? I propose that we give it no meaning. It would be a syntax error.
-- Printers need not support token lists, since any token list can be represented in prefix notation (for that matter, printers don't have to support operators or keyword expressions; it's just a matter of how pretty you want your output to be).
+- What would the `'` operator mean when used within a token list? I propose to make it meaningless. It would be a syntax error.
+- Printers need not support token lists, since any token list can be represented in prefix notation (for that matter, printers don't have to support operators or keyword expressions, either; it's just a matter of how pretty you want your output to be).
 
 Closing thoughts
 ----------------
@@ -407,7 +407,7 @@ Closing thoughts
 
 ### What keywords? ###
 
-Here's what a predefined keyword set might look like. We'd start with Javascript keywords that are not type names (`int`, `long`), attributes (`public`, `abstract`) or operators (`typeof`, `instanceof`):
+Here's what a predefined keyword set might look like. We'd start with Javascript keywords that are not identifier-like (`int`, `long`, `this`), attribute-like (`public`, `volatile`) or operators (`typeof`, `instanceof`):
 
     // Simple statements (7)
     goto  return  break  continue  
@@ -423,7 +423,7 @@ Here's what a predefined keyword set might look like. We'd start with Javascript
     // "Future" reserved words (5)
     interface  enum  import  export  package
 
-Why JavaScript? Because JavaScript is the only language similar enough to LES that partial compatibility is possible. Other languages like C, C#, C++ and Java have too many incompatible elements, e.g. typed variable declarations (`Foo x`), angle-bracket generics (`Foo<T>`), and paren-typecases (`(Foo) x`).
+Why focus on JavaScript? JavaScript is the only language similar enough to LES that partial compatibility is possible. Other languages like C, C#, C++ and Java have too many incompatible elements, e.g. typed variable declarations (`Foo x`), angle-bracket generics (`Foo<T>`), and paren-typecases (`(Foo) x`).
 
 JavaScript also has some elements that LES wouldn't handle; the biggest problem is block statements without braces, like `if (c) f()`. Also unsupported: `typeof e` and `void 0` (you'd have to change these to `typeof(e)` and `void(0)`). The JavaScript expression `x instanceof y` could still work, although its precedence is wrong. Similarly, JavaScript's `yield*` could work, but the precedence of `*` is high so in some cases the expression after `yield*` would need parentheses around it.
 
@@ -457,7 +457,7 @@ Including literals and continuator keywords, LES would have around 48 keywords: 
 
 Compared to JSON or s-expressions, LES is quite complicated. Also, LESv3 is a bit more complex than LESv2.
 
-However, even if we add lots of new keywords, parsing LES is still be easier than parsing all popular languages in the C family. For example, compared with C, LES avoids the complexity of feedback from the symbol table to the parser/lexer, the complexity of the preprocessor, and the subtleties of C type declarations like `char *(*(* const *foo[][8])())[]` and "abstract declarators" like `int (*(*)())()`. In terms of code size, a C parser will be moderately larger before adding the mandatory preprocessor. For reference, the main LESv3 parser grammar (excluding the lexer and some helper code) is currently 333 lines, which the parser generator expands to 810 lines of C#. The C parser pycparser, written in Python, is 1740 lines (excluding the lexer, preprocessor, and other helper code, though this does include an unusually large amount of documentation).
+However, even if we add lots of new keywords, parsing LES is still be easier than parsing all popular languages in the C family. For example, compared with C, LES avoids the complexity of feedback from the symbol table to the parser/lexer, the complexity of the preprocessor, and the subtleties of C type declarations like `char *(*(* const *foo[][8])())[]` and "abstract declarators" like `int (*(*)())()`. In terms of code size, a C parser will be moderately larger before adding the mandatory preprocessor. For reference, the main LESv3 parser grammar (excluding the lexer and some helper code) is currently 333 lines, which the parser generator expands to 810 lines of C#. The C parser [pycparser](https://github.com/eliben/pycparser), written in Python, is 1740 lines (excluding the lexer, preprocessor, and other helper code, though this does include an unusually large amount of documentation).
 
 LESv3 is at least 4 times simpler than C# or [Enhanced C#](http://ecsharp.net):
 
