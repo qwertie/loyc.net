@@ -286,7 +286,7 @@ After realizing that word operators were a workable concept, I was delighted to 
 
     $x = $y s> $z
 
-This is _not_ ambiguous. `s` appears right after an expression so it cannot be interpreted as a normal identifier. It cannot be word operator either, because word operators must be followed by a space or tab and `s` is not. Instead, the identifier `s` and the punctuation `>` are merged by the parser into a single unit called a _combo operator_. The punctuation portion of the operator determines its precedence; thus `s>` has the same precedence as `>`.
+This is _not_ ambiguous. `s` appears right after an expression so it cannot be interpreted as a normal identifier. It cannot be a word operator either, because word operators must be followed by a space or tab and `s` is not. Instead, the identifier `s` and the punctuation `>` are merged by the parser into a single unit called a _combo operator_. The punctuation portion of the operator determines its precedence; thus `s>` has the same precedence as `>`.
 
 The word and punctuation have unlimited length, and the operator must be followed by a space, tab, or newline character to clearly mark where it ends. In the final syntax tree, the operator gets a single quote in front of it, so `$y s> $z` means `` `'s>`($y, $y) ``.
 
