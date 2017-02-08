@@ -3,6 +3,7 @@ layout: page
 title: Loyc trees
 date: Edited 5 Nov 2016
 toc: true
+tagline: The universal syntax tree
 ---
 
 Introduction
