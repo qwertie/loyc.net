@@ -34,7 +34,7 @@ A Loyc tree, also known as a Loyc node, is one of three things:
 
 * An identifier, such as the name of a variable, type, function, method, operator or keyword.
 * A literal, such as an integer, double, string or character.
-* A "call", which represents either a method call, or a construct like a "class" or a "for loop".
+* A "call", which represents either a function call, or a construct like a "class" or a "for loop".
 
 Unlike in most programming languages, Loyc identifiers can be any string--any string at all. Even identifiers like `\n\0` (a linefeed and a null character) are supported. This design guarantees that a Loyc tree can represent an identifier from any programming language on Earth. To support WebAssembly, LESv3 takes this a step further, supporting not just _any string_ but _any sequence of bytes_.
 
@@ -48,7 +48,7 @@ In other words, a Loyc tree (or Loyc "node") is a data structure with these prop
 2. `Attrs`: a list of attributes (metadata)
 3. One of: a literal (`Value`), an identifier (`Name`), or a call (`Target` and `Args`).
 
-Call nodes are the most interesting. A "call" represents either a method call, or a construct like a "class" or a "for loop". By convention, constructs that are built into a language use a special identifier that starts with `#` or `.` or `'`, such as `.class` or `#public` or `'==`. By convention, then, `foo(x, y)` (where `Target` is `foo` and `Args` is a list of two items) would be a normal function call, while `#foo(x, y)` would represent some kind of special construct, e.g. `#var(Foo, x)` could represent a declaration for a variable `x` of type `Foo`. **Note:** these naming conventions aren't quite settled yet.
+Call nodes are the most interesting. A "call" represents either a function call, or a construct like a "class" or a "for loop". By convention, constructs that are built into a language use a special identifier that starts with `#` or `.` or `'`, such as `.class` or `#public` or `'==`. By convention, then, `foo(x, y)` (where `Target` is `foo` and `Args` is a list of two items) would be a normal function call, while `#foo(x, y)` would represent some kind of special construct, e.g. `#var(Foo, x)` could represent a declaration for a variable `x` of type `Foo`. **Note:** these naming conventions aren't quite settled yet.
 
 ![](loyc-tree-diagram.png)
 
@@ -58,7 +58,7 @@ Loyc trees versus s-expressions
 Loyc trees are inspired by LISP trees, but designed for non-LISP languages. If you've heard of [LISP](http://en.wikipedia.org/wiki/Lisp_(programming_language)), well, Loyc Expression Syntax (LES) is basically a 21st century version of the [S-expression](http://en.wikipedia.org/wiki/S-expressions). The main differences between s-expressions and Loyc trees are:
 
 * Loyc trees are a data structure, whereas s-expressions are a _syntax_ whose underlying data structure _could_ be a singly-linked list. LES is to Loyc trees as s-expressions are to singly-linked lists.
-* Each "call" has a "target". Whereas LISP represents a method call with `(method arg1 arg2)`, Loyc represents a method call with `method(arg1, arg2)`. In LISP, the method name is simply the first item in a list, and there is no way to tell if `(x y z)` is a list of three items or a function call that takes two arguments. In contrast, most other programming languages separate the "target" from the argument list, with the notation `target(arg1, arg2)`. In a Loyc tree, a specific target would be used to denote a list (e.g `#tuple(item1, item2)`).
+* Each "call" has a "target". Whereas LISP represents a function call with `(funcName arg1 arg2)`, Loyc represents a function call with `funcName(arg1, arg2)`. In LISP, the function name is simply the first item in a list, and there is no way to tell if `(x y z)` is a list of three items or a function call that takes two arguments. In contrast, most other programming languages separate the "target" from the argument list, with the notation `target(arg1, arg2)`. In a Loyc tree, a specific target would be used to denote a list (e.g `#tuple(item1, item2)`).
 * Each node has a list of attributes. The concept of attributes was inspired by .NET attributes, so naturally a .NET attribute or Java annotation would be represented in a Loyc tree by an attribute. But also, "trivia" such as comments and blank lines can be represented by attaching attributes to nodes, and modifiers like "public", "private", "override" and "static" are conventionally represented by attributes.
 * Each node has an associated source file and two integers that identify the range of characters that the original construct occupied in source code. If a Loyc tree is created programmatically, a dummy source file and a zero-length range can be used.
 
@@ -67,7 +67,7 @@ Loyc trees: text representation
 
 Obviously, a text format is needed for Loyc trees.
 
-My original plan was to use a subset of [Enhanced C#](http://ecsharp.net) to represent Loyc trees. However, since EC# is based on C#, it inherits some very strange syntax elements. Consider the fact that `(a<b>.c)(x)` is classified a "cast" while `(a<b>+c)(x)` is classified as a method call. EC# has a lot of oddball rules like that, which create unnecessary complication that should not exist in an AST interchange format.
+My original plan was to use a subset of [Enhanced C#](http://ecsharp.net) to represent Loyc trees. However, since EC# is based on C#, it inherits some very strange syntax elements. Consider the fact that `(a<b>.c)(x)` is classified a "cast" while `(a<b>+c)(x)` is classified as a function call. EC# has a lot of oddball rules like that, which create unnecessary complication that should not exist in an AST interchange format.
 
 Threfore I invented ([Loyc Expression Syntax](/les)). However, we can do better than _just_ an interchange format; I've made LES flexible enough to be used as a modern programming language in its own right.
 
