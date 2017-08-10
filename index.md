@@ -16,9 +16,11 @@ We believe that programming languages should interoperate with each other on a h
 
 We also believe interoperability is a serious problem _within_ individual languages, because of a lack of standardization of data types and interfaces, and in some cases, standard types being poorly-designed: inefficient, limited, etc. We want to fix that too, but haven't really gotten started on it yet.
 
-The Loyc initiative is about finding ways to bring the world's programs and programming languages closer together, to grease the wheels of developers everywhere.
+The original idea of Loyc was a multi-syntax compiler, which would have taken code written in several languages and compile it as a single program with a single compiler, allowing code to call between languages and share data, easily and directly. We have not had the necessary volunteers or resources to create such a compiler; instead we working on bits and pieces that may be useful for such a compiler eventually.
 
-Currently, all Loyc projects are written in C# because the .NET platform is the only one specifically designed for multiple languages. Eventually though, we hope to shift our focus to WebAssembly, especially since Microsoft has refused to fix the CLR's [design flaws](http://loyc.net/2014/dotnet-annoyances.html).
+In general, the Loyc initiative is about finding ways to bring the world's programs and programming languages closer together, to grease the wheels of developers everywhere.
+
+Currently, all Loyc projects are written in C# and [Enhanced C#](http://ecsharp.net) because the .NET platform is the only one specifically designed for multiple languages. Eventually though, we hope to shift our focus to WebAssembly, especially since Microsoft has not been fixing the CLR's [design flaws](http://loyc.net/2014/dotnet-annoyances.html).
 
 Core projects
 -------------
