@@ -7,7 +7,6 @@ commentIssueId: 1
 paragraphLinks: true
 toc: true
 ---
-{% raw %}
 GitHub has a "built-in" simple content management system called Jekyll. It's unobtrusive; you can put ordinary HTML files in your webspace and they will be served unchanged, or you can create Jekyll files, which are text files that start with a header block that the Jekyll documentation calls "front matter" (a phrase that the documentation uses as if everyone knows what it means already). Among other things, Jekyll allows you to write web pages and blog posts in Markdown. And since it's GitHub, you won't be surprised to learn that your web space is version-controlled with Git, which means that you can update your web site with an ordinary Git push.
 
 <style>
@@ -84,6 +83,7 @@ No, Jekyll isn't good at error messages. To solve this quickly,
 3. Add this option: `highlighter: rouge`
 4. If applicable, restart `jekyll serve` whenever you change `_config.yml`
 
+{% raw %}
 To create code blocks, Jekyll recommends the use of `{%...%}` blocks like this:
 
 ~~~text
@@ -91,6 +91,7 @@ To create code blocks, Jekyll recommends the use of `{%...%}` blocks like this:
 // Code
 {% endhighlight %}
 ~~~
+{% endraw %}
 
 But this, of course, is not standard Markdown code. I want to write my posts in the language of Markdown, not Jekyll; I should be able to use a standard "fence" instead:
 
@@ -110,9 +111,10 @@ Unfortunately, redcarpet and kramdown have different sets of advanced features. 
 
 **Update: As of August 1, 2014, commiting a `_config.yml` that uses `rouge` now causes "Page build failure" on GitHub with a misleading error message like "The file `_posts/2014-08-01-blah.md` contains syntax errors."** Before you commit & push, you must set `highlighter: pygments` in `_config.yml`, even if you don't care to install pygments locally.
 
+**ProTip**: Jekyll won't easily let you write the literal character combination `{​%` or `{​{`, not even inside code blocks. You could write `{​{ "{​%" }}` or `{​{ "{​{" }}` instead, but if you are not intending to use Liquid (Jekyll's templating engine), a better option is to wrap the entire page in `{​% raw %} ... {​% endraw %}`, after the front-matter.
+**2017 Update**: raw/endraw are now somehow buggy; Jekyll 3.5.2 can no longer handle a paragraph like this one, and wrapping an entire document in `{​% raw %}` often doesn't work anymore. As a last resort I've used the zero-width space U+200B in `{​%` and `{​{` to make Jekyll ignore it. This is bad, of course, as a user that copies the text will unknowingly pick up a zero-width space.
 
-**ProTip**: Jekyll won't easily let you write the literal character combination `{%` or `{{`, not even inside code blocks. You could write `{{"{%"}}` or `{{ "{{" }}` instead, but if you are not intending to use Liquid (Jekyll's templating ending), a better option is to wrap the entire page in `{% raw %} ... {% endraw %}{{"{%"}} endraw %}`, after the front-matter, as I have done in this post. One problem with this though: you can't use [jekyll internal links](http://stackoverflow.com/questions/4629675/jekyll-markdown-internal-links).
-{% raw %}
+****************************************
 
 ## How I set up this site
 
@@ -148,6 +150,7 @@ I decided to use the Poole-based "Hyde" theme, so I downloaded [`hyde-master.zip
 
 4. (Hyde) The `baseurl` option is a problem if you want it to refer to the root of the domain. The `Jekyll` documentation implies you should use "" in this case, and offers sample code that doesn't work correctly with "/"; for example, this code is in the Jekyll site template (`Ruby200\lib\ruby\gems\2.0.0\gems\jekyll-2.1.0\lib\site_template`):
     
+    {% raw %}
     ~~~html
     <ul class="posts">
       {% for post in site.posts %}
@@ -158,16 +161,19 @@ I decided to use the Poole-based "Hyde" theme, so I downloaded [`hyde-master.zip
       {% endfor %}
     </ul>
     ~~~
+    {% endraw %}
     
     For some reason this produces bogus links if baseurl is "/". But Hyde will break if you use "/" because it uses raw concatenation in `/_includes/head.html`:
     
+    {% raw %}
     ~~~html
     <link rel="stylesheet" href="{{ site.baseurl }}public/css/poole.css">
     <link rel="stylesheet" href="{{ site.baseurl }}public/css/syntax.css">
     <link rel="stylesheet" href="{{ site.baseurl }}public/css/hyde.css">
     ~~~
+    {% endraw %}
 
-    Note that a slash is needed before '`public`'. To fix this I changed all instances of `{{ site.baseurl }}` to `{{ site.baseurl }}/` in all of Hyde's HTML files (be sure to replace _all_ of them!)
+    {% raw %}Note that a slash is needed before '`public`'. To fix this I changed all instances of `{{ site.baseurl }}` to `{{ site.baseurl }}/` in all of Hyde's HTML files (be sure to replace _all_ of them!){% endraw %}
     
     Perhaps the same problem would arise if you are _not_ at the root of the domain; i.e. if your web space is at `username.github.io/projectname`. In that case Jekyll wants `baseurl` to be <i>projectname</i> while Hyde expects <i>projectname/</i>.
     
@@ -192,6 +198,7 @@ I decided to use the Poole-based "Hyde" theme, so I downloaded [`hyde-master.zip
 
 11. At the top of the blog I made a "List of all posts" link, which goes to `blog-list.html`:
 
+    {% raw %}
     ~~~html
     ---
     layout: default
@@ -211,9 +218,11 @@ I decided to use the Poole-based "Hyde" theme, so I downloaded [`hyde-master.zip
       <p class="rss-subscribe">subscribe <a href="{{ "atom.xml" | prepend: site.baseurl }}">via Atom</a></p>
     </div>
     ~~~
+    {% endraw %}
 
 12. (Hyde) if you have enough blog posts to cause pagination, Hyde shows the "Blog" link multiple times, one for each page! This turned out to be slightly difficult to fix; after a little while I realized that Jekyll, or more specifically __Liquid__, __does not support Ruby expressions__. In fact, it hardly supports any expressions at all! Check it out: [Liquid contains only 9 operators __in total__](http://docs.shopify.com/themes/liquid-basics/operators). There is not even a `not` operator, and there is no regex matching (or if there is, it is implemented as something other than an operator.) Anyway, the unwanted pages can still be filtered out, although not with the precision I am used to. In `_includes/sidebar.html`, I changed this code:
 
+    {% raw %}
     ~~~
     {% assign pages_list = site.pages %}
     {% for node in pages_list %}
@@ -225,8 +234,10 @@ I decided to use the Poole-based "Hyde" theme, so I downloaded [`hyde-master.zip
       {% endif %}
     {% endfor %}
     ~~~
+    {% endraw %}
     by adding an `unless` statement:
     
+    {% raw %}
     ~~~
     {% assign pages_list = site.pages %}
     {% for node in pages_list %}
@@ -238,6 +249,7 @@ I decided to use the Poole-based "Hyde" theme, so I downloaded [`hyde-master.zip
       {% endif %}
     {% endfor %}
     ~~~
+    {% endraw %}
 
 13. (Hyde) The Older and Newer buttons had broken links because they assumed the blog would be the home page. And you know what, I made so many little changes and fixes, I won't list them all. Let's just say you can clone my repo and make it your own, if you like.
 
@@ -281,6 +293,7 @@ How to set up:
 
 2. In `_layouts/default.html`, include `comments.html` below the content:
     
+    {% raw %}
     ~~~
         ...
         {{ content }}
@@ -288,6 +301,7 @@ How to set up:
       </div>
     </body>
     ~~~
+    {% endraw %}
 
 3. Add my copy of [`comments.html`](https://github.com/qwertie/Loyc/tree/gh-pages/_includes/comments.html) unchanged to your `/_includes` folder, and add [`comments.css`](https://github.com/qwertie/Loyc/blob/gh-pages/res/css/comments.css) unchanged to `/res/css` (oh, you don't have a `/res/css` folder? Either create that folder, or put `comments.css` wherever you like to put css files and change `comments.html` to point to the new location.)
 
@@ -348,5 +362,4 @@ By the way, no matter whether you're using GitHub or not or Jekyll or not, there
 
 You can even use MDWiki without a web server, if you view `mdwiki.html` in Firefox (it doesn't work in Google Chrome), which means you can use it for offline Markdown previews (which is great because, at least on the Windows, tools for editing Markdown are generally quite limited.)
 
-{% endraw %}
 Published on <a href="http://www.codeproject.com/script/Articles/BlogArticleList.aspx?amid=3453924" rel="tag">CodeProject</a>
