@@ -3,7 +3,6 @@ layout: post
 title: Building a table of contents in JavaScript
 toc: true
 ---
-{% raw %}
 So you're publishing a long document online and don't have an easy mechanism to automatically add a table of contents on the server side? Well with JavaScript, you enslave the web browser to do it instead! This TOC generator...
 
 - needs no jQuery or other third-party library
@@ -113,6 +112,7 @@ The default class is `sidebox`, and if you insert the following CSS on your page
 
 If you're [publishing with Jekyll](http://loyc.net/2014/blogging-on-github.html), I suggest adding the above code to the bottom of `/_layouts/default.html` (and any other layouts you might use that might need a TOC, as long as they do _not_ import `default.html` using a `layout: default` option), just before `</body>`, surrounded by a test like this:
 
+    {% raw %}
     {% if page.toc %}
     <script>
     ...
@@ -121,7 +121,8 @@ If you're [publishing with Jekyll](http://loyc.net/2014/blogging-on-github.html)
     addTOC(_post_, _post_.firstChild.nextSibling.nextSibling);
     </script>
     {% endif %}
+    {% endraw %}
 
 This way, Jekyll only adds the TOC code to a page if the front-matter contains a `toc: true` option.
-{% endraw %}
+
 Published on <a href="http://www.codeproject.com/script/Articles/BlogArticleList.aspx?amid=3453924" rel="tag">CodeProject</a>. Comments? Leave them there.
