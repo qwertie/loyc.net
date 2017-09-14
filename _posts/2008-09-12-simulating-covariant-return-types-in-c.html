@@ -4,7 +4,7 @@ layout: post
 # Pulled from Blogger. Last updated there on: 2008-09-12
 ---
 <small><p><i>This post was imported from <a href='http://loyc-etc.blogspot.com/2008/09/simulating-covariant-return-types-in-c.html'>blogspot</a>.</i></p></small>
-{% raw %}
+
 For several years, Microsoft engineers have refused to add support for <a href="http://en.wikipedia.org/wiki/Covariant_return_type">covariant return types</a>, a trivially simple feature that should have been in the CLR from the beginning.<br/>
 
 
@@ -56,4 +56,3 @@ That's right. You need six Clone() methods. The last method is virtual in case y
     protected virtual void Clone(out VeryComplexNode clone) { ... }
 }</pre><br/>
 Without covariant return types, you have to to define an additional virtual function for each additional derived class.
-{% endraw %}

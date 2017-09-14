@@ -4,7 +4,7 @@ layout: post
 # Pulled from Blogger. Last updated there on: 2012-04-05
 ---
 <small><p><i>This post was imported from <a href='http://loyc-etc.blogspot.com/2012/04/shouldnt-you-learn-that-new-microsoft.html'>blogspot</a>.</i></p></small>
-{% raw %}
+
 I recently responded to someone trying to <a href="http://programmers.stackexchange.com/questions/143201/justification-for-learning-implementing-newer-microsoft-technologies/143242#143242">justify learning all those newfandangled Microsoft APIs</a>. It sounded like a blog entry so I'm copy-pasting here.<br/>
 <br/>
 While you should definitely learn some of the new MS technologies, my recent experience learning about things like WPF and WCF has made me a bit more cautious about learning the newest MS APIs.<br/>
@@ -25,4 +25,3 @@ But you might ask, "so what"? Well, with such big libraries you might never feel
 Also because of the largeness and complexity of these new APIs, the cross-platform alternative to .NET, Mono, has poor support or no support for them. You'll probably have little difficulty using your typed data tables on Linux or Mac, but Entity Framework? Forget about it. I wouldn't be surprised if Mono <i>never</i> supports it.<br/>
 <br/>
 I have used LINQ-to-SQL in a new project and it's not bad. In some ways it could be better, but I think the developer experience is substantially better than ADO.NET. One significant limitation: L2S is easiest by far if you modify tables in "connected" mode, unlike the old ADO.NET which was specifically designed to work without an active database connection. Anyway, since LINQ-to-SQL is (according to Mono people) a quarter the size of Entity Framework, it's a shame that MS decided to quit working on it.
-{% endraw %}

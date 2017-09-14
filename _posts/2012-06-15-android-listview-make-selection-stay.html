@@ -4,7 +4,7 @@ layout: post
 # Pulled from Blogger. Last updated there on: 2012-06-19
 ---
 <small><p><i>This post was imported from <a href='http://loyc-etc.blogspot.com/2012/06/android-listview-make-selection-stay.html'>blogspot</a>.</i></p></small>
-{% raw %}
+
 The behavior of Android's ListView is surprising: when the user clicks an item, it doesn't stay selected! It looks selected for a brief instant and then fades away.<br/>
 
 
@@ -55,4 +55,3 @@ static void setListItems(Context context, AdapterView listView, List listItems, 
 Warning<span style="font-weight: normal;">: this solution needs further development. If the user uses arrow keys or buttons to select an item, that item will not be selected from the IntHolder's perspective. If the user presses the unlabeled button or the Enter key then the item will become "officially" selected, but then you have another problem because if the user uses the arrow keys again, it will sort of look like two items are selected. Leave a comment if you figure out how to keep the "internal selection" in the IntHolder synchronized with the "keyboard selection" or whatever it's called. What <i>is</i> it called, anyway?</span></h4> <ul>
 <li><a href="http://qscribble.blogspot.ca/2012/05/android-ndk-tips-part-1-glossary.html">Android NDK tips</a></li>
 </ul>
-{% endraw %}

@@ -4,7 +4,7 @@ layout: post
 # Pulled from Blogger. Last updated there on: 2007-07-12
 ---
 <small><p><i>This post was imported from <a href='http://loyc-etc.blogspot.com/2007/07/goodbye-antlr.html'>blogspot</a>.</i></p></small>
-{% raw %}
+
 Three days ago, after finding workarounds for the ANTLR3 (C#) bugs <a href="http://qscribble.blogspot.com/2007/07/no-matter-what-i-do-i-cant-seem-to-make.html">detailed here</a>, I immediately ran into even more bugs. For instance I had a rule that said<br/>
 <br/>
 SL_COMMENT: '#' (~NEWLINE_CHAR)*;<br/>
@@ -22,4 +22,3 @@ Well, my initial goal will be a translator from boo to boo. I'll make some AST c
 At this point I've already written a lot of the lexer by hand. I've taken it as an opportunity to figure out how a parser generator should work, by attempting to write the lexer the way a machine would do it. I started by writing the lexer grammar in a hypothetical boo-style syntax; then I translated that grammar--mechanically, by hand--to C# source code.<br/>
 <br/>
 There is so much work I have to do before I start making the parser generator, though. I fear that by the time I'm done with the prerequisites, I will have forgotten the lessons I'm now learning about making a parser generator. We'll see.
-{% endraw %}

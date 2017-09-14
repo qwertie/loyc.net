@@ -4,7 +4,7 @@ layout: post
 # Pulled from Blogger. Last updated there on: 2013-04-11
 ---
 <small><p><i>This post was imported from <a href='http://loyc-etc.blogspot.com/2012/10/lisp-heres-why-mainstream-ignores-you.html'>blogspot</a>.</i></p></small>
-{% raw %}
+
 While I currently don't know how you write a "hello world" in LISP, I am keenly aware that the LISP language, with its powerful macro system, could be very instructive on the topic of metaprogramming. However, it is proving difficult to quickly learn LISP because the community uses terminology, technology and notations that are far outside the mainstream. <br/>
 
 
@@ -48,4 +48,3 @@ It's getting late, maybe I'll finish this later... if anyone can name a non-emac
 The key problem I'm facing right now in my exploratory design of macros for EC# is the question of how to order macro expansions with respect to each other and with respect to substitution operations (which, for all I know, should themselves be implemented with macros) and what the rules for name resolution should be. However, reading about LISP has provided little insight so far, because (1) I would have to understand LISP fairly well in order to understand the documentation about macros, or <i>extremely</i> well in order to understand any technical specifications; and (2) in tutorial-level material, the ordering of operations, the name resolution rules, and the compilation model are implicit and assumed to be of secondary importance. Quite reasonably they assume you want to <i>use</i> LISP, whereas I just want to shamelessly copy the ideas <i>behind</i> LISP and the lessons that were learned in the course of developing modern LISPs. <br/>
 <br/>
 Perhaps <a href="http://en.wikipedia.org/wiki/Hygienic_macro">this</a> will help me. Since much of LISP is defined with macros, I had also been wondering which parts of LISP were built-in and which were macros. The key to finding this out seems to be the term "<a href="http://www.gigamonkeys.com/book/the-special-operators.html">special operator</a>" aka "<a href="http://simonwillison.net/2002/oct/3/lispspecialforms/">special form</a>", which is like a keyword or built-in statement in other languages. So far I haven't found a complete list of them though.
-{% endraw %}

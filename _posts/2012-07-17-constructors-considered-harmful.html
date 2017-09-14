@@ -4,7 +4,7 @@ layout: post
 # Pulled from Blogger. Last updated there on: 2012-07-17
 ---
 <small><p><i>This post was imported from <a href='http://loyc-etc.blogspot.com/2012/07/constructors-considered-harmful.html'>blogspot</a>.</i></p></small>
-{% raw %}
+
 Ahh, constructors, constructors. In my opinion the constructor design in most languages including C++, C#, D and Java is flawed, because it exposes an implementation detail that should not be exposed, namely, which class gets allocated and when. <br/>
 
 
@@ -45,4 +45,3 @@ For D <a href="http://d.puremagic.com/issues/show_bug.cgi?id=8381">I suggested</
 This tweak would allow the class Foo to change the implementation of a constructor to return an object derived from Foo, instead of Foo itself. It would also allow Foo to do some work before actually creating a Foo object. Finally, this proposal doesn't allow named constructors per se, but it does provide a similar syntax for named and unnamed creation methods, because the syntax to call an unnamed constructor, "Foo.new(...)" is similar to the syntax to call a named creation method, "Foo.newFromFile(...)". <br/>
 <br/>
 I don't expect D or any other language to accept my proposal, but it's a good idea so I'm blogging it anyway. In .NET, this feature would be more practical if .NET compilers were to automatically create a static "new" method for every real constructor, and to prefer to emit calls to the static method (if present) instead of the real constructor. This rule would provide for binary compatibility, which improves upon the source-level compatibility provided by my syntax proposal.
-{% endraw %}

@@ -4,7 +4,7 @@ layout: post
 # Pulled from Blogger. Last updated there on: 2013-05-10
 ---
 <small><p><i>This post was imported from <a href='http://loyc-etc.blogspot.com/2013/05/redesigning-loyc-tree-code.html'>blogspot</a>.</i></p></small>
-{% raw %}
+
 The original (and current) design for the classes that represent <a href="http://loyc-etc.blogspot.ca/2013/04/the-loyc-tree-and-prefix-notation-in-ec.html">Loyc trees</a> has some problematic properties: 
 <ol>
 <li>You can't tell if a node is mutable or immutable without a runtime check.</li>
@@ -93,4 +93,3 @@ public class CallNode : Node {
 <li>A simple call such as "f()" will require two nodes, whereas the current implementation only needs a single node. It occurs to me, however, that the child node "f" could be implemented as a temporary object, constructed on-demand and immediately discarded (calling the Name property rather than Target would avoid constructing the temporary object).</li>
 <li>Currently, a mutable node can be converted in-place between any of the possible node types, e.g. you can simply write <tt>node.IsCall = true</tt> to add an empty argument list. That kind of thing is not possible when we use these separate classes.</li>
 </ul>I guess I should keep in mind that EC# will support deconstruction and pattern-matching when it is complete, and the current mutation abilities are not very important to keep. The performance implications still matter, however, and I always love to save memory. 
-{% endraw %}

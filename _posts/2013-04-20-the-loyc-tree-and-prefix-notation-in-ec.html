@@ -4,7 +4,7 @@ layout: post
 # Pulled from Blogger. Last updated there on: 2013-06-12
 ---
 <small><p><i>This post was imported from <a href='http://loyc-etc.blogspot.com/2013/04/the-loyc-tree-and-prefix-notation-in-ec.html'>blogspot</a>.</i></p></small>
-{% raw %}
+
 <b>Update:</b> <a href="http://loyc-etc.blogspot.ca/2013/05/status-update-loyc-tree-rewritten.html">the Loyc tree code has been rewritten</a> and the original concept has been slightly modified from the concept described in this post. <br/>
 <br/>
 As I designed the macro system for Enhanced C#, I thought a lot about what kind of syntax tree would be appropriate--not just for EC# but for tools that could process multiple languages. One of Loyc's goals is conversion between languages, and another goal is to support multiple language syntaxes (perhaps each with a macro system!) in a single project. A third goal is to assist IDE tools (in particular, to be compatible with incremental parsing). And, as always, I wanted a data structure that is fast and uses memory efficiently. <br/>
@@ -133,4 +133,4 @@ The EC# parser also does not distinguish between "executable places" and "places
 </pre>Although the parser understands this code, the EC# compiler (as a whole) would reject it, because code cannot run outside of methods (except macros), and namespaces cannot be located inside methods or properties. <br/>
 <br/>
 <b>Note: EC# is not usable yet. This post exists because I want to publish the idea of Loyc trees.</b> I'll update this when the parser is ready. But once the parser is ready, you will still not be able to write code in EC#. Making a programming language by myself is a long process!
-{% endraw %}
+

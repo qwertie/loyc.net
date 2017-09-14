@@ -4,7 +4,7 @@ layout: post
 # Pulled from Blogger. Last updated there on: 2012-02-25
 ---
 <small><p><i>This post was imported from <a href='http://loyc-etc.blogspot.com/2012/02/design-flaws-in-net.html'>blogspot</a>.</i></p></small>
-{% raw %}
+
 I made this list of the flaws in .NET (CLR+BCL) for StackOverflow, but then I noticed that <a href="http://stackoverflow.com/questions/411906/c-sharp-net-design-flaws">the question</a> is closed. Whatever, I may as well CC to my blog. All of these flaws except #3 have irked me personally. .NET is my favorite platform, yet it is still far from ideal.
 
 <ol>
@@ -40,4 +40,3 @@ I made this list of the flaws in .NET (CLR+BCL) for StackOverflow, but then I no
 
 If we broaden this list to include flaws of C#, it would be a lot longer. For instance, C# has no ??= operator; you must write <code>variable = variable ?? value</code>. Indeed, there are a few places in C# that needlessly lack symmetry. For example you can write <code>if (x) y(); else z();</code> (without braces), but you can't write <code>try y(); finally z();</code>.<br/>
 
-{% endraw %}

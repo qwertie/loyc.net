@@ -4,7 +4,7 @@ layout: post
 # Pulled from Blogger. Last updated there on: 2010-06-10
 ---
 <small><p><i>This post was imported from <a href='http://loyc-etc.blogspot.com/2010/06/c-stream-flattening.html'>blogspot</a>.</i></p></small>
-{% raw %}
+
 The Microsoft research language Cω (C-omega), which predates C# 3.0 (and even 2.0?), extended C# with a number of interesting features, of which C# 3.0 includes several comparable features. To me the most interesting thing in Cω was streams, which are roughly just lists of things in IEnumerables. For instance, the stream "int*" basically means "IEnumerable&lt;int>", but they allowed you to manipulate lists of things without using explicit loops:
 
 
@@ -121,4 +121,3 @@ Of course, <b>neither Cω streams nor C# generators were actually designed for c
 But, since the .NET framework doesn't support genuine coroutines, this is the only option right now. Mono recently introduced <a href="http://www.mono-project.com/Continuations">continuations that it calls "tasklets"</a>, which can also be used to write coroutines (but only under Mono, not Microsoft .NET); Since they apparently duplicate and restore the entire call stack, though, I am concerned that Tasklets might have poor performance.<br/>
 <br/>
 I don't actually know how the flattening is implemented; I'll be sure to update this entry if I figure it out.
-{% endraw %}

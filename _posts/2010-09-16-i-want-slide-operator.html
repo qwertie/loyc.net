@@ -4,7 +4,7 @@ layout: post
 # Pulled from Blogger. Last updated there on: 2010-09-16
 ---
 <small><p><i>This post was imported from <a href='http://loyc-etc.blogspot.com/2010/09/i-want-slide-operator.html'>blogspot</a>.</i></p></small>
-{% raw %}
+
 I've been writing imperative code for a long time and I noticed that I often extract a value from a variable, then change the variable immediately afterward. This is evident in numerous iterative algorithms, such as the fibonnaci algorithm:
 <pre>{
   int a = 0, b = 1, tmp;
@@ -65,4 +65,3 @@ A second temporary variable is needed in case the left-hand side is expensive or
 temp2 = temp1.Value;
 temp1.Value = savedValue;
 savedValue = temp2;</pre>Now when can I get my slide operator in a real language?
-{% endraw %}

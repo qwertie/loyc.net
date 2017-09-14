@@ -4,7 +4,7 @@ layout: post
 # Pulled from Blogger. Last updated there on: 2014-02-26
 ---
 <small><p><i>This post was imported from <a href='http://loyc-etc.blogspot.com/2013/11/lllpg-greedy-and-nongreedy.html'>blogspot</a>.</i></p></small>
-{% raw %}
+
 (Edit: This blog post was incorporated into the <a href="http://www.codeproject.com/Articles/733426/The-Loyc-LL-k-Parser-Generator-Part-4">fourth article about LLLPG</a>.) <br/>
 <br/>
 LLLPG supports "greedy" and "nongreedy" loops and optional items. The "greedy" and "nongreedy" modes refer to the action you prefer to take in case of ambiguity between an exit branch and another branch. Greedy is the default: it means that if the input matches both a non-exit branch and an exit branch, the non-exit branch should be taken. A typical greedy example is this rule for an "if" statement: 
@@ -101,4 +101,4 @@ rule Newline        @[ ('\r' '\n'?) | '\n' ];
 rule Field          @[ nongreedy(_)*
                      | '"' ('"' '"' | nongreedy(~('\n'|'\r'))* '"' ];
 </pre>This grammar describes a file filled with fields separated by commas (plus I introduced the EOF symbol, so that no Newline is required at the end of the last line). Notice that 'Field' has the loop <tt>nongreedy(_)*</tt>. How does LLLPG know to when to break out of the loop? Because it computes the "follow set" or "return address" of each rule. In this case, 'Field' can be followed by <tt>','|'\n'|'\r'|EOF</tt>, so the loop will break as soon as one of these characters is encountered. This is different than the <tt>IfStmt</tt> example above in an important respect: <tt>Field</tt> always has the same follow set. Even though <tt>Field</tt> is called from two different places, the follow set is the same in both locations: <tt>','|'\n'|'\r'|EOF</tt>. So <tt>nongreedy</tt> works reliably in this example because it makes no difference what context <tt>Field</tt> was called from.
-{% endraw %}
+

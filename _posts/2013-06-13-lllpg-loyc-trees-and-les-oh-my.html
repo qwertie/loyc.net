@@ -4,7 +4,7 @@ layout: post
 # Pulled from Blogger. Last updated there on: 2013-06-27
 ---
 <small><p><i>This post was imported from <a href='http://loyc-etc.blogspot.com/2013/06/lllpg-loyc-trees-and-les-oh-my.html'>blogspot</a>.</i></p></small>
-{% raw %}
+
 <style type='text/css'><!--  .sidebox { border: 1px dotted rgb(127, 127, 127); padding: 4px 3px 4px 4px; min-width: 100px ! important; float: right ! important; font-size: small; margin-top: 1px; margin-bottom: 1px; margin-left: 4px; visibility: visible; max-width: 50%; width: 35%; } --></style><h4>Background: LLLPG —</h4>I normally don't let these internal "planning" posts go to CodeProject, but my planning has reached an advanced stage and I think it would be fun to hear some feedback on my new parser generator and my plan for a new programming language called LES or LEL (depending on what you're doing with it). The parser generator is called LLLPG (Loyc LL(k) Parser Generator). "Loyc" means "Language of Your Choice" and it is my project for creating a set of generic tools for creating programming languages and for translating code between different languages* <div class="sidebox">* To summarize Loyc in 10 words, Loyc will do for front-ends what LLVM does for back-ends. I guess that's 12 words?</div>; meanwhile, LL(k) is one of the three most popular types of parsers for computer languages (the others being PEG and LALR(1)... perhaps ANTLR's LL(*) is more popular than LL(k) nowadays, but I'm counting LL(*) as a mere variation on LL(k).) <br/>
 <br/>
 LLLPG is a recursive-decent parser generator, with a feature set (and syntax) comparable to ANTLR version 2. LLLPG 1.0 is about 80% complete. All that's missing is a parser that can accept grammars in the form of text, and a bit of polishing, but the last 15% is the most important--no one will want to use LLLPG without a nice friendly input language, and right now LLLPG cannot parse its own input. <br/>
@@ -406,4 +406,4 @@ To tell you the truth, I have never seriously programmed in a language with a LI
 </ol>I hereby open the floor to your comments and questions. <br/>
 <br/>
 <small>&lt; Published on <a href="http://www.codeproject.com/script/Articles/BlogArticleList.aspx?amid=3453924">CodeProject</a> &gt;</small>
-{% endraw %}
+

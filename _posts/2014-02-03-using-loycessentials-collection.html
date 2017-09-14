@@ -4,7 +4,7 @@ layout: post
 # Pulled from Blogger. Last updated there on: 2014-05-28
 ---
 <small><p><i>This post was imported from <a href='http://loyc-etc.blogspot.com/2014/02/using-loycessentials-collection.html'>blogspot</a>.</i></p></small>
-{% raw %}
+
 Loyc.Essentials is a library of "stuff that should be in the <a href="http://en.wikipedia.org/wiki/Base_Class_Library">.NET BCL</a>, but isn't." Today I will present one of the most important parts of Loyc.Essentials: its collection interfaces. <br/>
 <br/>
 
@@ -570,4 +570,4 @@ In general, I find it to be a big nuisance that when two DLLs define identical i
 Some of these interfaces are used heavily in Loyc, while others are not used at all. In future posts I'll introduce the other classes, structures, and handy methods of Loyc.Essentials.dll, and then I'll move on to Loyc.Collections.dll. <br/>
 <br/>
 <b>Edit</b>: I missed an interesting interface: <tt>IEnumeratorFrame&lt;Frame, T></tt>, which goes with the <tt>NestedEnumerator&lt;Frame, T></tt> structure, and is used for enumerating tree-like data structures or manually-implemented coroutines. See <a href="http://sourceforge.net/p/loyc/code/HEAD/tree/Src/Loyc.Essentials/Collections/HelperClasses/NestedEnumerator.cs">the code</a> if you're curious, although this interface would work best as part of a built-in compiler feature for stream flattening like <a href="http://research.microsoft.com/en-us/um/cambridge/projects/comega/doc/comega_whatis.htm">Cω had</a>.
-{% endraw %}
+
