@@ -4,7 +4,6 @@ layout: post
 # Pulled from Blogger. Last updated there on: 2014-06-17
 ---
 <small><p><i>This post was imported from <a href='http://loyc-etc.blogspot.com/2014/05/2d-convex-hull-in-c-45-lines-of-code.html'>blogspot</a>.</i></p></small>
-{% raw %}
 If you want a <a href="http://en.wikipedia.org/wiki/Convex_hull">convex hull</a> and you want it now, you could go get a library like <a href="http://miconvexhull.codeplex.com/">MIConvexHull</a>. That library claims to be high-performance compared to a comparable C++ library, but that claim is implausible, especially for the 2D case, since the algorithm relies heavily on heap memory and dynamic dispatch, accessing all coordinates through an <tt>IVertex</tt> interface that returns coordinates as <tt>double[]</tt>, and it uses LINQ rather liberally. (Update: <a href="http://www.codeproject.com/Articles/775753/Ouellet-Convex-Hull-Algorithm-and-its-implementati">Ouellet's Algorithm</a> is a good choice.) <br/>
 <br/>
 Loyc.Utilities has a much simpler convex hull algorithm in the <tt>PointMath</tt> class that you might find easier to adapt to your own codebase, and although I haven't benchmarked it, you can plainly see that scanning for the convex hull takes O(n) time and needs only simple math, so that the overall running time will be dominated by the initial sorting step (which takes O(n log n) time). Because of the simple math used in this algorithm, it performs well both on powerful desktop machines and (given integer or fixed-point workloads) on lower-power machines with no FPU.  
@@ -111,4 +110,3 @@ Convex hull of 10000000 points took 6949 ms (4953 ms for sorting step). Output h
 </pre>Notice that the sorting step takes the majority of the time, as you would expect since sorting is O(N log N) while the rest of the code is O(N). (Why 316? Logarithmically, it's half way between 100 and 1000.) <br/>
 <br/>
 Copyright: me (David Piepgrass). Do with the code as you wish (originally LGPL). 
-{% endraw %}

@@ -112,7 +112,7 @@ Unfortunately, redcarpet and kramdown have different sets of advanced features. 
 **Update: As of August 1, 2014, commiting a `_config.yml` that uses `rouge` now causes "Page build failure" on GitHub with a misleading error message like "The file `_posts/2014-08-01-blah.md` contains syntax errors."** Before you commit & push, you must set `highlighter: pygments` in `_config.yml`, even if you don't care to install pygments locally.
 
 **ProTip**: Jekyll won't easily let you write the literal character combination `{​%` or `{​{`, not even inside code blocks. You could write `{​{ "{​%" }}` or `{​{ "{​{" }}` instead, but if you are not intending to use Liquid (Jekyll's templating engine), a better option is to wrap the entire page in `{​% raw %} ... {​% endraw %}`, after the front-matter.
-**2017 Update**: raw/endraw are now somehow buggy; Jekyll 3.5.2 can no longer handle a paragraph like this one, and wrapping an entire document in `{​% raw %}` often doesn't work anymore. As a last resort I've used the zero-width space U+200B in `{​%` and `{​{` to make Jekyll ignore it. This is bad, of course, as a user that copies the text will unknowingly pick up a zero-width space.
+**2017 Update**: raw/endraw are now somehow buggy; Jekyll 3.5.2 can no longer handle a paragraph like this one, and GitHub's internal copy of Jekyll tends to email you an error if you wrap an entire document in `{​% raw %}`. As a last resort I've used the zero-width space U+200B in `{​%` and `{​{` to make Jekyll ignore it. This is bad, of course, as a user that copies the text will unknowingly pick up a zero-width space.
 
 ****************************************
 
