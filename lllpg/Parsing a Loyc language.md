@@ -1,5 +1,7 @@
-Parsing a Loyc language with LLLPG, part 1
-==========================================
+---
+title: "Parsing a Loyc language with LLLPG, part 1"
+layout: article
+---
 
 Introducing LeMP 1.3
 --------------------
