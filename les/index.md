@@ -5,7 +5,7 @@ tagline: "Programming language builder & syntax interchange format"
 toc: true
 ---
 
-LES is an interchange format for syntax trees, comparable to s-expressions but designed for languages in the Algol family such as C, C++, C#, Java, EcmaScript, Rust and Python. It can be described as "JSON for code": just as XML/YAML/JSON are tree structures that assign no particular meaning to the data inside, likewise LES represents syntax trees without assigning any particular meaning to them. It may be called LESv2 (the original [LESv1](/les/v1) is deprecated and discontinued.)
+LES is an interchange format for syntax trees, comparable to s-expressions but designed for languages in the Algol family such as C, C++, C#, Java, EcmaScript, Rust and Python. It can be described as "JSON for code": just as XML/YAML/JSON are tree structures that assign no particular meaning to the data inside, likewise LES represents syntax trees without assigning any particular meaning to them.
 
 LES is a C-like language with `{braced blocks}` and expressions that end in semicolons; its parser is much simpler than C itself. The output of the LES parser is a list of expressions, in the form of tree structures called [Loyc trees](/loyc-trees). In comparison with the syntax trees inside most compilers, Loyc trees are designed to have an almost LISP-like simplicity.
 
@@ -74,7 +74,11 @@ A complete grammar of LES has not yet been published; the [current grammar](http
 
 ### Note: A new LES is coming ###
 
-This document describes LESv2. The design of [LESv3 is nearing completion](http://loyc.net/2017/lesv3-update.html) and will be the recommended version going forward. However, unlike LESv2, LESv3 is not a superset of JSON. Both versions of LES are available in the .NET NuGet package Loyc.Syntax.dll.
+This document describes LESv2. The design of [LESv3 is nearing completion](http://loyc.net/2017/lesv3-update.html) and will be the recommended version going forward. LESv2 looks good - it closely resembles Java/C and is a superset of JSON - but LESv3 is less error-prone to write, mainly because LESv3 uses newline as a terminator so it does not require semicolons after closing braces (or anything else for that matter).
+
+However, because newlines are significant, LESv3 is not a superset of JSON. If you prefer to have a superset of JSON or if you prefer how LESv2 looks, feel free to keep using LESv2 and feel free to voice your opinion on the [issue tracker](https://github.com/qwertie/ecsharp/issues). Both versions of LES are currently available in the .NET NuGet package Loyc.Syntax.dll.
+
+LESv3 doesn't have a spec yet, but the latest blog post is [here](http://loyc.net/2017/lesv3-update.html) and see issue [#52](https://github.com/qwertie/ecsharp/issues/52). As always, help is wanted to write parsers (and printers) for languages other than C#.
 
 ### LES for configuration files ###
 
