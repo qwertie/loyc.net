@@ -10,9 +10,9 @@ The main thing I wanted to contribute to WebAssembly was to have an LES-compatib
 
 It became fairly clear to me as time went on that the key decisions about WebAssembly were being made behind closed doors in Silicon Valley. The first really clear signal about that was the announcement (mid-2016) that they would switch from a expression language to a stack machine. Now, while it's a large change conceptually, it turned out that it was actually a fairly small change in terms of implementation. But the point is, the decision was made with no public discussion, they just suddenly said one day "hey everyone, here's how it's gonna be now".
 
-So with LES, they pretty much consistently ignored my proposal. The only person (with a connection to the browser devs) that liked it was Alon Zakai, but in my conversation with him I got the impression that he was relatively powerless himself, that he saw his role as being to just accept whatever the main devs decided.
-
 I responded to the change to a stack machine by noting that it actually wasn't a big deal, there's no reason you couldn't use an LES-like syntax for WebAssembly with a stack machine. But I think my comment about that was ignored. Due to time constraints they also wanted to drop the expression-like syntax; but again this was fine, and really didn't impede LES at all. Loyc trees and LES are meant to be "universal", after all!
+
+But my [proposal](https://github.com/WebAssembly/design/issues/697) was ignored. It's not that they had any _objections_ to it - not a single criticism was offered. One person with a connection to the browser devs actually liked it, Alon Zakai, but in my conversation with him I got the impression that he was relatively powerless himself, that he saw his role as being to just accept whatever the main devs decided. In the end they simply closed it in favor of another proposal.
 
 I was a little disturbed when they announced via PR early this year that the version number was to be changed to 0x1 (It was agreed long ago that the switch to 0x1 meant that the WebAssembly standard was finalized - that once the version number became 0x1, it would never change again). Again, it didn't seem like a discussion to me, it was more like "oh, by the way, WebAssembly is done and we're about to ship it."
 

@@ -38,12 +38,12 @@ Foo(new MyList&lt;T>()); // ERROR: The call is ambiguous
   // '...Foo(System.Collections.Generic.IReadOnlyList&lt;T>)'
 </pre> <b>Flaw #4</b>: A lack of variety and flexibility. If you actually survey the various data structures that exist, you'll find a wide variety of capabilities that they may or may not offer.  <ul>
 <li>A data structure might support an indexing operator but not a Count property (consider the <a href="http://en.wikipedia.org/wiki/Sieve_of_Eratosthenes">Sieve of Eratosthenes</a> of infinite size). Other data structures may <i>support</i> a Count property in theory, but <i>calling</i> it should be avoided because it may be expensive (in Loyc.Essentials, BufferedSequence&lt;T> has this property). </li>
-<li>A data structures may be queue- or stack-like, offering access to the beginning/end of a data structure but not the middle.</li>
+<li>A data structure may be queue- or stack-like, offering access to the beginning/end of a data structure but not the middle.</li>
 <li>A data structure might not be zero-based, e.g. the range of valid indexes could be 1..100 or -100..100 or 35..39.</li>
 <li>A data structure may be <i>sparse</i>, in which case scanning it for items with a for-loop from 0..Count is inefficient.</li>
 <li>A data structure may be a <i>sink</i>, allowing insertion of data but not reading (write-only files and pipes may be viewed this way).</li>
 <li>Most list data structures could allow enumeration to start at any point in the middle, but .NET ignores this possibility; in addition, indexing is less efficient than enumeration for some lists (e.g. <a href="http://www.codeproject.com/Articles/568095/The-List-Trifecta-Part-1">AList</a>), so this should be supported.</li>
-<li>A data structures may not support access by integer index, but could still allow bi-directional enumeration moving both forward and backward), e.g. a doubly-linked list, with insertion locations denoted by enumerator positions.</li>
+<li>A data structure may not support access by integer index, but could still allow bi-directional enumeration moving both forward and backward), e.g. a doubly-linked list, with insertion locations denoted by enumerator positions.</li>
 <li>Many data structures can easily tell you if they are empty, but require O(N) time to report their Count. .NET almost forces you to use <tt>Count == 0</tt> to detect emptiness; you can use LINQ's <tt>Any()</tt> function instead, but this requires a heap allocation and two interface calls.</li>
 </ul> This list is certainly incomplete; the possible combinations of operations that data structures may or may not support is just about endless. <br/>
 <br/>
