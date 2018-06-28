@@ -10,7 +10,7 @@ encoding: UTF-8
 highlighter: rouge
 paginate: 8
 paginate_path: "blog/page:num"
-permalink: /:categories/:year/:title.html
+permalink: /:categories/:year/:title:output_ext
 safe: true
 lsi: false
 
