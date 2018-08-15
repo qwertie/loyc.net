@@ -20,7 +20,7 @@ There was the kind where the text on top could be edited, and the kind where it 
   </select>
 ~~~
 
-But I was shocked to learn that the first kind doesn’t exist in HTML. Oh, there’s a thing called a `datalist`, but it doesn’t work right: users can’t view the entire list, and as you begin typing, items immediately start disappearing if they don’t start with the same string that the user typed.
+But I was shocked to learn that the first kind doesn’t exist in HTML. Oh, there’s a thing called a [`datalist`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/datalist), but it doesn’t work right: users can't click something to view the entire list, and as you begin typing, items immediately start disappearing if they don’t start with the same string that the user typed.
 
 But CSS is a styling tool of impressive power: [entire](https://medium.com/r/?url=http%3A%2F%2Fvictordarras.fr%2Fcssgame%2F) [video](https://medium.com/r/?url=https%3A%2F%2Fcodepen.io%2Felad2412%2Fpen%2FhBaqo) [games](https://medium.com/r/?url=https%3A%2F%2Fminocernota.com%2Farticles%2Fpure_css_game%2F) have been built out of CSS, HTML and a few picture files. (Great, I just lost half my audience.)
 
@@ -63,18 +63,16 @@ As a bonus, you'll be able to make a dropdown list that is **not** a combo-box w
 
 ~~~html
   <div class="dropdown">
-    <span>[--</span>
-    <span tabindex="0">dropdown menu</span>
-    <span>--]</span>
-    <div>
-      Dropdown content goes here
-    </div>
+    *** <span tabindex="0">Dropdown menu</span> ***
+    <span>
+      Contents of drop-down popup go here
+    </span>
   </div>
 ~~~
 
 This is intended as a click-to-open dropdown menu (if you want a dropdown menu that opens on mouse hover instead of mouse click, there are already [many other tutorials about that](https://www.google.com/search?num=20&q=pure+css+hover+menu).)
 
-In this case the last element contains the drop-down content and all other elements are shown above it, but only elements with a `tabindex` attribute can be clicked to open the dropdown area.
+In this case the last element contains the drop-down content and all other elements are shown above it, but only elements with a `tabindex` attribute can be clicked to open the popup area.
 
 You can safely edit the margin and border of a combo box and its children without messing up its behavior, except one thing: don't let `padding-right` get too small because the ▾ down arrow is shown in the padding; its size should be at least `1em`.
 
@@ -106,7 +104,7 @@ CSS Features We Will Need
 - `box-sizing: border-box` means that the width and height of an element includes the padding and border ([learn more](https://css-tricks.com/international-box-sizing-awareness-day/))
 - `display`: we'll be using `display: block`, which displays an element as a "block", which is like a paragraph in that two adjacent blocks have line breaks between them. We will also use `display: inline-block`, which displays an element _inline_, e.g. like an icon image within a paragraph, but still allowing margins, borders and padding. We will not explicitly use `display: inline`, which is used for elements that do not have margins, borders or padding and do not need line breaks between them (`<b>like this</b>`). ([Learn more](https://css-tricks.com/almanac/properties/d/display/))
 - `position`: in the combo box, we will see how this style is used to take elements out of the normal document flow. Elements normally have a style of `position: static`, which just means "position it on the page normally". `position: relative` is like `static`, except two things: first, the element can be shifted left, right, up or down without affecting any other elements. However, the combo box doesn't need this feature. The second effect of `relative` is to mark the element as "positioned". This matters because another position, `absolute`, positions an element relative to its nearest "positioned" ancestor. Specifically, the dropdown popup will use `position: absolute` in order to position itself relative to the top part of the combo box; therefore the combo box itself is marked `relative`. Also, an `absolute` element doesn't affect the positioning of other items on the page, not even its own parent element, and that's just what we want for a popup box. ([Learn more about `position`.](https://www.w3schools.com/css/css_positioning.asp))
-- `left`, `top`, `right` and `bottom`: These styles are used with `position: relative` and `position: absolute`, _and they work differently for each one_.
+- `left`, `top`, `right` and `bottom`: These styles are used with `position: relative` and `position: absolute`, and they work a little differently for each one. More on that later.
 - `outline`: Outline is an extra border drawn outside an element's normal border. It is normally used to highlight an element, e.g. to indicate it has been "selected" by a user. Because outlines are expected to be temporary, they don't occupy space on the page (i.e. adding an outline won't push other elements out of the way.)
 - `box-shadow`: Draws a shadow "under" the element (well, actually the shadow is drawn _outside_ the element, which looks very strange if the element has no background). This will be handy for the dropdown popup!
 - `z-index`: This style changes the order in which an element is drawn by the browser. A _higher_ z-index causes an element to be drawn _later_ so that it appears to be above other things on the page. We'll need a large z-index for our dropdown popup so that it appears on top of everything else. The children of the popup will get a new "stacking context", which basically means they will automatically be drawn on top of the popup, which is good. Caution: `z-index` only works on "positioned" elements. ([Learn more](https://www.smashingmagazine.com/2009/09/the-z-index-css-property-a-comprehensive-look/))
@@ -125,7 +123,7 @@ CSS Features We Will Need
 Preparing the initial appearance
 --------------------------------
 
-`.combobox` and `.dropdown` need to be `relative` so that the dropdown list can be positioned relative to them. `display: inline-block` allows the combo box to have margins, padding and border, but unlike `display: block` it allows other things to appear on the same line (e.g. labels or other combo boxes.)
+`.combobox` and `.dropdown` need to be `relative` so that the dropdown popup can be positioned relative to them. `display: inline-block` allows the combo box to have margins, padding and border, but unlike `display: block` it allows other things to appear on the same line (e.g. labels or other combo boxes.)
 
 ~~~css
 .combobox, .dropdown { 
@@ -160,7 +158,7 @@ In absolute positioning mode, `top` aligns the top edge of an element relative t
   right: 0;  /* Align right edge of downarrow with right edge of combobox */
   width: 1.25em;
   
-  cursor: default; /* Use arrow cursor, not I-beam */
+  cursor: default; /* Use arrow cursor instead of I-beam */
   nav-index: -1; /* sets tabindex - nonfunctional in most browsers */
 
   border-width: 0;        /* disable by default */
@@ -171,7 +169,7 @@ In absolute positioning mode, `top` aligns the top edge of an element relative t
 
 Here, `display: block` and `display: inline-block` have the same effect so I used the shorter one. I also disabled the I-beam mouse cursor normally shown over text (since the down arrow counts as text). There is actually a way to set `tabindex` in css, it's called `nav-index`, but most browsers don't support it, so if you find that your combo box only works in Opera, you know why. You must therefore add `tabindex="-1"` beside `class="downarrow"`.
 
-This code disables the borders, with the caveat that the border color/style should be inherited from the parent element (the combo box) if other css increases `border-left-width`. You can use the `inherit` option on any attribute that doesn't inherit from parent by default, by the way. I decided there should be a left border if the dropdown won't open when the left side is clicked. That way the dropdown arrow looks like a button, subtly suggesting it can be clicked. Remember the plan: only `dropdown`, not `combobox` alone, will open when the left side is focused. Therefore I will add a border when `combobox` alone is used:
+This code disables the borders, with the caveat that the border color/style should be inherited from the parent element (the combo box) if other css increases `border-left-width`. You can use the `inherit` option on any attribute that doesn't inherit from parent by default, by the way. I decided there should be a left border if the popup won't open when the left side is clicked. That way the dropdown arrow looks like a button, subtly suggesting it can be clicked. Remember the plan: only `dropdown`, not `combobox` alone, will open when the left side is focused. Therefore I will add a border when `combobox` alone is used:
 
 ~~~css
 .combobox:not(.dropdown) > .downarrow {
@@ -187,7 +185,7 @@ Next, if the user has provided us with an empty `<span class="downarrow"></span>
 }
 ~~~
 
-The down arrow needs to be centered within the `.downarrow` element, too. `text-align: center` will center the text horizontally, but vertical centering is tricky. `vertical-align: middle` doesn't work, because it is designed to align _inline_ elements _with the surrounding text_; what we want is to align our down arrow pseudo-element with the parent element `.downarrow` container. There's a trick to it:
+The down arrow needs to be centered within the `.downarrow` element, too. `text-align: center` will center the text horizontally, but vertical centering is tricky. `vertical-align: middle` doesn't work, because it is designed to align _inline_ elements _with the surrounding text_; what we want is to align our down arrow pseudo-element with the _parent_ `.downarrow` container. There's a trick to it:
 
 ~~~css
 .downarrow::before, .downarrow > *:only-child {
@@ -432,7 +430,7 @@ This draws an outline around the focused child instead of the combo box itself, 
 
 ### Stickiness ###
 
-The styles we have so far keep the box open only when something is focused, so if you click on plain text in the popup area, the popup closes. For the final version I expanded the list of reasons to keep the popup open to include a `sticky` style that will keep the dropdown open on mouse hover, so that clicking doesn't close the box
+The styles we have so far keep the box open only when something is focused, so if you click on plain text in the popup area, the popup closes. For the final version I expanded the list of reasons to keep the popup open to include a `sticky` style that will keep the dropdown open on mouse hover, so that clicking doesn't close the box:
 
 ~~~css
 .combobox > .downarrow:focus ~ *:last-child,
@@ -494,7 +492,7 @@ First, the borders were gone because Edge and IE don’t support opacity on bord
   border: 1px solid #8888; /* All other browsers */
 ~~~
 
-Second — click as I might — the down-dropping-divs just wouldn’t drop down!
+Second — click as I might — the down-dropping-divs just didn’t drop down!
 
 In solving this issue I learned something new: if a browser doesn’t understand a selector used in a CSS declaration, it will _ignore the entire block_. For instance if you write `.x, .y, .z:unknown { margin:1em }`, then `x` and `y` won’t get margins simply because the browser doesn’t understand `unknown`.
 
