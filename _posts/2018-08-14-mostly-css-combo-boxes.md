@@ -82,6 +82,7 @@ You can safely edit the margin and border of a combo box and its children withou
 - The `dropdown` class is for menus and combo boxes that drop down when the top content is clicked (remember `tabindex="0"`)
 - The `downarrow` class adds the down-arrow icon (`tabindex="-1"` is required, because it cannot be added via CSS.)
 - The last child of `combobox` or `dropdown` is the dropdown content.
+- [Click here](https://codepen.io/qwertie/pen/QBYMdZ) to view the demo with source code.
 
 CSS Features We Will Need
 -------------------------
@@ -266,6 +267,8 @@ The drop-down box is the last child, so we'll need to combine the `*:last-child`
   display: block;
 }
 ~~~
+
+<span class="tip">**Tip:** It's important that the popup appears last within the combobox. You can write a selector `A ~ B` that will select `B` if it comes after `A`, but CSS does not have any selector that can select `B` if it comes _before_ `A`. So in CSS, there would be no way to open a popup box in response to the user clicking a `.downarrow` element that appears _after_ the popup box.</span>
 
 We're not done yet, though: what if the user clicks a textbox or a link inside the drop-down box? The click will cause the `.downarrow` or the `.dropdown` to lose the focus, causing the dropdown box to disappear instantly. In the case of a link, the browser focuses the link when the mouse button goes down but it does not follow the link until the mouse button is released. So if the dropdown disappears instantly, any links in the dropdown cannot be followed!
 
