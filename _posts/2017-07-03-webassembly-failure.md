@@ -4,7 +4,7 @@ layout: post
 toc: false
 ---
 
-With WebAssembly, there's no doubt that I failed completely. I knew how important it was - as I told my wife, "if I can make this happen, it will be the most important thing I have ever done in my life." But I allowed myself to lose confidence and let fear of failure - fear of being ignored - to take over.
+In my efforts to contribute to WebAssembly, there's no doubt that I failed completely. I knew how important it was - as I told my wife, "if I can make this happen, it will be the most important thing I have ever done in my life." But I allowed myself to lose confidence and let fear of failure - fear of being ignored - to take over.
 
 The first thing I wanted to contribute to WebAssembly was to have an LES-compatible text format, so that, among other things, any language with an LES parser could parse WebAssembly text. Thus, each programming language would not need to have its own separate implementation of a WebAssembly text parser. If I could succeed with LES, there were other things I wanted to do too. Specifically, I created an organization on GitHub called [wasio](https://github.com/wasio), meaning WebAssembly Standard for InterOperability, but I never even made a single commit. Sad!
 
@@ -24,6 +24,6 @@ At that point, when the version switched to 0x1, I just kind of assumed their cu
 
 There was another guy called wlllang (formerly JSStats) in the WebAssembly CG, and frankly I wish I was more like him, because he was pushing his ideas at every opportunity. There were weaknesses in his communication style - he was a bit judgmental and belligerent, he didn't always seem to understand what the main developers were proposing, and he did not tend to express his ideas very clearly. Nevertheless his heart was in the right place - that is, he wanted WebAssembly to be something really great. And more to the point, he pushed his opinion fairly relentlessly, despite the fact that the main developers usually ignored him.
 
-Maybe if I had had his forthrightness and consistently pushed my opinion (without the belligerence), maybe they would have let me design the text format. And honestly, why did they want to use up their own engineers' precious time designing a custom format when I was already happily designing LESv3 for free? I can't know what they were thinking, but I know it's at least partly my fault for not finding ways to reach out and push more.
+Maybe if I had had his forthrightness and consistently pushed my opinion (without the belligerence), maybe they would have let me design the text format. And honestly, why did they want to use up their own engineers' precious time designing a custom format when I was already happily designing LESv3 for free? I can't know what they were thinking, but I know that I must accept responsibility for not finding ways to reach out and push harder.
 
 On the other hand, the decision to ignore LES and make a custom text format was made behind closed doors and since (AFAIK) that decision was never announced, I did not have an opportunity to object to it.
