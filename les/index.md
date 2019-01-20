@@ -11,37 +11,37 @@ LES is a C-like language with `{braced blocks}` and expressions that end in semi
 
 Here is an example of LES code:
 
-~~~C#
-    @[#static] 
-    fn factorial(x::int)::int {
-      var result = 1;
-      for (; x > 1; x--) {
-        result *= x;
-      };
-      return result;
+~~~csharp
+  @[#static] 
+  fn factorial(x::int)::int {
+    var result = 1;
+    for (; x > 1; x--) {
+      result *= x;
     };
+    return result;
+  };
 ~~~
 
 The above code uses a feature called "superexpressions" to make it more readable. The same code can be written without superexpressions as 
 
-~~~C#
-    @[#static]
-    fn(factorial(x::int)::int, {
-      var(result = 1);
-      for((; x > 1; x--), { result *= x });
-      return(result);
-    });
+~~~csharp
+  @[#static]
+  fn(factorial(x::int)::int, {
+    var(result = 1);
+    for((; x > 1; x--), { result *= x });
+    return(result);
+  });
 ~~~
 
 Or it can be written in "pure prefix notation", which uses `@identifiers-with-at-signs` instead of infix operators:
 
-~~~C#
-    @[#static]
-    fn(@::(factorial(@::(x,int)),int), @`{}`(
-      var(@=(result, 1)),
-      for(#tuple(@``, @>(x, 1), @suf--(x)), @`{}`(@*=(result, x)));
-      return(result);
-    ));
+~~~csharp
+  @[#static]
+  fn(@'::(factorial(@'::(x,int)),int), @`'{}`(
+    var(@'=(result, 1)),
+    for(#tuple(@``, @'>(x, 1), @'--suf(x)), @`'{}`(@'*=(result, x)));
+    return(result);
+  ));
 ~~~
 
 The last form most closely reflects the "real" structure of the code. After reading more about LES and [Loyc trees](https://github.com/qwertie/LoycCore/wiki/Loyc-trees), you will understand why these three forms are equivalent. If you put this code into [LeMP.exe](http://www.codeproject.com/Articles/995264/Avoid-tedious-coding-with-LeMP-Part) along with the following directive:
@@ -50,27 +50,25 @@ The last form most closely reflects the "real" structure of the code. After read
 
 It will be transformed into the following C# code:
 
-~~~C#
-    static int factorial(int x)
-    {
-        var result = 1;
-        for (; x > 1; x--)
-            result *= x;
-        return result;
-    }
+~~~csharp
+  static int factorial(int x)
+  {
+    var result = 1;
+    for (; x > 1; x--)
+      result *= x;
+      return result;
+  }
 ~~~
 
 The C# code, in turn, looks like this when printed as LES code:
 
-~~~C#
-    @[#static] #fn(#int32, factorial, #(#int32 `#var` x), {
-        #var(@``, result = 1);
-        #for(@``, x > 1, x --, result *= x);
-        #return(result);
-    });
+~~~csharp
+  @[#static] #fn(#int32, factorial, #(#int32 `#var` x), {
+    #var(@``, result = 1);
+    #for(@``, x > 1, x --, result *= x);
+    #return(result);
+  });
 ~~~
-
-A complete grammar of LES has not yet been published; the [current grammar](https://github.com/qwertie/ecsharp/blob/master/Core/Loyc.Syntax/LES/Les2ParserGrammar.les) isn't fully cleaned up. This document defines LES in a less formal manner. The specification is in beta, not finalized.
 
 ### Note: A new LES is coming ###
 
@@ -157,6 +155,10 @@ but you'd need a separate expression parser, too.
 * **Simplicity**: The parser should be as simple as possible while meeting the above goals. Despite its flexibility, the parser recognizes only a fixed syntax, and does not build or use symbol tables.
 
 ![](LESv2inVisualStudio.png)
+
+### Grammars ###
+
+A formal grammar of LES has not yet been published. The [actual grammar used for parsing](https://github.com/qwertie/ecsharp/blob/master/Core/Loyc.Syntax/LES/Les2ParserGrammar.les) is written in LES and then converted to C# by [LeMP](http://ecsharp.net/lemp/). The [grammar of LESv3](https://github.com/qwertie/ecsharp/blob/master/Core/Loyc.Syntax/LES/Les3Parser.ecs) is a bit more readable. Meanwhile, this document defines LESv2 in an informal manner.
 
 Comments & stuff
 ----------------
