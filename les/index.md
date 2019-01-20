@@ -70,7 +70,7 @@ The C# code, in turn, looks like this when printed as LES code:
     });
 ~~~
 
-A complete grammar of LES has not yet been published; the [current grammar](https://github.com/qwertie/LoycCore/blob/master/Loyc.Syntax/LES/LesParserGrammar.les) isn't fully cleaned up. This document defines LES in a less formal manner. The specification is in beta, not finalized.
+A complete grammar of LES has not yet been published; the [current grammar](https://github.com/qwertie/ecsharp/blob/master/Core/Loyc.Syntax/LES/Les2ParserGrammar.les) isn't fully cleaned up. This document defines LES in a less formal manner. The specification is in beta, not finalized.
 
 ### Note: A new LES is coming ###
 
