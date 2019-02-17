@@ -36,6 +36,8 @@ A Loyc tree, also known as a Loyc node, is one of three things:
 * A literal, such as an integer, double, string or character.
 * A "call", which represents either a function call, or a construct like a "class" or a "for loop".
 
+**Note:** Typically, Loyc trees are implemented as an immutable data structure. And typically they can be directed acyclic graphs (DAGs), not just trees, meaning that if two subtrees are identical, they can share the same memory.
+
 Unlike in most programming languages, Loyc identifiers can be any string--any string at all. Even identifiers like `\n\0` (a linefeed and a null character) are supported. This design guarantees that a Loyc tree can represent an identifier from any programming language on Earth. To support WebAssembly, LESv3 takes this a step further, supporting not just _any string_ but _any sequence of bytes_.
 
 Normally, literals can be any value representable in the language in which Loyc trees being used, but this is only true of Loyc trees that exists in memory. When a Loyc tree is serialized to text, some in-memory data may not be representable, although LESv3 has a system for defining "custom" literals.
@@ -69,7 +71,7 @@ Obviously, a text format is needed for Loyc trees.
 
 My original plan was to use a subset of [Enhanced C#](http://ecsharp.net) to represent Loyc trees. However, since EC# is based on C#, it inherits some very strange syntax elements. Consider the fact that `(a<b>.c)(x)` is classified a "cast" while `(a<b>+c)(x)` is classified as a function call. EC# has a lot of oddball rules like that, which create unnecessary complication that should not exist in an AST interchange format.
 
-Threfore I invented ([Loyc Expression Syntax](/les)). However, we can do better than _just_ an interchange format; I've made LES flexible enough to be used as a modern programming language in its own right.
+Threfore I invented LES ([Loyc Expression Syntax](/les)). However, we can do better than _just_ an interchange format; I've made LES flexible enough to be used as a modern programming language in its own right.
 
 Here is a simple Loyc tree expressed in LES version 2:
 
@@ -101,14 +103,10 @@ In languages that use 0-based indexing, the argument list is typically numbered 
 
 Sometimes it is useful to view a node as having a single list of children. You can think of *all* nodes as having a single contiguous list of child nodes indexed starting from `-AttributeCount - 1` to `ArgumentCount - 1`. That is, if `N` is a Loyc tree node then `N[-2]` refers to its final attribute, `N[-1]` refers to its target, `N[0]` refers to its first argument, and so forth. If a node is an identifier or literal then `N[-1]` (and above) does not exist, but `N[-2]` and below may still exist. In .NET ([`LNode`](http://ecsharp.net/doc/code/classLoyc_1_1Syntax_1_1LNode.html)), `N.Min` and `N.Max` tell you the range of valid indexes (if a node `N` has no children, `N.Min == -1 && N.Max == -2`.)
 
-Node styles and trivia attributes
+Trivia Attributes and Node Styles
 ---------------------------------
 
-The C# implementation of Loyc trees has a concept of "node style", an 8-bit number that represents something stylistic and non-semantic about the source code. For example, `0xC` and `12` are the same integer in two different styles. It is semantically the same—the compiler always produces the same program regardless of which form you choose. But it's a striking visual difference that should be preserved during conversion between languages. In my implementation, this difference is preserved in a node's `NodeStyle` property, using the bit flag `NodeStyle.HexLiteral`.
-
-**Style bits are an unnecessary flourish**; an implementation of Loyc trees can use trivia attributes instead, but the concept of style bits may save memory.
-
-A trivia attribute is a Loyc node in an attribute list whose `Name` starts with `#trivia_`. Trivia attributes can be simple identifiers or calls. By convention, trivia attributes have low importance and can be optionally dropped when converting a Loyc tree to text.
+A trivia attribute is a Loyc node in an attribute list whose `Name` starts with `#trivia_` (**note:** going forward we'll switch to a [one-character prefix](https://github.com/qwertie/ecsharp/issues/61)). Trivia attributes can be simple identifiers or calls. By convention, trivia attributes have low importance and can be (optionally) dropped when converting a Loyc tree to text.
 
 Probably the most important use of trivia attributes is to denote comments. By convention, comments like
 
@@ -125,7 +123,11 @@ are represented by the following Loyc tree:
 result = (@[#trivia_MLComment(" in the middle ")] Func());
 ~~~
 
-If you manually insert a `#trivia_` attribute in your source code, it may disappear or change form when the code is printed out (it affects the output in some special way if the printer understands it, as with comments.)
+If you manually insert a trivia attribute in your source code, it may disappear or change form when the code is printed out (it affects the output in some special way if the printer understands it, as with comments.)
+
+The C# implementation of Loyc trees has a concept of "node style", an 8-bit number that represents something stylistic and non-semantic about the source code. For example, `0xC` and `12` are the same integer in two different styles. It is semantically the same—the compiler always produces the same program regardless of which form you choose. But it's a striking visual difference that should be preserved during conversion between languages. In my implementation, this difference is preserved in a node's `NodeStyle` property, using the bit flag `NodeStyle.HexLiteral`.
+
+Style bits do a great job saving memory, but they are an unnecessary flourish, and in the future I'm strongly inclined to drop them and use the [flyweight pattern](https://en.wikipedia.org/wiki/Flyweight_pattern) instead, representing these styles as trivia attributes in shared sublists.
 
 Mappings between Loyc trees and programming languages
 -----------------------------------------------------
