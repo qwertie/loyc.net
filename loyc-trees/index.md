@@ -1,7 +1,7 @@
 ---
 layout: page
 title: Loyc trees
-date: Edited 5 Nov 2016
+date: Edited Feb 2019
 toc: true
 tagline: The universal syntax tree for code
 ---
@@ -176,6 +176,10 @@ These rules are sometimes in conflict, so if two people both try to define mappi
 Loyc tree implementations
 -------------------------
 
-The .NET implementation is the only one that exists as of October 2016.
+The .NET LNode implementation is the only one that exists as of January 2019.
 
 See [Using Loyc trees in .NET](dotnet.html).
+
+### ILNode interface ###
+
+If you have a custom syntax (or semantic) tree you'd like to be compatible with Loyc trees / LES, you don't need to convert the whole compiler to use Loyc trees. Instead, implement the [`ILNode` interface](http://ecsharp.net/doc/code/interfaceLoyc_1_1Syntax_1_1ILNode.html) to "impersonate" a Loyc tree. The LES printers can consume this interface directly.

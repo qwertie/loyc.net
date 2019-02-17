@@ -1,7 +1,7 @@
 ---
 layout: article
 title: Using Loyc trees in .NET (C#)
-date: 5 Nov 2016
+date: 5 Nov 2016 (updated Feb 2019)
 toc: true
 ---
 
@@ -9,7 +9,7 @@ You can create Loyc trees programmatically using the [`LNodeFactory`](http://ecs
 
 An `LNodeFactory` is often named `F`:
 
-~~~C#
+~~~csharp
 LNodeFactory F = new LNodeFactory(new EmptySourceFile("Foo.cs"));
  
 // Create a call to foo(xyz, 123)
@@ -29,7 +29,7 @@ Similarly, to parse LES into a Loyc tree, call `LesLanguageService.Value.Parse("
 
 The LES printer is the default when you call `LNode.ToString()`. To use EC# as the default instead, set `LNode.Printer` to `EcsLanguageService.Value.Printer`, or better yet, use code like this:
 
-~~~
+~~~csharp
     using (LNode.PushPrinter(EcsLanguageService.Value.Printer)) {
       /* print Loyc trees with `tree.ToString()` here */
     }
@@ -66,16 +66,213 @@ Node comparisons with `Equals()` test for structural equality rather than refere
 Loyc tree imitators
 -------------------
 
-Any .NET class can "pretend" to be a Loyc tree by implementing the `ILNode` interface. This read-only interface is missing much of the functionality of `LNode` itself; most notably, it is meant for read-only use and has none of the "With" or "Plus" methods for creating modified nodes. This interface also lacks the `Attrs` and `Args` properties, although they are available as the extension methods `Attrs()` and `Args()`. `ILNode` has an indexer, which allows you to access both arguments and attributes as explained [here](http://loyc.net/loyc-trees/#single-list-perspective).
+Any .NET class can "pretend" to be a Loyc tree by implementing the `ILNode` interface. By implementing this interface you can print your custom syntax tree as if it were a Loyc tree.
+
+`ILNode` is a read-only interface that omits much of the functionality of `LNode` itself; most notably, it is meant for read-only use and has none of the "With" or "Plus" methods for creating modified nodes. This interface also lacks the `Attrs` and `Args` properties, although they are available as the extension methods `Attrs()` and `Args()`. `ILNode` has an indexer, which allows you to access both arguments and attributes as explained [here](http://loyc.net/loyc-trees/#single-list-perspective).
 
 Most code in the Loyc libraries is designed to work with `LNode`, not `ILNode`, but the LESv2 and LESv3 node printers can print `ILNode` objects directly, and there is a method, `LNodeExt.ToLNode(ILNode)`, to convert any `ILNode` to `LNode`.
+
+Implementing this interface requires a couple of methods that might seem challenging at first. For example, `ILNode` inherits [`INegListSource`](http://ecsharp.net/doc/code/interfaceLoyc_1_1Collections_1_1INegListSource.html) from the [Loyc.Essentials library](http://core.loyc.net/essentials/), which has a `Slice()` method that returns an `IRange` object - where the heck can you get one of those? That's actually easy, you can just use the same implementation as `LNode` itself, which creates a `NegListSlice` adapter that implements `IRange`:
+
+~~~csharp
+IRange<ILNode> INegListSource<ILNode>.Slice(int start, int count)
+{
+    return new NegListSlice<ILNode>(this, start, count);
+}
+~~~
+
+Another challenge you'll face is the `Range` property which is supposed to return the range of characters in the source file from which the node originated. That's easy if you happen to be using [`Loyc.Syntax.SourceFile<CharSource>`](http://ecsharp.net/doc/code/classLoyc_1_1Syntax_1_1SourceFile.html) to represent your source files, but if not you could fake it using a dummy source file such as `EmptySourceFile.Unknown` or a `new EmptySourceFile`:
+
+~~~csharp
+// Assuming you have fields _fileName, _startIndex, _endIndex
+public SourceRange Range => 
+  new SourceRange(new EmptySourceFile(_fileName),
+    _startIndex, _endIndex - _startIndex);
+~~~
+
+Let's go through a full example to see how to implement `ILNode`.
+
+Let's say your custom syntax tree is rooted at `Expr`, and among its many nodes is `Number` and `AddOperator`, with base classes `Literal` and `BinaryOperator` respectively. So you have something like this:
+
+~~~csharp
+abstract class Expr {
+   // Location of the expression in source code
+   protected string _filename = "Unknown";
+   protected int _startIndex, _endIndex;
+   ...
+}
+
+abstract class Literal : Expr {
+}
+
+class Number : Literal {
+   double _n;
+   public Number(double n) { _n = n; }
+   ...
+}
+
+abstract class BinaryOperator : Expr {
+   protected BinaryOperator(Expr lhs, Expr rhs) 
+      { _lhs = lhs; _rhs = rhs; }
+   protected Expr _lhs, _rhs;
+   public Expr Left => _lhs;
+   public Expr Right => _rhs;
+}
+
+class AddOperator : BinaryOperator {
+   public AddOperator(Expr lhs, Expr rhs) : base(lhs, rhs) { }
+   ...
+}
+~~~
+
+You should implement most of the interface in your base class(es), with just a few overrides in derived classes as necessary:
+
+~~~csharp
+using Loyc;
+using Loyc.Syntax;
+
+abstract class Expr : ILNode
+{
+   protected string _filename = "Unknown";
+   protected int _startIndex, _endIndex;
+
+   #region ILNode implementation
+
+   public abstract LNodeKind Kind { get; }
+   public abstract Symbol Name { get; }
+   public abstract ILNode Target { get; }
+   public abstract object Value { get; }
+   public abstract int Min { get; }
+   public abstract int Max { get; }
+   public abstract ILNode TryGet(int index, out bool fail);
+
+   public ILNode this[int index] {
+      get {
+         bool fail;
+         var r = TryGet(index, out fail);
+         if (fail) throw new ArgumentOutOfRangeException("index");
+         return r;
+      }
+   }
+   public IEnumerator<ILNode> GetEnumerator()
+   {
+      for (int i = Min; i <= Max; i++)
+         yield return this[i];
+   }
+
+   public int Count => Max - Min + 1;
+   public SourceRange Range 
+      => new SourceRange(new EmptySourceFile(_filename), 
+             _startIndex, _endIndex - _startIndex);
+   NodeStyle ILNode.Style { get => NodeStyle.Default; set {} }
+   object IHasLocation.Location => Range;
+   public bool Calls(Symbol name, int argCount)
+      => Name == name && Max + 1 == argCount;
+   public bool CallsMin(Symbol name, int argCount)
+      => Name == name && Max + 1 > argCount;
+   public bool Equals(ILNode other) 
+      => other == this;
+   IEnumerator IEnumerable.GetEnumerator() 
+      => GetEnumerator();
+   public IRange<ILNode> Slice(int start, int count = int.MaxValue)
+      => new NegListSlice<ILNode>(this, start, count);
+   public LNode ToLNode() => LNodeExt.ToLNode(this);
+
+   #endregion
+}
+
+abstract class Literal : Expr
+{
+   #region ILNode implementation
+
+   public override LNodeKind Kind => LNodeKind.Literal;
+   public override Symbol Name => GSymbol.Empty;
+   public override ILNode Target => null;
+   public override abstract object Value { get; }
+   // Literals always have Max==-2 since they have no Target nor Args
+   // (Target would have index -1, Args start at index 0). Assuming 
+   // no attributes, Min should be -1 so that the number of children
+   // is zero (given that Count is defined as Max - Min + 1).
+   public override int Min => -1;
+   public override int Max => -2;
+   public override ILNode TryGet(int index, out bool fail) {
+      fail = true; // No children so always fail
+      return null;
+   }
+      
+   #endregion
+}
+
+class Number : Literal
+{
+   double _n;
+   public Number(double n) { _n = n; }
+
+   public override object Value => _n;
+}
+
+abstract class BinaryOperator : Expr
+{
+   protected BinaryOperator(Expr lhs, Expr rhs)
+      { _lhs = lhs; _rhs = rhs; }
+   protected Expr _lhs, _rhs;
+   public Expr Left => _lhs;
+   public Expr Right => _rhs;
+
+   #region ILNode implementation
+
+   public override LNodeKind Kind => LNodeKind.Call;
+   public override abstract Symbol Name { get; }
+   // Assuming your syntax tree has identifiers, you could return 
+   // one of those instead. Note: Range is wrong here, as the Target's
+   // range should be the range of the target alone, e.g. the + sign
+   // in an AddOperator. But for printing as LES, Range doesn't matter.
+   public override ILNode Target => LNode.Id(Name, Range);
+   // A Call has no value, not even null
+   public override object Value => NoValue.Value;
+   // If the node has no attributes, Min must be -1
+   public override int Min => -1;
+   public override int Max => 1;
+   public override ILNode TryGet(int index, out bool fail)
+   {
+      fail = false;
+      if (index == 0) return Left;
+      if (index == 1) return Right;
+      if (index == -1) return Target;
+      fail = true;
+      return null;
+   }
+
+   #endregion
+}
+
+class AddOperator : BinaryOperator
+{
+   public AddOperator(Expr lhs, Expr rhs) : base(lhs, rhs) { }
+
+   public override Symbol Name => CodeSymbols.Add;
+}
+~~~
+
+As you can see, although implementing `ILNode` requires a nontrivial amount of code, the "leaf" classes in your class hierarchy often require very little code per-class.
+
+You should then be able to print your custom syntax tree like you would an `LNode`:
+
+~~~csharp
+var expr = new AddOperator(new AddOperator(
+    new Number(1), new Number(2)), new Number(3));
+Console.WriteLine(Les3LanguageService.Value.Print(expr));
+// Output: 1.0 + 2.0 + 3.0
+~~~
+
+And, of course, you can call `expr.ToLNode()` to convert it to a real Loyc tree.
 
 Modifying nodes
 ---------------
 
 Since `LNode`s are immutable, you don't modify them directly. Instead you'll typically use one of the "`With`" (or `Plus`) methods to create modified nodes:
 
-~~~C#
+~~~csharp
  // For modifying Id nodes (WithName(x) can also be used with call
  // nodes; in that case it means WithTarget(Target.WithName(x))).
  public virtual  LNode WithName(Symbol name)
@@ -121,11 +318,12 @@ Argument lists are stored in [VList data structures](http://www.codeproject.com/
 `ReplaceRecursive(node => {...})` performs a recursive find-and-replace operation; see the [documentation](http://ecsharp.net/doc/code/classLoyc_1_1Syntax_1_1LNode.html#ad887a82823c62a4b4fc5c8bbc51b0603) for full details, but here is an example that replaces all instances of `0xFFFF` or `65535` with `ushort.MaxValue`:
 
 ~~~csharp
-  code = code.ReplaceRecursive(node => {
-	  if (node.Value is int && ((int)node.Value) == 0xFFFF)
-		  return LNode.Call(CodeSymbols.Dot, LNode.List(LNode.Id(CodeSymbols.UInt16), LNode.Id("MaxValue")));
-	  return null;
-  });
+code = code.ReplaceRecursive(node => {
+    if (node.Value is int && ((int)node.Value) == 0xFFFF)
+        return LNode.Call(CodeSymbols.Dot, 
+           LNode.List(LNode.Id(CodeSymbols.UInt16), LNode.Id("MaxValue")));
+    return null;
+});
 ~~~
 
 If all you want to do is search for something, you can still use `ReplaceRecursive`; just return `null` to avoid creating new trees.
@@ -149,10 +347,10 @@ var code = LesLanguageService.Value.Parse(@"{
 
 Symbol x = (Symbol)"x", y = (Symbol)"y", z = (Symbol)"z";
 code = code.ReplaceRecursive(node => {
-	IDictionary<Symbol, LNode> captures;
-	if (node.MatchesPattern(pattern, out captures))
-		return LNode.Call((Symbol)"MulDiv", LNode.List(captures[x], captures[y], captures[z]));
-	return null;
+    IDictionary<Symbol, LNode> captures;
+    if (node.MatchesPattern(pattern, out captures))
+        return LNode.Call((Symbol)"MulDiv", LNode.List(captures[x], captures[y], captures[z]));
+    return null;
 });
 Les3PrettyPrinter.PrintToConsole(code);
 ~~~
@@ -169,11 +367,11 @@ Notice that `p * q + r` has not been changed. That's because when the lambda ret
 ~~~csharp
 Symbol x = (Symbol)"x", y = (Symbol)"y", z = (Symbol)"z";
 Func<LNode, LNode> lambda = null; lambda = node => {
-	IDictionary<Symbol, LNode> captures;
-	if (node.MatchesPattern(pattern, out captures))
-		return LNode.Call((Symbol)"MulDiv", LNode.List(captures[x], captures[y], captures[z]))
-			.ReplaceRecursive(lambda);
-	return null;
+    IDictionary<Symbol, LNode> captures;
+    if (node.MatchesPattern(pattern, out captures))
+        return LNode.Call((Symbol)"MulDiv", LNode.List(captures[x], captures[y], captures[z]))
+            .ReplaceRecursive(lambda);
+    return null;
 };
 code = code.ReplaceRecursive(lambda);
 ~~~
