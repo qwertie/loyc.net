@@ -82,7 +82,7 @@ LESv3 doesn't have a spec yet, but the latest blog post is [here](http://loyc.ne
 
 As a superset of JSON, LES is useful for configuration files. LES is more compact and flexible than JSON and XML. Compare these representations of the same data:
 
-~~~XML
+~~~xml
 <?xml version="1.0"?>
 <root>
   <owner name="John Smith">
@@ -97,7 +97,7 @@ As a superset of JSON, LES is useful for configuration files. LES is more compac
   </insurer>
 </root>
 ~~~
-~~~JSON
+~~~json
 {
   "owners": [{
     "name": "John Smith",
@@ -122,7 +122,7 @@ As a superset of JSON, LES is useful for configuration files. LES is more compac
   ]
 }
 ~~~
-~~~JS
+~~~csharp
 // One of several possible choices of LES syntax
 owner "John Smith" {
     address(city="Calgary", prov="Alberta", country="CA", address="123 Fake St");
@@ -165,7 +165,7 @@ Comments & stuff
 
 Comments in LES work like C#, C++, Java, and many other languages:
 
-~~~C#
+~~~csharp
     /* This is a multi-line comment.
        It continues until there's a star and a slash. */
     /* A multi-line comment doesn't need multiple lines, of course. */
@@ -238,7 +238,7 @@ Top-level expressions
 
 An LES file consists of a list of statements (i.e. top-level expressions) that are separated or terminated by semicolons (`;`), as if the file were enclosed in curly braces. It would be possible to allow either `;` or `,` as a separator, but requiring semicolons allows the parser to catch certain mistakes earlier, without relying on indentation or newlines to choose error messages. For example, without this rule, the error on line 1 would not be detected until the end:
 
-~~~C#
+~~~csharp
 foo(2 * (x = y + z), 0 // line 1
 if happy { 
   Smile(); 
@@ -251,13 +251,13 @@ Every list of expressions in LES is a list of "top-level" expressions (whether i
 
 ### Attributes ###
 
-~~~C#
+~~~csharp
 avgSpeed = (@[miles] 0.25) / (@[seconds] 2.68);
 ~~~
 
 Every node in a Loyc tree conceptually has an _attribute list_, which is a "side channel" for storing additional information. Every top-level expression can begin with a single list of attributes enclosed in `[square brackets]`; the contents of the square brackets are parsed the same way as an argument list. For example, in
 
-~~~C#
+~~~csharp
 @[Foo(), X + 1] ++X;
 ~~~
 
@@ -605,7 +605,7 @@ Using LES in .NET
 
 To use LES in .NET, simply call `LesLanguageService.Value` (in Loyc.Syntax.dll) to get an `IParsingService` object that supports parsing LES text and printing Loyc trees as LES text. Call `Print(node)` to print and `Parse(text)` to parse:
 
-~~~C#
+~~~csharp
 IListSource<LNode> code = LesLanguageService.Value.Parse("Jump(); Ship();");
 LNode firstStmt = code[0];
 string code2 = LesLanguageService.Value.PrintMultiple(code); // "Jump(); Ship();"
