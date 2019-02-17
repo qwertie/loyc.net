@@ -50,7 +50,7 @@ In other words, a Loyc tree (or Loyc "node") is a data structure with these prop
 2. `Attrs`: a list of attributes (metadata)
 3. One of: a literal (`Value`), an identifier (`Name`), or a call (`Target` and `Args`).
 
-Call nodes are the most interesting. A "call" represents either a function call, or a construct like a "class" or a "for loop". By convention, constructs that are built into a language use a special identifier that starts with `#` or `.` or `'`, such as `.class` or `#public` or `'==`. By convention, then, `foo(x, y)` (where `Target` is `foo` and `Args` is a list of two items) would be a normal function call, while `#foo(x, y)` would represent some kind of special construct, e.g. `#var(Foo, x)` could represent a declaration for a variable `x` of type `Foo`. **Note:** these naming conventions aren't quite settled yet.
+Call nodes are the most interesting. A "call" represents either a function call, or a construct like a "class" or a "for loop". By convention, constructs that are built into a language use a special identifier that starts with `#` or `'`, such as `#class` or `#public` or `'==`. By convention, then, `foo(x, y)` (where `Target` is `foo` and `Args` is a list of two items) would be a normal function call, while `#foo(x, y)` would represent some kind of special construct, e.g. `#var(Foo, x)` could represent a declaration for a variable `x` of type `Foo`. **Note:** these naming conventions aren't quite settled yet.
 
 ![](loyc-tree-diagram.png)
 
