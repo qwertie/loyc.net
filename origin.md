@@ -1,6 +1,6 @@
 ---
 layout: page
-title: Origin Story
+title: History
 ---
 
 I, David Piepgrass, started the Loyc project in 2007, after I added a feature to a compiler and the makers of that language showed no interest in adding that feature to their language. It got me thinking that progress in the design of popular programming languages is held back by the gatekeepers we put in charge of them. It seemed to me that programming languages should offer ways for users to add features, in such a way that two features made by different people should ordinarily be compatible.
