@@ -152,7 +152,7 @@ abbr[title] {
 /* Code */
 code,
 pre {
-  font-family: Menlo, Monaco, "Courier New", monospace;
+  font-family: "DejaVu Sans Mono", monospace;
 }
 code {
   padding: .2em .2em;
