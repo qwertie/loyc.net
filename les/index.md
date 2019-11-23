@@ -148,7 +148,7 @@ but you'd need a separate expression parser, too.
 
 ## Design goals ##
 
-* **Concision**: LES is not XML! It should not be weighed down by its own syntax.
+* **Concision**: LES should not be weighed down by its own syntax. It should be as brief as a typical programming language.
 * **Familiarity**: LES should resemble popular languages, especially C/C++/Java.
 * **Utility**: although LES can represent syntax trees from any language, its syntax should be powerful enough to be the basis for a general-purpose language.
 * **Light on parenthesis**: Less Shift-9ing and Shift-0ing for Less [RSI](https://en.wikipedia.org/wiki/Repetitive_strain_injury).
@@ -204,7 +204,7 @@ LES supports the following kinds of subexpressions:
 - **Special identifiers**. In LES, an identifier can contain any and all Unicode characters. To include special characters in an identifier, use the prefix `@`. After `@` you can write an identifier composed of digits, letters, and operator characters (`'0'..'9'|'a'..'z'|'A'..'Z'|'_'|'#'|'\''|'~'|'!'|'%'|'^'|'&'|'*'|'-'|'+'|'='|'|'|'<'|'>'|'/'|'?'|':'|'.'|'$'`). For example, `@you+me=win!` is a single token representing the identifier `you+me=win!`. To include _really_ special characters, add backquotes around the identifier text (in addition to `@`). Thus ``@`'{}` `` represents the identifier named `'{}` which is the built-in "operator" that represents a braced block. Similarly `@'>` and `@'.` represent the operators `>` and `.`. The empty identifier ```@`` ``` is also permitted, and the backquoted string can include C-style escape sequences such as ``@`\n` `` (newline character #10). If a "normal" identifier is prefixed by `@`, the parser is allowed to interpret it as a literal; currently, `@false`, `@true` and `@null` are defined as literal values, not identifiers.
 - **Literals**: LES supports literals of primitive types (64 bits or less), including booleans, integers, floating point, booleans and strings (see '[Literals](#literals)').
 - **Calls**: as in C, syntax like `F(A, B)` represents a "call". Calls are a fundamental construct, and they may or may not represent function calls; for example, `#var(String, x)` is a call that conventionally represents a _declaration_ of a variable named `x`. LES allows missing arguments, which are represented by the empty identifier ```@`` ```, e.g. `F(X, , Z)` is short for ```F(X, @``, Z)``` and `F(,)` is short for ```F(@``, @``)```. The arguments to a call are separated by `,` by convention, but `;` is also permitted as a separator.
-- **Infix operators**: LES supports an infinite number of infix operators. The precedence table closely resembles C and JavaScript, so for example `a.b = c + d.e * 5 == f && g` is parsed as `(a.b) = (((c + ((d.e) * 5)) == f) && g)`. Operators consist of a sequence of any of the punctuation characters `'~'|'!'|'%'|'^'|'&'|'*'|'-'|'+'|'='|'|'|'<'|'>'|'/'|'?'|':'|'.'|'$'`. There is a set of "built in" operators (which have an entry in the precedence table) and the precedence of additional operators is derived from that table using a short list of rules (e.g. `&|^` is defined as having the same precedence as `^`.) Finally, infix operators can be derived from non-punctuation characters by writing a backquoted string, e.g. ``x `Foo` y`` is equivalent to `Foo(x, y)`. As you may have gathered, punctuation-based operators are equivalent to identifiers that begin with an apostrophe; for example, `x * 2` is a call to the identifier `'*`, so this expression can be rewritten as `@'*(x, 2)`. Remember that LES expressions are parsed into an in-memory data structure called a [Loyc tree](http://loyc.net/loyc-trees/). In a Loyc tree there is no _type-level_ distinction between function calls and operators; for example, an operator expression like `A + B` is parsed into a Loyc call node like `@'+(A, B)`., which has the _same data type_ as the node for a normal call like `Print(A, B)`. The only way to tell that one of these is an "operator" and the other is "not an operator" is to look at the first character of the identifier: operators begin with a single quote, normal identifiers don't.
+- **Infix operators**: LES supports an infinite number of infix operators. The precedence table closely resembles C and JavaScript, so for example `a.b = c + d.e * 5 == f && g` is parsed as `(a.b) = (((c + ((d.e) * 5)) == f) && g)`. Operators consist of a sequence of any of the punctuation characters `'~'|'!'|'%'|'^'|'&'|'*'|'-'|'+'|'='|'|'|'<'|'>'|'/'|'?'|':'|'.'|'$'`. There is a set of "built in" operators (which have an entry in the precedence table) and the precedence of additional operators is derived from that table using a short list of rules (e.g. `&|^` is defined as having the same precedence as `^`.) Finally, infix operators can be derived from non-punctuation characters by writing a backquoted string, e.g. ``x `Foo` y`` is equivalent to `Foo(x, y)`. As you may have gathered, punctuation-based operators are equivalent to identifiers that begin with an apostrophe; for example, `x * 2` is a call to the identifier `'*`, so this expression can be rewritten as `@'*(x, 2)`. Remember that LES expressions are parsed into an in-memory data structure called a [Loyc tree](http://loyc.net/loyc-trees/). In a Loyc tree there is no _type-level_ distinction between function calls and operators; for example, an operator expression like `A + B` is parsed into a Loyc call node like `@'+(A, B)`, which has the _same data type_ as the node for a normal call like `Print(A, B)`. The only way to tell that one of these is an "operator" and the other is "not an operator" is to look at the first character of the identifier: operators begin with a single quote, normal identifiers don't.
 - **Prefix operators**: Most infix operators can also be used as prefix operators; the precedence of a prefix operator is not related to the infix operator of the same name. For example, `x * -y - -z` is parsed like `(x * (-y)) - (-z)`).
 - **Suffix operators**: LES supports the C prefix/suffix operators `++` and `--` and any other operators surrounded by `+` or `-`, e.g. `+++` and `-<>-` can act as prefix or suffix operators.
 - **Parenthesized expressions and tuples**. You can, of course, use parentheses `(...)` for grouping, to override the natural precedence of operators. Tuples are supported too, but each item in a tuple must be separated by semicolons rather than commas as in most languages (there are two reasons for this, explained below under '[Subtleties](#subtleties)'). Tuples represent calls to the identifier `#tuple`. Empty parentheses `()` are a synonym for `#tuple()`, `(foo;)` parses as `#tuple(foo)` and both `(A; B)` and `(A; B;)` produce the same syntax tree as `#tuple(A, B)`.
@@ -239,7 +239,7 @@ Top-level expressions
 An LES file consists of a list of statements (i.e. top-level expressions) that are separated or terminated by semicolons (`;`), as if the file were enclosed in curly braces. It would be possible to allow either `;` or `,` as a separator, but requiring semicolons allows the parser to catch certain mistakes earlier, without relying on indentation or newlines to choose error messages. For example, without this rule, the error on line 1 would not be detected until the end:
 
 ~~~csharp
-foo(2 * (x = y + z), 0 // line 1
+foo(2 * (x = y + z), bar   // line 1
 if happy { 
   Smile(); 
 } else { 
@@ -255,7 +255,7 @@ Every list of expressions in LES is a list of "top-level" expressions (whether i
 avgSpeed = (@[miles] 0.25) / (@[seconds] 2.68);
 ~~~
 
-Every node in a Loyc tree conceptually has an _attribute list_, which is a "side channel" for storing additional information. Every top-level expression can begin with a single list of attributes enclosed in `[square brackets]`; the contents of the square brackets are parsed the same way as an argument list. For example, in
+Every node in a Loyc tree conceptually has an _attribute list_, which is a "side channel" for storing additional information. Every top-level expression can begin with a single list of attributes enclosed in `@[square brackets]`; the contents of the square brackets are parsed the same way as an argument list. For example, in
 
 ~~~csharp
 @[Foo(), X + 1] ++X;
@@ -263,24 +263,22 @@ Every node in a Loyc tree conceptually has an _attribute list_, which is a "side
 
 Two attributes, `Foo()` and `X + 1`, are attached to the prefix expression `++X`.
 
-After the optional square brackets there is (an LL(2) decision between)
+After the optional attribute list, each statement has either
 
 1. A normal subexpression (see the previous section), or
 2. A superexpression (see the next section)
 
 ### Superexpressions ###
 
-In LLLPG notation, we might write the grammar of a superexpression as:
+We might summarize the grammar of a superexpression as follows (in LLLPG's ANTLR-style notation):
 
-    rule SuperExpr @{
-        TT.ID Expr AfterParticle*
-    };
+    SuperExpr: TT.ID Expr Particle*;
 
-In other words, it starts with an identifier, followed an expression, followed by zero or more "AfterParticles", where an `AfterParticle` is an identifier, or something in braces, or something in parentheses that is preceded by a space, or a literal.
+In other words, it starts with an identifier, followed an expression, followed by zero or more "Particles", where a `Particle` is an identifier, or something in braces, or something in parentheses that is preceded by a space, or a literal.
 
 For example, this LES code contains six superexpressions:
 
-~~~JS
+~~~js
 function length(s) {
     if s == null {
       return 0;
@@ -294,7 +292,7 @@ function length(s) {
 
 Now that you know what a superexpression _looks_ like, let's talk about what it _means_. Quite simply, superexpressions are translated into ordinary calls:
 
-~~~JS
+~~~js
 function(length(s), {
    if(s == null, {
       return(0);
@@ -307,19 +305,19 @@ function(length(s), {
 };
 ~~~
 
-Remember that a superexpression is always a part of a list of expressions, so a superexpression is always terminated by `";"`, `","`, EOF, or one of the closers ")", "]" or "}". The last part of a superexpression does not allow "full" expressions, in order to maximize the chances of getting a syntax error if you forget a semicolon after `"}"`.
+Remember that a superexpression is always a part of a list of expressions, so a superexpression is always terminated by `;`, `,`, EOF, or one of the closers `)`, `]` or `}`. The last part of a superexpression does not allow "full" expressions, in order to maximize the chances of getting a syntax error if you forget a semicolon after `}`.
 
 This is the key tradeoff of LES. C allows you to write
 
-~~~JS
+~~~js
 while (false) {}
 if (c) {} else {}
 x++;
 ~~~
 
-with no semicolon after any of the closing braces, but LES requires an explicit signal that each statement is terminating. The above code will only give a parse error when it reaches `++`, since operators are not allowed after the first braced block. The correct LES code is
+with _no semicolon_ after any of the closing braces, but LES _requires_ an explicit signal that each statement is terminating. The above code will only give a parse error when it reaches `++`, since operators are not allowed after the first braced block. The correct LES code is
 
-~~~JS
+~~~js
 while (false) {};
 if (c) {} else {};
 x++;
@@ -337,7 +335,7 @@ from a superexpression like
 
 The answer is very simple: if `'('` is preceded by a space or tab (`' '|'\t'`), it is _not allowed_ to represent a function call. For example, both of these statements are syntax errors (the parser will tell you what you did wrong):
 
-~~~JS
+~~~js
 // Syntax error. If a function call was intended, remove the space(s) before '('.
 Console.WriteLine ("Hello, world!");
 // Tuples require ';' as a separator. If a function call was intended, remove 
@@ -347,7 +345,7 @@ Foo (X, Y);
 
 This is based on the observation that in C/C++/C#/Java, most programmers write code like
 
-~~~JS
+~~~csharp
 Console.WriteLine(...);
 var re = new Regex(...);
 F(x);
@@ -355,7 +353,7 @@ F(x);
 
 with no space between the identifier and the method being called, but many (albeit fewer) programmers write
 
-~~~JS
+~~~js
 if (...) {...} else {...}
 for (...) {...}
 lock (...) {...}
@@ -376,7 +374,7 @@ The only difference is that, in the second case, `x` is considered to be inside 
 
 LES was actually redesigned to reduce the space of valid superexpressions, so that in most cases, the parser would give a syntax error if there is a missing semicolon after closing braces. For example, a statement like `minOrMax = if (max) Max() else Min();` used to be legal, and no longer is, which allows mistakes like the following to be detected without analyzing newlines or indentation:
 
-~~~JS
+~~~js
 while (x < 100) { x *= 2; }
 Foo(x); // Syntax error
 
@@ -392,7 +390,7 @@ if x > 0 { return 0 }; // Syntax error
 
 Even so, sometimes when two superexpressions are placed side-by-side, the parser doesn't see a problem:
 
-~~~JS
+~~~js
 while (x < 100) { x *= 2; }
 return x; // No parse error
 ~~~
@@ -405,7 +403,7 @@ That means that whatever software receives the Loyc tree produced by the LES par
 
 The symptom of a missing semicolon is a call that receives too many arguments. Therefore, the software that receives a superexpression with too many arguments can assume, if the earlier arguments look reasonable, that a missing comma or semicolon is to blame, and report something like "expected end of statement" at the first unexpected argument:
 
-~~~JS
+~~~js
     while (c) { 
       c = F(); 
     }
@@ -499,6 +497,7 @@ I hate the idea of source code changing its meaning when a text editor switches 
 
 In addition, after a newline, indentation is ignored insofar as it matches the indentation of the first line (the line with the opening triple-quote). For example, in
 
+~~~py
     namespace Frobulator {
        def PrintHelp() {
           Console.WriteLine("""
@@ -508,9 +507,11 @@ In addition, after a newline, indentation is ignored insofar as it matches the i
               --help: Show this text again.""");
        };
     };
+~~~
 
 The words "Usage" and "Options" are indented by two spaces. This is compatible with dot-space notation, so the following version is exactly equivalent:
 
+~~~py
     namespace Frobulator {
     .  def PrintHelp() {
     .  .  Console.WriteLine("""
@@ -520,6 +521,7 @@ The words "Usage" and "Options" are indented by two spaces. This is compatible w
     .  .      --help: Show this text again.""");
     .  };
     };
+~~~
 
 I decided that I wanted all the string types to support any string whatsoever. In particular, I wanted it to be possible to store `"'''\r\"\"\""` as a triple-quoted string. Therefore, I decided to support escape sequences inside triple-quoted strings, but the sequences have a different format (with an additional forward slash). The following escape sequences are supported:
 
