@@ -200,18 +200,18 @@ Subexpressions
 
 LES supports the following kinds of subexpressions:
 
-- **Identifiers**. Normal identifiers are similar to other languages, e.g. `foo`, `foo2`, `_x`. LES is a keyword-free language, so words like `if` and `while` that are keywords in most languages are just normal identifiers in LES. Identifiers can contain apostrophes, except as the first character, so `Toys'R'Us` and `Foo'` are also valid identifiers. The characters `#` and `_` are not considered punctuation in LES; they is treated like letters. Thus `__STDC__` and `#ifndef` are "normal" identifiers in LES. 
-- **Special identifiers**. In LES, an identifier can contain any and all Unicode characters. To include special characters in an identifier, use the prefix `@`. After `@` you can write an identifier composed of digits, letters, and operator characters (`'0'..'9'|'a'..'z'|'A'..'Z'|'_'|'#'|'\''|'~'|'!'|'%'|'^'|'&'|'*'|'-'|'+'|'='|'|'|'<'|'>'|'/'|'?'|':'|'.'|'$'`). For example, `@you+me=win!` is a single token representing the identifier `you+me=win!`. To include _really_ special characters, add backquotes around the identifier text (in addition to `@`). Thus ``@`{}` `` represents the identifier named `{}` which is the built-in "function" that represents a braced block. Similarly `@>` and `@.` represent the identifiers "`>`" and "`.`". The empty identifier ```@`` ``` is also permitted, and the backquoted string can include C-style escape sequences such as ``@`\n` `` (newline character #10). If a "normal" identifier is prefixed by `@`, the parser is allowed to interpret it as a literal; currently, `@false`, `@true` and `@null` are defined as literal values, not identifiers.
+- **Identifiers**. Normal identifiers are similar to other languages, e.g. `foo`, `foo2`, `_x`. LES is a keyword-free language, so words like `if` and `while` that are keywords in most languages are just normal identifiers in LES. Identifiers can contain apostrophes, except as the first character, so `Toys'R'Us` and `Foo'` are also valid identifiers. The characters `#` and `_` are not considered punctuation in LES; they are treated like letters. Thus `__STDC__` and `#ifndef` are "normal" identifiers in LES. There is a convention that the `#` character represents "special" identifiers. For example, `#break` could be used to represent the act of breaking out of a loop (if you feel that this is ugly, keep in mind that nothing stops your code from _also_ interpreting `break` the same way.)
+- **Special identifiers**. In LES, an identifier can contain any and all Unicode characters. To include special characters in an identifier, use the prefix `@`. After `@` you can write an identifier composed of digits, letters, and operator characters (`'0'..'9'|'a'..'z'|'A'..'Z'|'_'|'#'|'\''|'~'|'!'|'%'|'^'|'&'|'*'|'-'|'+'|'='|'|'|'<'|'>'|'/'|'?'|':'|'.'|'$'`). For example, `@you+me=win!` is a single token representing the identifier `you+me=win!`. To include _really_ special characters, add backquotes around the identifier text (in addition to `@`). Thus ``@`'{}` `` represents the identifier named `'{}` which is the built-in "operator" that represents a braced block. Similarly `@'>` and `@'.` represent the operators `>` and `.`. The empty identifier ```@`` ``` is also permitted, and the backquoted string can include C-style escape sequences such as ``@`\n` `` (newline character #10). If a "normal" identifier is prefixed by `@`, the parser is allowed to interpret it as a literal; currently, `@false`, `@true` and `@null` are defined as literal values, not identifiers.
 - **Literals**: LES supports literals of primitive types (64 bits or less), including booleans, integers, floating point, booleans and strings (see '[Literals](#literals)').
-- **Calls**: as in C, syntax like `F(A, B)` represents a "call". Calls are a fundamental construct, and they may or may not represent function calls; for example, `#var(int, x)` is a call that conventionally represents a declaration of a variable named `x`. An operator expression like `A + B` is always parsed into a call like `@+(A, B)`. LES allows missing arguments, which are represented by the empty identifier ```@`` ```, e.g. `F(X, , Z)` is short for ```F(X, @``, Z)``` and `F(,)` is short for ```F(@``, @``)```. The arguments to a call are separated by `,` by convention, but `;` is also permitted as a separator.
-- **Infix operators**: LES supports an infinite number of infix operators. The precedence table closely resembles C and JavaScript, so for example `a.b = c + d.e * 5 == f && g` is parsed as `(a.b) = (((c + ((d.e) * 5)) == f) && g)`. Operators consist of a sequence of any of the punctuation characters `'~'|'!'|'%'|'^'|'&'|'*'|'-'|'+'|'='|'|'|'<'|'>'|'/'|'?'|':'|'.'|'$'`. There is a set of "built in" operators (which have an entry in the precedence table) and the precedence of additional operators is derived from that table using a short list of rules (e.g. `&|^` is defined as having the same precedence as `^`.) Finally, infix operators can be derived from non-punctuation characters by writing a backquoted string, e.g. ``x `Foo` y`` is equivalent to `Foo(x, y)`. The infix operators `>>`, `<<`, `&`, `|` and `^` are not allowed to be mixed with certain other operators, because their precedence is a potential source of bugs. For example, `x & 7 == 0` is considered a syntax error, although the parser will still produce a tree from it (`@&(x, @==(7, 0))`). Backquoted operators have a similar restriction (for full details, see "Precedence").
-- **Prefix operators**: Most infix operators can also be used as prefix operators; the precedence of a prefix operator is not related to the infix operator of the same name (e.g. `x * -y - -z` is parsed as `(x * (-y)) - (-z)`).
+- **Calls**: as in C, syntax like `F(A, B)` represents a "call". Calls are a fundamental construct, and they may or may not represent function calls; for example, `#var(String, x)` is a call that conventionally represents a _declaration_ of a variable named `x`. LES allows missing arguments, which are represented by the empty identifier ```@`` ```, e.g. `F(X, , Z)` is short for ```F(X, @``, Z)``` and `F(,)` is short for ```F(@``, @``)```. The arguments to a call are separated by `,` by convention, but `;` is also permitted as a separator.
+- **Infix operators**: LES supports an infinite number of infix operators. The precedence table closely resembles C and JavaScript, so for example `a.b = c + d.e * 5 == f && g` is parsed as `(a.b) = (((c + ((d.e) * 5)) == f) && g)`. Operators consist of a sequence of any of the punctuation characters `'~'|'!'|'%'|'^'|'&'|'*'|'-'|'+'|'='|'|'|'<'|'>'|'/'|'?'|':'|'.'|'$'`. There is a set of "built in" operators (which have an entry in the precedence table) and the precedence of additional operators is derived from that table using a short list of rules (e.g. `&|^` is defined as having the same precedence as `^`.) Finally, infix operators can be derived from non-punctuation characters by writing a backquoted string, e.g. ``x `Foo` y`` is equivalent to `Foo(x, y)`. As you may have gathered, punctuation-based operators are equivalent to identifiers that begin with an apostrophe; for example, `x * 2` is a call to the identifier `'*`, so this expression can be rewritten as `@'*(x, 2)`. Remember that LES expressions are parsed into an in-memory data structure called a [Loyc tree](http://loyc.net/loyc-trees/). In a Loyc tree there is no _type-level_ distinction between function calls and operators; for example, an operator expression like `A + B` is parsed into a Loyc call node like `@'+(A, B)`., which has the _same data type_ as the node for a normal call like `Print(A, B)`. The only way to tell that one of these is an "operator" and the other is "not an operator" is to look at the first character of the identifier: operators begin with a single quote, normal identifiers don't.
+- **Prefix operators**: Most infix operators can also be used as prefix operators; the precedence of a prefix operator is not related to the infix operator of the same name. For example, `x * -y - -z` is parsed like `(x * (-y)) - (-z)`).
 - **Suffix operators**: LES supports the C prefix/suffix operators `++` and `--` and any other operators surrounded by `+` or `-`, e.g. `+++` and `-<>-` can act as prefix or suffix operators.
 - **Parenthesized expressions and tuples**. You can, of course, use parentheses `(...)` for grouping, to override the natural precedence of operators. Tuples are supported too, but each item in a tuple must be separated by semicolons rather than commas as in most languages (there are two reasons for this, explained below under '[Subtleties](#subtleties)'). Tuples represent calls to the identifier `#tuple`. Empty parentheses `()` are a synonym for `#tuple()`, `(foo;)` parses as `#tuple(foo)` and both `(A; B)` and `(A; B;)` produce the same syntax tree as `#tuple(A, B)`.
-- **Lists**: LES supports JSON-style `[lists, in, square, brackets]` as a call to ``@`[]` ``. As with argument lists, semicolons are permitted as a terminator, but one must be consistent about whether comma or semicolon is used as a separator.
-- **Bracket lookup**: Typically used for array indexing or map lookup. A bracket expression `L[A, B]` is parsed into a call to ``@`_[]` ``, specifically ``@`_[]`(L, A, B)``.
-- **Generics**: The most popular notation for generics, `Foo<T>`, is highly ambiguous, so LES uses generic notation invented for [D](http://dlang.org), which involves exclamation marks: `List!T` or `List!(T)` are both parsed into `#of(List, T)`. When parentheses are used, the binary `!` operator works differently than most other operators. It is actually an N-ary operator: it puts the left-hand side in a list of length 1, then parses the contents of `(...)` as if it were an argument list, appending the arguments to the list. For example, `Foo!(a,b,c)` is parsed into `#of(Foo, a, b, c)`. Please note that `Foo!X.Y` is parsed like `(Foo!X).Y`.
-- **Braced blocks**: A list of statements in braces is parsed into a call to ``@`{}` ``. The grammar inside a braced block `{...}` is identical to that of a list expression `[...]`: a list of expressions separated by commas or terminated by semicolons.It makes no difference whether the final expression is followed by a semicolon (`{X}` and `{X;}` both mean ``@`{}`(X)``). Empty statements are permitted; they are parsed into ```@`` ```(e.g. `{;;}` is equivalent to ```{ @``; @``; }```.
+- **Lists**: LES supports JSON-style `[lists, in, square, brackets]` as a call to ``@`'[]` ``. As with argument lists, semicolons are permitted as a terminator, but one must be consistent about whether comma or semicolon is used as a separator.
+- **Bracket lookup**: Typically used for array indexing or map lookup. A bracket expression `L[A, B]` is parsed into a call to ``@`'_[]` ``, specifically ``@`'_[]`(L, A, B)``.
+- **Generics**: The most popular notation for generics, `Foo<T>`, is highly ambiguous, so LES uses generic notation invented for [D](http://dlang.org), which involves exclamation marks: `List!T` or `List!(T)` are both parsed into `#of(List, T)`. When parentheses are used, the binary `!` operator works differently than most other operators. It is actually an N-ary operator: it puts the left-hand side in a list of length 1, then parses the contents of `(...)` as if it were an argument list, appending the arguments to the list. For example, `Foo!(a,b,c)` is parsed into `#of(Foo, a, b, c)`. Please note that `Foo!X.Y` is parsed like `(Foo!X).Y`. Note: [it is proposed to change the name of `#of`](https://github.com/qwertie/ecsharp/issues/96).
+- **Braced blocks**: A list of statements in braces is parsed into a call to ``@`'{}` ``. The grammar inside a braced block `{...}` is identical to that of a list expression `[...]`: a list of expressions separated by commas or terminated by semicolons.It makes no difference whether the final expression is followed by a semicolon (`{X}` and `{X;}` both mean ``@`'{}`(X)``). Empty statements are permitted; they are parsed into ```@`` ```(e.g. `{;;}` is equivalent to ```{ @``; @``; }```.
 
 Here is a typical LES subexpression, showing that braced blocks can be embedded in expressions:
 
@@ -225,13 +225,13 @@ Here is a typical LES subexpression, showing that braced blocks can be embedded 
 
 You may occasionally see the term "Prefix notation". Prefix notation is a subset of the expression grammar that includes only identifiers (including special ones), literals, calls, and attributes (introduced below). Any [Loyc tree](Loyc-trees) can be expressed in prefix notation; for example, `p = A!B[X,Y]` can be expressed in prefix notation as 
 
-    @=(p, @`_[]`(#of(A, B), X, Y))
+    @'=(p, @`'_[]`(#of(A, B), X, Y))
     
 and `System.Console.WriteLine("Hello")` can be expressed as 
 
-    @.(@.(System, Console), WriteLine)("Hello") 
+    @'.(@'.(System, Console), WriteLine)("Hello") 
 
-which means `(@.(@.(System, Console), WriteLine))("Hello")`.
+which is parsed like `(@'.(@'.(System, Console), WriteLine))("Hello")`.
 
 Top-level expressions
 ---------------------
@@ -426,7 +426,7 @@ TODO: update this section
 
 The operator precedence rules are documented at [LesPrecedence](http://loyc.net/doc/code/classLoyc_1_1Syntax_1_1Les_1_1LesPrecedence.html).[cs](https://github.com/qwertie/Loyc/blob/master/Core/Loyc.Syntax/LES/LesPrecedence.cs).
 
-In short, the name of the operator determines its precedence, starting from the following basis rules:
+In short, the characters in the operator determine the operator's precedence, starting from the following basis rules:
 
 - Substitute: prefix $ . :
 - Primary: binary `. =:`, generic arguments `List!(int)`, suffix `++` `--`, method calls `f(x)`, indexers `a[i]`
@@ -452,6 +452,8 @@ In short, the name of the operator determines its precedence, starting from the 
 
 See the [full documentation](http://loyc.net/doc/code/classLoyc_1_1Syntax_1_1Les_1_1LesPrecedence.html) for the rules about binary `=> ~ <>`, `` `backtick` ``, and prefix `/ \ < > ? =`.
 
+The infix operators `>>`, `<<`, `&`, `|` and `^` are not allowed to be mixed with certain other operators, because their precedence is a potential source of bugs. For example, `x & 7 == 0` is considered a syntax error, although the parser will still produce a tree from it (`@'&(x, @'==(7, 0))`). Backquoted operators have a similar restriction (for full details, see "Precedence").
+
 Literals
 --------
 
@@ -469,7 +471,7 @@ LES supports the following kinds of literals:
 * Characters, e.g. `'a'` or `'\n'`. Characters are Unicode, but under .NET, characters are limited to 16 bits. Hopefully proper 21-bit Unicode characters can be supported somehow, someday.
 * Strings, e.g. `"é"` or `"ĉheap"`. LES does not support C# `@"verbatim"` strings; instead, it supports triple-quoted strings using either `'''three single quotes'''` or `"""three double quotes"""`.
 * Symbols, e.g. `@@foo` or ``@@`BAM!` `` (see below)
-* Token literals (optional): a token literal is an `@{ at sign, followed by a tree of tokens in braces }`. This optional feature is used to store domain-specific languages such as [LLLPG](http://www.codeproject.com/Articles/664785/A-New-Parser-Generator-for-Csharp) inside LES files. LES parsers are not required to support token literals.
+* Token literals (optional): a token literal is an `@{ at sign, followed by a tree of tokens in braces }`. This optional feature is used to store domain-specific languages such as [LLLPG](http://www.codeproject.com/Articles/664785/A-New-Parser-Generator-for-Csharp) inside LES files. LES parsers are not required to support token literals. Note: in LES v3, token literals are being eliminated; instead, there will be a feature similar to token literals, but they will be stored as Loyc trees instead of using a specialized data type.
 
 There is no literal notation for lists or tuples (note that a tuple such as `(1; "two")` is not a "literal"; it is a Loyc tree that some programming languages may or may not interpret as a tuple.) More literal types will probably be added in the future (such as unlimited-size integers, 8-bit and 16-bit ints, byte array literals).
 
@@ -538,9 +540,11 @@ Subtleties
 
 ### Parentheses & Style ###
 
-If an expression uses parentheses for grouping, this fact is encoded in the tree by attaching a `#trivia_inParens` attribute, unless there is a `'['` token after the opening `(`. Thus, for example, the parser produces the same result for `2 * (x+1)` and `2 * ([#trivia_inParens] x + 1)`. Similarly, the parser produces the same result for `2 * x + 1` and `([] 2 * x) + 1`.
+If an expression uses parentheses for grouping, this fact is encoded in the tree by attaching a `#trivia_inParens` attribute, unless there is a `'['` token after the opening `(`. Thus, for example, the parser produces the same result for `2 * (x+1)` and `2 * ([#trivia_inParens] x + 1)`. Similarly, the parser produces the same result for `2 * x + 1` and `(@[] 2 * x) + 1`. Note: [the prefix `#trivia_` will change to `%` in the future.](https://github.com/qwertie/ecsharp/issues/61)
 
-The C# Loyc tree implementation reserves 8 "style" bits, intended for tracking other [style distinctions](http://loyc.net/doc/code/namespaceLoyc_1_1Syntax.html#abc3eedb6b204244ecdfdfeacb1d433b8) such as the difference between `11` and `0xB`, and the difference between `2 + 2` and `@+(2, 2)`. These bits are the only mutable state in an [LNode](http://loyc.net/doc/code/classLoyc_1_1Syntax_1_1LNode.html).
+The C# Loyc tree implementation reserves 8 "style" bits, intended for tracking other [style distinctions](http://loyc.net/doc/code/namespaceLoyc_1_1Syntax.html#abc3eedb6b204244ecdfdfeacb1d433b8) such as the difference between `11` and `0xB`, and the difference between `2 + 2` and `@'+(2, 2)`. These bits are the only mutable state in an [LNode](http://loyc.net/doc/code/classLoyc_1_1Syntax_1_1LNode.html).
+
+Note: [it has been proposed that the style bits be removed](https://github.com/qwertie/ecsharp/issues/80) to make the Loyc tree concept simpler. The [flyweight pattern](https://en.wikipedia.org/wiki/Flyweight_pattern) could be used instead, by using cached sets of one or more attribute to represent styles. For example, the number `0xF` might be stored in memory with an attribute like `@[@%base16]15`, and the attribute list `@[@%base16]` could be shared between all hexadecimal numbers to save memory.
 
 Style bits also indicate whether commas or semicolons are used as a separator/terminator in argument lists, braced blocks and lists in square brackets. The current implementation sets `BaseStyle = NodeStyle.Statement` if and only if semicolons are used.
 
@@ -598,18 +602,20 @@ LESv2 was made JSON-compatible via four changes to LES:
 3. Use `@[...]` instead of `[...]` for attributes (token literals were changed from `@[...]` to `@{...}`; note that using `@(...)` for attributes would not have clashed with token literals, but I felt it would be better to use `@[...]` because `[]` does not require the shift key, and token literals are a more obscure feature.)
 4. Do not give an error message for big integers (larger than can fit in 64 bits) _(incomplete)_
 
-Although LES supports JSON syntactically, the structure of the tree produced by the LES parser is different from that produced by a JSON parser. In particular, LES has no concept of "dictionaries" or "objects", so a "dictionary" like `{"a":"A", "b":"B"}` really means ``@`{}`(@:("a","A"), @:("b","B"))``, i.e. each pair is represented by a call to the binary colon operator.
+Although LES supports JSON syntactically, the structure of the tree produced by the LES parser is different from that produced by a JSON parser. In particular, LES has no concept of "dictionaries" or "objects", so a "dictionary" like `{"a":"A", "b":"B"}` really means ``@`'{}`(@':("a","A"), @':("b","B"))``, i.e. each pair is represented by a call to the binary colon operator.
 
 Using LES in .NET
 -----------------
 
-To use LES in .NET, simply call `LesLanguageService.Value` (in Loyc.Syntax.dll) to get an `IParsingService` object that supports parsing LES text and printing Loyc trees as LES text. Call `Print(node)` to print and `Parse(text)` to parse:
+To use LES in .NET, simply call `LesLanguageService.Value` (in Loyc.Syntax.dll) to get an `IParsingService` object that supports parsing LES text and printing Loyc trees as LES text. Call `Print(node)` to print and `Parse(text)` to parse.
+
+Example:
 
 ~~~csharp
 IListSource<LNode> code = LesLanguageService.Value.Parse("Jump(); Ship();");
-LNode firstStmt = code[0];
-string code2 = LesLanguageService.Value.PrintMultiple(code); // "Jump(); Ship();"
-string first = LesLanguageService.Value.Print(firstStmt);    // "Jump();"
+LNode firstStatement = code[0];
+string code2 = LesLanguageService.Value.PrintMultiple(code);   // "Jump(); Ship();"
+string first = LesLanguageService.Value.Print(firstStatement); // "Jump();"
 ~~~
 
 You can also call `Tokenize("text")` to use the lexer by itself (it implements `ILexer<Token>` and `IEnumerator<Token>`; just call `NextToken()` which returns [`Maybe<Token>`](http://loyc.net/doc/code/structLoyc_1_1Maybe_3_01T_01_4.html)).
