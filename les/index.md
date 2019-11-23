@@ -397,7 +397,7 @@ return x; // No parse error
 
 There are two main ways to mitigate this lack-of-an-error:
 
-**1. Front-end processing**: when you write LES code you have some kind of _reason_ to do so - usually you're going to feed the code into a compiler or other tool (e.g. [LeMP](https://github.com/qwertie/Loyc/wiki/LeMP)) after you've written it. Also, superexpressions are designed for a very specific purpose: to simulate constructs like `while` loops and `function` definitions.
+**1. Front-end processing**: when you write LES code you have some kind of _reason_ to do so - usually you're going to feed the code into a compiler or other tool (e.g. [LeMP](https://github.com/qwertie/Loyc/wiki/LeMP)) after you've written it. Also, superexpressions are designed for a specific purpose: to simulate constructs like `while` loops and `function` definitions.
 
 That means that whatever software receives the Loyc tree produced by the LES parser knows it is expecting to see a `while` loop with two arguments, an `if` statement with 2 or 4 arguments (`if(expr, {...})` or `if(expr, {...}, else, {...})`), and so forth.
 
@@ -542,7 +542,7 @@ Subtleties
 
 ### Parentheses & Style ###
 
-If an expression uses parentheses for grouping, this fact is encoded in the tree by attaching a `#trivia_inParens` attribute, unless there is a `'['` token after the opening `(`. Thus, for example, the parser produces the same result for `2 * (x+1)` and `2 * ([#trivia_inParens] x + 1)`. Similarly, the parser produces the same result for `2 * x + 1` and `(@[] 2 * x) + 1`. Note: [the prefix `#trivia_` will change to `%` in the future.](https://github.com/qwertie/ecsharp/issues/61)
+If an expression uses parentheses for grouping, this fact is encoded in the tree by attaching a `#trivia_inParens` attribute, unless there is an attribute marker after the opening `(`. For example, the parser produces the same result for `2 * (x+1)` and `2 * ([#trivia_inParens] x + 1)`. Similarly, the parser produces the same result for `2 * x + 1` and `(@[] 2 * x) + 1`. Note: [the prefix `#trivia_` will change to `%` in the future.](https://github.com/qwertie/ecsharp/issues/61)
 
 The C# Loyc tree implementation reserves 8 "style" bits, intended for tracking other [style distinctions](http://loyc.net/doc/code/namespaceLoyc_1_1Syntax.html#abc3eedb6b204244ecdfdfeacb1d433b8) such as the difference between `11` and `0xB`, and the difference between `2 + 2` and `@'+(2, 2)`. These bits are the only mutable state in an [LNode](http://loyc.net/doc/code/classLoyc_1_1Syntax_1_1LNode.html).
 
@@ -605,6 +605,10 @@ LESv2 was made JSON-compatible via four changes to LES:
 4. Do not give an error message for big integers (larger than can fit in 64 bits) _(incomplete)_
 
 Although LES supports JSON syntactically, the structure of the tree produced by the LES parser is different from that produced by a JSON parser. In particular, LES has no concept of "dictionaries" or "objects", so a "dictionary" like `{"a":"A", "b":"B"}` really means ``@`'{}`(@':("a","A"), @':("b","B"))``, i.e. each pair is represented by a call to the binary colon operator.
+
+### Shebangs ###
+
+On Linux/BSD systems, a ["shebang"](https://en.wikipedia.org/wiki/Shebang_(Unix)) is the two characters `#!` at the beginning of a file. These characters tell the operating system how to run a script. The LES parser ignores the first line of the file if that line starts with `#!`.
 
 Using LES in .NET
 -----------------
