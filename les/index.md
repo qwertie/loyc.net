@@ -178,7 +178,7 @@ Comments in LES work like C#, C++, Java, and many other languages:
     /* Multi-line comments can be /* nested */ as you see here. */
 ~~~
 
-Comments can be embeded in Loyc trees. **TODO**: enhance the LES parser to attach comments to nodes.
+Comments can be embedded in Loyc trees, and the LES parser can include comments and newlines in its output tree (using a mostly language-independent algorithm in [`StandardTriviaInjector`](http://ecsharp.net/doc/code/classLoyc_1_1Syntax_1_1StandardTriviaInjector.html)).
 
 Statements & expressions
 ------------------------
