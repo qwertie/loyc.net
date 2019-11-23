@@ -1,7 +1,7 @@
 ---
 layout: page
 title: "LES: Loyc Expression Syntax"
-tagline: "Programming language builder & syntax interchange format"
+tagline: "Your DSL buddy & universal syntax tree"
 toc: true
 ---
 
