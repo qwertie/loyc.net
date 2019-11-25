@@ -542,7 +542,7 @@ Subtleties
 
 ### Parentheses & Style ###
 
-If an expression uses parentheses for grouping, this fact is encoded in the tree by attaching a `#trivia_inParens` attribute, unless there is an attribute marker after the opening `(`. For example, the parser produces the same result for `2 * (x+1)` and `2 * ([#trivia_inParens] x + 1)`. Similarly, the parser produces the same result for `2 * x + 1` and `(@[] 2 * x) + 1`. Note: [the prefix `#trivia_` will change to `%` in the future.](https://github.com/qwertie/ecsharp/issues/61)
+If an expression uses parentheses for grouping, this fact is encoded in the tree by attaching a `%inParens` attribute, unless there is an attribute marker after the opening `(`. For example, the parser produces the same result for `2 * (x+1)` and `2 * (@[@%inParens] x + 1)`. Similarly, the parser produces the same result for `2 * x + 1` and `(@[] 2 * x) + 1`. Note: [the prefix `%` was `#trivia_` in older code.](https://github.com/qwertie/ecsharp/issues/61)
 
 The C# Loyc tree implementation reserves 8 "style" bits, intended for tracking other [style distinctions](http://loyc.net/doc/code/namespaceLoyc_1_1Syntax.html#abc3eedb6b204244ecdfdfeacb1d433b8) such as the difference between `11` and `0xB`, and the difference between `2 + 2` and `@'+(2, 2)`. These bits are the only mutable state in an [LNode](http://loyc.net/doc/code/classLoyc_1_1Syntax_1_1LNode.html).
 

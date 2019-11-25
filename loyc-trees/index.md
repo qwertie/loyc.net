@@ -108,7 +108,7 @@ Sometimes it is useful to view a node as having a single list of children. You c
 Trivia Attributes and Node Styles
 ---------------------------------
 
-A trivia attribute is a Loyc node in an attribute list whose `Name` starts with `#trivia_` (**note:** going forward we'll switch to a [one-character prefix](https://github.com/qwertie/ecsharp/issues/61)). Trivia attributes can be simple identifiers or calls. By convention, trivia attributes have low importance and can be (optionally) dropped when converting a Loyc tree to text.
+A trivia attribute is a Loyc node in an attribute list whose `Name` starts with `%` (**note:** code updates are [pending for this](https://github.com/qwertie/ecsharp/issues/61); the old convention was that trivia nodes have a `Name` that starts with `#trivia_`.) Trivia attributes can be simple identifiers or calls. By convention, trivia attributes have low importance and can be (optionally) dropped when converting a Loyc tree to text.
 
 Probably the most important use of trivia attributes is to denote comments. By convention, comments like
 
@@ -120,9 +120,9 @@ result = /* in the middle */ Func(); // after
 are represented by the following Loyc tree:
 
 ~~~
-@[#trivia_SLComment(" Before")]
-@[#trivia_trailing(#trivia_SLComment(" after"))]
-result = (@[#trivia_MLComment(" in the middle ")] Func());
+@[@%SLComment(" Before")]
+@[@%trailing(@%SLComment(" after"))]
+result = (@[@%MLComment(" in the middle ")] Func());
 ~~~
 
 If you manually insert a trivia attribute in your source code, it may disappear or change form when the code is printed out (it affects the output in some special way if the printer understands it, as with comments.)
