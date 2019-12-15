@@ -11,9 +11,9 @@ I first heard about the [unum](https://en.wikipedia.org/wiki/Unum_(number_format
 
 The idea was to get an accurate picture of the result of any given numeric calculation. It involved a variable-size number format that would sometimes be enlarged during calculations to an extent necessary to accurately describe a range (or set of ranges) of values in which the correct answer to a computation on real numbers might lie.
 
-The details are complicated, but the result is awesome: the unum can tell you how much "rounding error" has happened, and it can give you a tightly-bounded range (or multiple ranges) of values in which the mathematically perfect answer _must_ lie. And if you need more accuracy, you can always get more in exchange for slower computations. In science, and sometimes engineering, you want to make sure you don't get bad answers because of rounding errors _you can't quantify_, so unums can sometimes offer big benefits, or at least let you sleep a little better knowing you've got an accurate answer to your calculation. However, the original unum was a variable-size format with multiple variable-size parts, and it would be challenging to work with those numbers efficiently, whether it be in software or in hardware.
+The details are complicated, but the result is awesome: the unum can tell you how much "rounding error" has happened, and it can give you a (usually) tightly-bounded range of values in which the mathematically perfect answer _must_ lie. And if you need more accuracy, you can always get more in exchange for slower computations. In science, and sometimes engineering, you want to make sure you don't get bad answers because of rounding errors _you can't quantify_, so unums can sometimes offer big benefits, or at least let you sleep a little better knowing you've got an accurate answer to your calculation. However, the original unum was a variable-size format with multiple variable-size parts, and it would be challenging to work with those numbers efficiently, whether it be in software or in hardware.
 
-But the author, John Gustafson, didn't stop there - he went on to develop another version of the idea called "type-II unums", which was elegant but required potentially huge lookup tables to implement in practice, and then "type-III unums" which I'll briefly talk about today.
+But the author, John Gustafson, didn't stop there - he went on to develop another version of the idea called "type-II unums", which was elegant but required potentially huge lookup tables to implement in practice, and then "type-III unums" which I'll teach you about today.
 
 ### Fixed point ###
 
@@ -32,6 +32,8 @@ Since computers only have zeros and ones, not minus signs or decimal points, we 
 The minus sign is kind of easy. We just reserve one bit on the left side and call it the "sign bit". But let's stay positive and ignore those negative-nancy numbers for now.
 
 The simplest way to represent the "point" is to simply _imagine_ that there is a point in a fixed location, usually in the middle. In these examples there are always 12 bits and the point is always in the middle, so we can simply _imagine_ the point is there and keep it in our minds as we design our software. This trick works well on simple computers that don't support fractions at all.
+
+![](fixed-point.png)
 
 So if we want to put the number 2.25 into the computer's memory, we actually put the number 144 into memory instead (10010000) and then imagine a point (10.010000). If we want to put 3 into our computer, that's 11 in binary, so, imagining a point, we put 11.000000 (192) into the computer's memory. What we're actually doing is multiplying everything by 64 (which is the same as a left-shift by 6 bits).
 
@@ -216,7 +218,7 @@ Finally, posits have two special values:
 
 A five-bit posit is large enough to have all four parts (sign, regime, exponent and fraction) but small enough to draw every value in one diagram:
 
-![](html-select-element.png)
+![](5-bit-posit.png)
 
 Pick a bit pattern and see if you can understand how the regime (yellow) combines with the exponent (blue) and the fraction (black) to represent a number. Take 11011, for example. It's negative, so we have to flip the bits and add one before extracting the regime, exponent, and fraction (-11011 = 00101 => _r_=-1, _e_=0, _f_=1). First1Location = r×2+e = -2, so we have binary 0.011 = 3/8 = 0.375.
 
