@@ -11,7 +11,7 @@ I first heard about the [unum](https://en.wikipedia.org/wiki/Unum_(number_format
 
 The idea was to get an accurate picture of the result of any given numeric calculation. It involved a variable-size number format that would sometimes be enlarged during calculations to an extent necessary to accurately describe a range (or set of ranges) of values in which the correct answer to a computation on real numbers might lie.
 
-The details are complicated, but the result is awesome: the unum can tell you how much "rounding error" has happened, and it can give you a (usually) tightly-bounded range of values in which the mathematically perfect answer _must_ lie. And if you need more accuracy, you can always get more in exchange for slower computations. In science, and sometimes engineering, you want to make sure you don't get bad answers because of rounding errors _you can't quantify_, so unums can sometimes offer big benefits, or at least let you sleep a little better knowing you've got an accurate answer to your calculation. However, the original unum was a variable-size format with multiple variable-size parts, and it would be challenging to work with those numbers efficiently, whether it be in software or in hardware.
+The details are complicated, but the result is awesome: the unum can tell you how much "rounding error" has happened, and it can give you a (usually) tightly-bounded range of values in which the mathematically perfect answer _must_ lie. And if you need more accuracy, you can always get more in exchange for slower computations. In science, and sometimes engineering, you want to make sure you don't get bad answers because of rounding errors _you can't quantify_, so unums can sometimes offer big benefits, or at least let you sleep a little better knowing your calculation doesn't suffer from a huge rounding error. However, the original unum was a variable-size format with multiple variable-size parts, and it would be challenging to work with those numbers efficiently, whether it be in software or in hardware.
 
 But the author, John Gustafson, didn't stop there - he went on to develop another version of the idea called "type-II unums", which was elegant but required potentially huge lookup tables to implement in practice, and then "type-III unums" which I'll teach you about today.
 
@@ -120,15 +120,15 @@ You can think of them as an outgrowth of the traditional floating-point number f
 
 I'm going to talk about 16-bit posits because small bit patterns are easier to discuss, but posits can have almost any size - 64 bits, 8 bits, whatever.
 
-Remember the 16-bit floating-point format we just talked about? The largest number it can handle is 65504. The next larger bit pattern is called "infinity", even though 66000 doesn't really seem like infinity. A 16-bit posit, however, has a maximum value of about _268 million_. That's because, as you increase the bit pattern inside a posit number, the number it represents will get bigger faster than a floating-point number gets bigger.
+Remember the 16-bit floating-point format we just talked about? The largest number it can handle is 65504. The next larger bit pattern is called "infinity", even though 66000 doesn't seem very close to infinity. A 16-bit posit, however, has a maximum value of about _268 million_. That's because, as you increase the bit pattern inside a posit number, the number it represents will get bigger faster than a floating-point number gets bigger.
 
-Actually, if you take the biggest 16-bit unum, 268 million, and decrement the bit pattern, it shrinks by a factor of 2, to 134 million. Decrease it again and it shrinks to 67 million. As you can see, the _precision_ of these huge numbers is terrible! Despite this, posits may be better than ordinary floating point for four reasons:
+Actually, if you take the biggest 16-bit unum, 268 million, and decrement the bit pattern, it shrinks by a factor of 2, to 134 million. Decrease it again and it shrinks to 67 million. The distance between adjacent numbers in this range is  immense, and the precision is terrible! Despite this, posits may be better than ordinary floating point for four reasons:
 
 1. Close to the number 1, posits have better precision than floating point. This is useful because numbers close to 1 are very common. 16-bit floating point always gives you slightly more than 3 significant digits (11 bits), but posits give you almost one extra significant digit near the number 1.0 (13-14 bits). For example, if you try to store π (3.14159265) in a 16-bit _float_, the closest representation is 0 10000 1001001000, which means 3.1406, but the closest _posit_ to π is 0 10 1 100100100010, which means 3.14160.
 2. Posits can represent large and tiny numbers that floats simply can't. It's easy to complain about "inaccuracy" when 74 million gets rounded off to 67 million, but 67 million is much closer to the correct result than "infinity". It's also useful that you can store very tiny numbers that would have simply been rounded off to zero in a traditional floating-point format.
 3. Posits tend to produce more accurate results for most common functions including addition/subtraction, multiplication, reciprocal, and square root.
 4. The posit standard - if that's really a thing - makes more promises about accuracy and repeatability across platforms than standard floating point (says the paper, "an incorrect value in the last bit for e^x, say, should be treated the way we would treat a computer system that tells us 2 + 2 = 5".) Oh, and it promises a fused dot product operator and subsets thereof, such as fused multiply-add - but the listed maximum accumulator size for this starts to get huge around 32 bits of precision, which makes me wonder about its performance, and wonder whether the perfect LINPACK result in the paper relies on this huge accumulator.
-5. Posits are part of the type-III unum design, which is really cool.
+5. Posits are part of the type-III unum design, which I expect to be really cool.
 
 They do have a few disadvantages:
 
@@ -220,6 +220,8 @@ A five-bit posit is large enough to have all four parts (sign, regime, exponent 
 
 ![](5-bit-posit.png)
 
+([Image from "Posit Arithmetic", John Gustafson](https://posithub.org/docs/Posits4.pdf))
+
 Pick a bit pattern and see if you can understand how the regime (yellow) combines with the exponent (blue) and the fraction (black) to represent a number. Take 11011, for example. It's negative, so we have to flip the bits and add one before extracting the regime, exponent, and fraction (-11011 = 00101 => _r_=-1, _e_=0, _f_=1). First1Location = r×2+e = -2, so we have binary 0.011 = 3/8 = 0.375.
 
 ### Is this the best representation? ###
@@ -238,16 +240,28 @@ Right now, Google won't tell me. I clicked on each of the top ten results for [t
 
 Finally I find buried in section 3.6 of a [document about posits](https://posithub.org/docs/Posits4.pdf), a "Sneak Preview" of "Valid Arithmetic".
 
-"Valid" doesn't mean what it normally means. It's a confusing term (which Google won't understand) that means "a pair of posits with a ubit". From this I glean that type-3 unums work something like this:
+"Valid" doesn't mean what it normally means. It's a confusing term that Google won't understand, meaning "a range of posits with ubits". I glean that type-3 unums work something like this:
 
 #### 1. There is a modified posit with a ubit
 
-The ubit, invented for the original type-I unums, indicates _imprecision_. If I write 123, it's exactly 123, so the ubit is 0, whereas 0.3 or π are inexact and the ubit is 1.
+The ubit, invented for the original type-I unums, indicates _imprecision_. The integer 123 is _exactly_ 123, so the ubit is 0, whereas 0.3 or π are inexact and the ubit is 1.
 
-The ubit becomes the least-significant bit. For example, the normal 16-bit posit for π is 0 10 1 100100100010; the modified posit would be 0 10 1 10010010001 1.
+The ubit becomes the least-significant bit. For example, the normal 16-bit posit for π is 0 **10 1** 100100100010; the modified posit would be 0 **10 1** 10010010000 1 - and notice that the last **two** bits have changed.
 
-TODO.
- 
+Think of this bit pattern as an ordinary 16-bit integer for a moment (it's 22817), and let's write down the closest bit patterns to it (22816 and 22818):
+
+    (22816) 0 10 1 10010010000 0 = 3.140625 (exact)
+    (22817) 0 10 1 10010010000 1
+    (22818) 0 10 1 10010010001 0 = 3.1416015625 (exact)
+
+This is a hint about what the bit pattern means. It means "somewhere between 3.140625 and 3.1416015625" (but not exactly equal to either of them).
+
+#### 2. Two modified posits form an interval
+
+TODO...
+
+
+
 ### Concern ###
 
 Earlier I complained that posits aren't really a "drop-in" replacement for floats in many applications, due to significant differences in behavior between the two.
