@@ -2,13 +2,15 @@
 title: "Top 10 principles & practices of programming"
 layout: post
 toc: false
-tagline: "Second draft"
+tagline: "Third draft"
 commentIssueId: 102
 ---
 
 Since watching Bret Victor's "[Inventing on Principle](https://www.youtube.com/watch?v=PUv66718DII)" I was sure I wanted to "Invent on Principle" as he suggested, but the tricky part is figuring out what my Big Principle is.
 
 One angle I've homed in on is the principle that "easy-sounding things should be easy". Programming is full of things that seem like they should be easy, but are unnecessarily hard in practice. Things like drawing graphics efficiently (you can start easily with Windows Forms but if you want efficient drawing you have to make this massive leap over to DirectX, in which case, good luck implementing your GUI widgets by hand) playing music and sounds (okay, playing a .wav file might be a simple static method call, but generating audio continuously or playing an mp3 or opus stream might be far more difficult), or keeping a user interface synchronized with the underlying data model (but see SwiftUI, Assisticant, MobX/KnockoutJS for reactive solutions in Swift, C# and JS respectively)
+
+### 0. Seeing Through The Eye of the Tool Writer ###
 
 The most basic idea of making software easy is pretty simple: 
 
@@ -55,15 +57,15 @@ And then you write the tool:
 
 Remarkably, within days of creating this new tool, I had used it multiple times in my own code, and I was rather amazed that I had never before thought to write this function. I had internalized the DRY principle well enough to notice the repetition and remove it, but as a tools developer at heart, it was ironic not to have noticed earlier this opportunity to build a tool.
 
-In this particular codebase there was, at the time, no designated location for general-purpose tools like this. Which is not to say there were no general-purpose classes or functions, but to the extent they existed, they were scattered about. I created a folder called GeneralPurpose and gathered a few of the existing general-purpose bits of code and moved them into this folder. And I tested the boundaries by not asking for anyone's permission first. _Because I knew it was the right thing to do_.
-
 If you take one thing away from this post, let it be this basic separation: _imagine_ things are easy, then _make them that way_.
+
+![](Tallest-tree-herring-programming.webp)
 
 Often the best way to solve a large problem involves creating a large tool that is fairly elaborate. Often this will not be acceptable to management. They will say they don't have the budget to make a tool. Or they'll say it's not your job and you have to stay on task. Or they'll say we can think about this later, after you've actually done the task. Or if the best approach involves improving an existing open-source tool, they'll say you were hired to write proprietary software, not free software. And sometimes if you want to keep your job, you'll have to put up with this.
 
 But as the example above illustrates, often there are little tools you can make, that will improve your ability to write software without the cost of making a large tool. The little tool might not be as broadly applicable as a bigger, more ideal tool that you can imagine, and it might not even reduce total development time as much as a bigger tool, but the little one will be easier to get through management, the time needed to build it will be more predictable, and by making a small tool, you might learn things that will help you build a larger and better tool later.
 
-So if there's one technique you learn here today, let it be the Seeing Through The Eye of the Tool Writer.
+So if there's one technique you learn here today, let this be it.
 
 But there are others. I have seen many proposals for programming principles: SOLID, KISS, YAGNI, composition, Law of Demeter, avoid premature optimization, avoid high computational complexity, test-driven development, object orientation, avoid mutability, blah blah blah. But which principles are the most important? Often, principles come into conflict with each other; it is hard, and sometimes impossible, to satisfy every good-sounding principle at the same time.
 
@@ -180,17 +182,24 @@ I didn't _actually_ merge the existing classes together, which would violate the
 
 If you've got tools that can mathematically prove important properties of your software, wow, good for you. For everyone else there's automated tests.
 
-They don't have to be "unit" tests. I don't know where this idea came from that the dependencies of the component under test have to be fake (test doubles). It's okay if you are testing component C and C uses components A and B. It's especially okay if you also have separate tests for A and B by themselves.
+Automated tests have major benefits:
+
+- It's a lot faster than manual testing
+- You can do a lot of test variations (using for-loops and other mechanisms) for better confidence that your code works
+- **Tests influence how code is structured**. Badly structured code tends to be hard to test! By writing tests (especially _without_ mocks) you'll be forced to write code that is good enough to test. Arguably, practices like test-driven development (TDD) improve code quality by influencing code structure, especially among less-experienced developers who aren't sure yet what good code looks like. Tests should have access to "internal" members of types, though (in C#, use the [InternalsVisibleTo](https://docs.microsoft.com/en-us/dotnet/api/system.runtime.compilerservices.internalsvisibletoattribute?view=netframework-4.8) attribute if your tests are in a different DLL).
+- Making your app safe for changes. You want to be able to change things and see if you broke something major _without any manual testing_. Facebook's motto is "Move fast and break things", but it's not literally OK for developers to break Facebook. If there are comprehensive tests, developers can be trusted to change things more, which means crufty old code can be improved. Use code-coverage tools to check (approximately) how much you've tested.
+
+You don't need "unit" tests for everything, in the sense of testing divorced from dependencies. I don't know where this idea came from that the dependencies of the component under test have to be fake (test doubles). It's okay if you are testing component C and C uses components A and B. It's especially okay if you also have separate tests for A and B by themselves.
 
 Avoid using mocks. In my experience, well-designed software never _needs_ mocks in its tests. If you can't fully test the software without mocks, it means the software is structured incorrectly. "White-box" testing may require mocks to check implementation details, but this reduces your freedom to change the internal design of the component. With this form of testing, when you change the internal design you may cause mock-based tests to fail, even if the new implementation is correct and working properly. This is not good.
 
-Do use complex tests with randomized and/or realistic data. 
-
 You have a limited amount of time to write tests, so your first priority should be to make sure that basic functionality - the things you expect users or customers to do with your software - work. Your other main priorities should be making sure that less common, more obscure functionality works; that edge cases work; and that corner cases work. Your _lowest_ priority should be making sure a constructor throws an exception when "null" is passed to it.
+
+In addition to basic tests, use complex tests with randomized and/or realistic data, in order to test your objects in their most complicated states.
 
 Good tests are written with the same discipline as the rest of the code. Don't repeat yourself, separate concerns, this all stays relevant.
 
-In particular, minimize the size of each test. Some people propose rules like "each test function should only test one thing!" **Wrong.** Your primary goal in testing is to test as thoroughly as possible in the time you have available. One thing that will help you do this is to make each test as compact as possible, so that you can write more tests in the same amount of time, and so that you can keep track of your tests more easily (500 lines of tests is going to be easier to keep track of than 1500).
+In particular, minimize the size of each test - not the test _methods_, but the tests themselves. Some people propose rules like "each test function should only test one thing!" **Wrong.** Your primary goal in testing is to test as thoroughly as possible in the time you have available. One thing that will help you do this is to make each test as compact as possible, so that you can write more tests in the same amount of time, and so that you can keep track of your tests more easily (500 lines of tests is going to be easier to keep track of than 1500).
 
 For example, in much of my Enhanced C# test suite, there are **two tests per one line of code**. Pretty compact, right? Here's an example:
 
@@ -237,8 +246,6 @@ Such a clunky way of writing tests would cause me to write fewer tests, so I'd e
 
 I do similar things for interfaces. Often if you implement an interface multiple times, there are certain rules that every implementation has to follow. You can get a lot of mileage by writing a _single_ test fixture to ensure that _every_ implementation follows these rules.
 
-One more reason why testing is important is that **tests influence how code is structured**. Badly structured code tends to be hard to test! By writing tests (without mocks) you'll be forced to write code that is good enough to test. Arguably, practices like test-driven development (TDD) improve code quality by influencing code structure, especially among less-experienced developers who aren't sure yet what good code looks like.
-
 ### 6. Pick good names ###
 
 _Spend time_ thinking about names, and write documentation that describes things in a different way than the names do. Be on the lookout for ambiguity and vagueness. It may seem clear to you that a `RecordDependencyPropertyCollection` is a sequence (whose order is not important) of pieces of metadata about dependencies between pairs of records in your application, but I can assure you this is not obvious from the name. Sometimes a better name will be more clear; other times, nothing short of a comment will clarify the purpose of something.
@@ -263,7 +270,7 @@ In Visual Studio, CodeLens visually separates comments from code, encouraging de
 
 Understanding when and how to use functional programming ideas like immutability, persistent data structures, map/filter/reduce, lambdas, tuples, algebraic data types (or union types, or class hierarchies to simulate union types in C#) and higher-order functions is a crucial skill for intermediate and senior developers. I lament that introductory courses still teach nested for-loops before they teach map/filter, that "blocks" (procedures) in Scratch cannot return values, and that my university still teaches C++ to first-year students.
 
-Traditional procedural and object-oriented programming has its uses, but if I could only choose one programming paradigm, functional would be it.
+Traditional procedural and object-oriented programming has its uses, but if I could only choose one programming paradigm to use for everything, functional would be it.
 
 ### 9. Know what things cost ###
 
@@ -288,7 +295,7 @@ As a library author who grew up at a time when my apps actually had to fit in [6
 3. Keep in mind the dramatic [difference in latency](https://www.forrestthewoods.com/blog/memory-bandwidth-napkin-math/) between access to L1/L2 cache, main memory, SSD, [hard disks](https://imgur.com/X1Hi1), and the internet.
 4. PC processors (desktop/laptop) have prediction-based optimizations so that executing [predictable code paths](https://en.wikipedia.org/wiki/Branch_predictor) is faster, and predictable memory access (especially sequentially) is faster. For example, virtual method calls are faster if the implementation is usually the same,  "if" statements are very fast if the same path is usually taken, and arrays tend to be much faster than linked lists.
 5. Threads are costly to create and synchronization between processors is somewhat costly, so parallelizing tasks remains an art form for algorithms that are not [embarrasingly parallel](https://en.wikipedia.org/wiki/Embarrassingly_parallel). When parallelizing, things to be aware of include  [Amdahl's law](https://en.wikipedia.org/wiki/Amdahl%27s_law), [LMAX disruptor](https://www.google.com/search?q=LMAX+disruptor), and er... remind me to finish this list.
-6. Dynamic and interpreted languages (JavaScript, Python, old BASICs) tend to be 4 to 100 times slower than statically-typed, compiled languages, even if (like JavaScript) they are heavily optimized. Exceptions to this rule may include Julia (which has slow startup and high memory use in exchange for fast long-term performance), LuaJIT and PyPy.
+6. Dynamic and interpreted languages (JavaScript, Python, old BASICs) tend to be 4 to 100 times slower than statically-typed, compiled languages, even if (like JavaScript) they are heavily optimized. Exceptions to this rule may include Julia (which has slow startup and high memory use in exchange for fast long-term performance), LuaJIT and PyPy. Plus, key parts of slow languages are written in fast languages (e.g. JavaScript's new [Map](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map) type will be fast because it is written in a fast language.)
 7. On some desktop processors, floating-point is almost as fast as integer math, but in some environments (e.g. [IoT](https://en.wikipedia.org/wiki/Internet_of_things)) floating point may be dramatically slower.
 8. Know about [SIMD](https://en.wikipedia.org/wiki/SIMD), though good opportunities to use it are rare.
 9. There are millions of pixels in modern screens, so drawing is slow in the same way scanning million-item arrays is slow, but worse because graphics memory is physically far from the CPU. GPUs speed things up using extreme concurrency, but they require specialized technology to program. General-purpose GPUs are widespread and useful for massively tasks such as simulation and machine learning.
