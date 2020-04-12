@@ -1,25 +1,42 @@
 ---
-title: "Top 10 principles & practices of programming"
+title: "Top 11 principles & practices of programming"
 layout: post
 toc: false
-tagline: "Third draft"
+tagline: "Fourth draft"
 commentIssueId: 102
 ---
 
-Since watching Bret Victor's "[Inventing on Principle](https://www.youtube.com/watch?v=PUv66718DII)" I was sure I wanted to "Invent on Principle" as he suggested, but the tricky part is figuring out what my Big Principle is.
+So you've got the training: you learned how to use XML, HTML, SQL, Java, Python, hashtables, mutexes, binary search trees, maybe you even took a course in 3D graphics or compiler design. You were told to use constants and unit tests and not to use global variables or `goto`. What's missing from this list? **Only some of the most powerful pinciples and practices of programming!**
 
-One angle I've homed in on is the principle that "easy-sounding things should be easy". Programming is full of things that seem like they should be easy, but are unnecessarily hard in practice. Things like drawing graphics efficiently (you can start easily with Windows Forms but if you want efficient drawing you have to make this massive leap over to DirectX, in which case, good luck implementing your GUI widgets by hand) playing music and sounds (okay, playing a .wav file might be a simple static method call, but generating audio continuously or playing an mp3 or opus stream might be far more difficult), or keeping a user interface synchronized with the underlying data model (but see SwiftUI, Assisticant, MobX/KnockoutJS for reactive solutions in Swift, C# and JS respectively)
+This post will teach you to...
+
+- See through the eye of the Tool Writer
+- Properly prioritize principles
+- Separate concerns
+- Avoid repeating patterns
+- Use the _correct_ amount of abstractions
+- Promote reusability and organize your code well
+- Write good tests
+- Pick good names
+- Use comments appropriately
+- Learn about functional programming
+- Know what things cost
+- Keep improving!
 
 ### 0. Seeing Through The Eye of the Tool Writer ###
 
-The most basic idea of making software easy is pretty simple: 
+Since watching Bret Victor's "[Inventing on Principle](https://www.youtube.com/watch?v=PUv66718DII)" I was sure I wanted to "Invent on Principle" as he suggested, but the tricky part is figuring out what my Big Principle is. One principle I've homed in on is that **easy-sounding things should be easy**.
 
-1. Imagine what your code _would_ look like _if_ your task _were_ as easy as possible. And maybe this is ordinary code, or maybe it's a diagram, or maybe it's a visualization that helps you build the code.
+Programming is full of things that seem like they should be easy, but are unnecessarily hard in practice. Things like drawing graphics efficiently (you can start easily with Windows Forms but if you want efficient drawing you have to make this massive leap over to DirectX, in which case, good luck implementing your GUI widgets by hand) playing music and sounds (okay, playing a .wav file might be a simple static method call, but generating audio continuously or playing an mp3 or opus stream might be far more difficult), or keeping a user interface synchronized with the underlying data model (but see SwiftUI, Assisticant, MobX/KnockoutJS for reactive solutions in Swift, C# and JS respectively). And no matter how good a product's user interface might be, it often happens that its internal components are confusing and laborious to use, with a design that is messy, inflexible, unportable, and expensive to maintain.
+
+The basic idea of making software easy is pretty simple: 
+
+1. Imagine what your code _would_ look like _if_ your task _were_ as easy as possible. And maybe this is ordinary code, or maybe it's a flow diagram, or maybe it's a specification that a machine generates code from.
 2. Next, you build the tool that makes your dream a reality - it could be as small as a single function, or as large as a new programming language or debugger infrastructure.
 
-And so I long to be a tools developer, to make tools that will make easy-sounding things actually straightforward. (I don't have the money or companionship to do this even part-time, but perhaps someday...)
+And so I long to be a tools developer, to make tools that will make easy-sounding things actually straightforward.
 
-But this basic separation, of making a tool to make something easier, and then using that tool, is not specific to tools developers. Instead, this basic approach is something _all_ developers should use in their everyday work.
+But this basic separation, of making a tool to make something easier, and then using that tool, is not specific to tools developers. Instead, this is something _all_ developers should use in their everyday work.
 
 Here's a small code snippet I saw recently (names have been changed to protect the guilty):
 
@@ -77,7 +94,7 @@ A program is like a house: just as walls give a house structure, separation of c
 
 I think some people "solve" this lack of compiler enforcement with "microservices architectures", but any solution that involves huge amounts of otherwise unnecessary plumbing code is a poor solution. Good discipline lets you do the same thing with less code.
 
-Concerns should be separated both "vertically" and "horizontally". Vertical separation is a stack of dependencies: module C depends on module B which depends on module A. Horizontal separation is _unrelatedness_: line drawing is separate from circle drawing; copying text to the clipboard is separate from deleting text, which is separate from the Undo Stack. The Cut command may use all three of these things, but it should be separate from them vertically, and they are separate from each other horizontally.
+Concerns should be separated both "vertically" and "horizontally". Vertical separation is a stack of dependencies: module C depends on module B which depends on module A. Horizontal separation is _unrelatedness_: copying text to the clipboard is separate from deleting text, which is separate from the Undo Stack. The Cut command may use all three of these things, but it should be separate from them vertically, and they are separate from each other horizontally.
 
 You can visualize separation of concerns as a 3-D pyramid of modules, with high-level functionality at the top, and low level functionality at the bottom.
 
@@ -93,7 +110,7 @@ As the diagram illustrates, it should be possible to arrange all modules in a ve
 
 ### 2. The Generalized Don't Repeat Yourself (DRY) principle ###
 
-Avoid not just repeating information or business logic in multiple places, but minimize repetition of any patterns whatsoever.
+Avoid not just repeating information or business logic in multiple places, but minimize repetition of any patterns whatsoever. The larger or more frequent a pattern is, the more important it is to avoid repeating it.
 
 **Elegant code minimizes the number of tokens in the program** (not including comments, and within reason).
 
@@ -142,7 +159,7 @@ Don't. Repeat. Stuff. And if you do repeat stuff, at least slap a `// TODO: This
 
 Create functions and abstractions appropriately, but avoid excessive layering/wrapping.
 
-Wrapping is often motivated by prior failure to refactor, or failure to test, leading to brittle code you don't dare touch. But having lots of layers, that basically all have the same responsibility, with confusingly similar names... well, it's confusing. You're taking a bad situation and making it worse. Don't do that.
+Wrapping is often motivated by prior failure to refactor, or failure to test, leading to brittle code you don't dare touch. But having lots of layers, that basically have the same responsibility, with confusingly similar names... well, it's confusing. You're taking a bad situation and making it worse. Don't do that.
 
 Too many abstractions can also occur because you are imagining several use cases that may never materialize, so you write a "framework" for these imaginary use cases. This is where YAGNI comes in: You Ain't Gonna Need It.
 
@@ -150,15 +167,31 @@ Too many abstractions can also occur because you are imagining several use cases
 
 **Don't** design large frameworks. Design libraries that are small, yet flexible and powerful within that constraint of smallness. But **do** design them. You do need some layers: real-world functionality should usually be built upon tools that are built on other tools.
 
-Focus mostly on features that you will actually use; considering those imaginary use cases is fine, but it should influence the code in ways _other than_ making it larger. For example, imagine ways you might improve the implementation of a component later, and then make sure that the _public interface_ is not incompaible with that hypothetical implementation. All too often I see interfaces that were designed for only one very specific (and poorly-thought-out) implementation. (That's not what interfaces are for, guys.)
+Focus mostly on features that you will actually use; considering those imaginary use cases is fine, but it should influence the code in ways _other than_ making it larger. For example, imagine ways you might improve the implementation of a component later, and then make sure that the _public interface_ is not incompaible with that hypothetical implementation. All too often I see interfaces that were designed for only one very specific (and poorly-thought-out) implementation. That's not what interfaces are for, guys.
 
-### 4. Avoid multiplying the number of code entities beyond reason ### 
+### 4. Promote reusability by organizing your code into separate _general_ and _specific_ parts ###
+
+This is another perspective on #0 and #1, Path of the Tool Writer and Separation of Concerns. Another way to say it is "separate things that change from things that stay the same"; tools change less than the things you build on top of the tools.
+
+Suppose you're adding support for profile pictures of your users, and you want to cache these pictures in memory. **Don't just write a `PictureCache` class to cache pictures!** _Definitely_ don't write a `ProfilePictureCache` that is specifically for profile pictures. Instead, start by writing an `ObjectCache` for caching _anything_, so that you can use it to cache other things later. Also, check the Standard Library of your language to see if it _already_ offers a cache that would meet your needs. If the picture cache has special requirements that somehow only apply to pictures, try to put as much code as possible in `ObjectCache` and then write small a `PictureCache` wrapper that _uses_ `ObjectCache` but also supports the special requirements.
+
+The [strategy pattern](https://en.wikipedia.org/wiki/Strategy_pattern) is super useful for promoting reusability. The idea is to write something general and then offer places to "plug in" specific knowledge and functionality. Strategies are usually functions or interfaces. In an Object Cache, for example, a strategy might be a function that figures out the size of each object (assuming your programming language offers no built-in way to do this). This function should typically a constructor parameter of the Object Cache, but it may be a property so that the strategy can be changed after the cache is created. Traditionally, object-oriented inheritance was used for this kind of thing, but the strategy pattern is often better because (1) a single class or component can support multiple kinds of strategy at the same time, and (2) strategies can sometimes be changed _after_ the class is constructed.
+
+To put this a third way, design your interfaces, classes, modules and libraries to be **generic, ignorant, and reusable.** If your code isn't separated properly, it will be designed for a _specific_ business use inside the _specific app_ you've been hired to work on. It may seem appealing that you're "working on the problem domain" and "tailoring your code to your employer's needs", but chances are that you're also making a _mess_ that is hard to understand, isn't flexible enough to adapt to new requirements, and can't be taken out of the current app and be plugged into a new app that has a better architecture.
+
+This division between general and specific should extend right up to the way you divide your software into folders, namespaces/packages, and DLLs/libraries/projects. If your software doesn't have a "general-purpose" or "common" folder, add one. I suggest three levels of specificness:
+
+1. Totally general stuff that would be useful in _many different industries_, e.g. graphics primitives, RPC protocols, caches, advanced data structures, an [undo stack](https://github.com/qwertie/baadia/blob/master/Util/UndoStack.cs).
+2. Stuff that is specific but _not limited to your app_, e.g. code dealing with a file or database for [DLS land parcel lookup](https://en.wikipedia.org/wiki/Dominion_Land_Survey), code to compute retail taxes for goods in specific states
+3. High-level features in a product your company sells. If possible, _parts_ of these features should be pushed down into layers 1 and 2.
+
+Finally, since high-level things depend on lower-level things (but not vice versa), designing low-level parts well (especially the _interfaces_ which which they are used) is more important than designing high-level parts well.
+
+### 5. Avoid multiplying the number of code entities beyond reason ### 
 
 When someone is reading your code, every new and separate entity is something that the reader has to expend mental energy to keep track of. Try to reduce this mental energy requirement, and your code may end up shorter as a happy side effect. For example, I realized that "logging" and "reporting a set of warnings and errors to a user" are mostly the same thing, so in the [Loyc.Essentials](http://core.loyc.net/essentials) way of doing things you would use the same classes and the same interface `IMessageSink` for both (sometimes I wonder if no one else has noticed this).
 
-Similarly I often see interfaces like `ISomethingRetriever` whose job is to retrieve some kind of object given some kind of key. That's basically a dictionary! Just implement `IReadOnlyDictionary`, you fool, or whatever your language's equivalent is. If you really do need a new interface, figure out if you can at least make it similar to something else in your language's standard library, if possible.
-
-Do not create a new and different interface every time you need to retrieve a new kind of object. More broadly, design your interfaces, classes, modules and libraries to be **generic, reusable, and ignorant.** Your app probably does not need to define a hundred separate interfaces.
+Similarly I often see interfaces like `ISomethingRetriever` whose job is to retrieve some kind of object given some kind of key. That's basically a dictionary! Just implement `IReadOnlyDictionary`, you fool, or whatever your language's equivalent is. If you really do need a new interface, figure out if you can at least make it similar to something else in your language's standard library, if possible. Do not create a new and different interface every time you need to retrieve a new kind of object. Your app probably does not need to define a hundred separate interfaces.
 
 This is similar to #2 (DRY), but different. For one thing, sometimes things that are fundamentally similar do not appear similar at first, and you might not notice the repetition. So here I am saying you should look deeply for patterns, and when you find them, unify them.
 
@@ -178,7 +211,7 @@ The software might not be used in a vehicle; it could be used in a desktop appli
 
 I didn't _actually_ merge the existing classes together, which would violate the #1 principle, Separation of Concerns. Instead I simply made them internal and did not expose them publicly in the SDK. Users would create one or more `VehicleState` objects and then deactivate any functionality they didn't need. Potentially this meant some memory would sometimes be wasted on unused objects, but it was worthwhile because it made the SDK much easier to use.
 
-### 5. Write good tests (or prove correctness) ###
+### 6. Write good tests (or prove correctness) ###
 
 If you've got tools that can mathematically prove important properties of your software, wow, good for you. For everyone else there's automated tests.
 
@@ -246,13 +279,19 @@ Such a clunky way of writing tests would cause me to write fewer tests, so I'd e
 
 I do similar things for interfaces. Often if you implement an interface multiple times, there are certain rules that every implementation has to follow. You can get a lot of mileage by writing a _single_ test fixture to ensure that _every_ implementation follows these rules.
 
-### 6. Pick good names ###
+### 7. Pick good names ###
 
-_Spend time_ thinking about names, and write documentation that describes things in a different way than the names do. Be on the lookout for ambiguity and vagueness. It may seem clear to you that a `RecordDependencyPropertyCollection` is a sequence (whose order is not important) of pieces of metadata about dependencies between pairs of records in your application, but I can assure you this is not obvious from the name. Sometimes a better name will be more clear; other times, nothing short of a comment will clarify the purpose of something.
+You probably know the standard rules:
+
+- Most methods should be named with a verb phrase, e.g. **Add**Item, **Find**MatchingItem, **Create**Record. Try to begin boolean methods with `is` or `has`.
+- Very long names are fine, except on frequently-used stuff.
+- If a value always has a certain unit, include the unit in the name e.g. `sizeInKB`, `widthPixels` (necessary only in languages without unit checking, i.e. most languages)
+
+A lot could be said about naming, but in brief I suggest _spending time_ thinking about names. Also, write documentation that describes things in a different way than the names do, because people often read documentation when they aren't sure what the name means. Be on the lookout for ambiguity and vagueness. It may seem clear to you that a `RecordDependencyPropertyCollection` is a sequence (whose order is not important) of pieces of metadata about dependencies between pairs of records in your application, but I can assure you this is not obvious from the name. Sometimes a better name will be more clear; other times, nothing short of comments/documentation will clarify the purpose of something.
 
 When debugging is done and the code is ready to commit, that's a good time to reconsider the names you chose before. Or, wait three months and see if the meaning of your names is still clear after you've been working on something completely different. The passage of time causes your brain to forget things that seemed obvious at the time, which allows you to read your own code with fresh eyes. Take advantage of this opportunity to notice when your code is more confusing than you thought--and fix it.
 
-### 7. Use comments. Appropriately. ###
+### 8. Use comments. Appropriately. ###
 
 I often write documentation for a class before its code, which leads to clear thinking and good separation of concerns. (However, I must remember to review the documentation during the commit process, because I usually tweak my planned implementation midstream, potentially making the comment wrong from the very beginning!)
 
@@ -264,15 +303,17 @@ However, code can only explain _what code does_. Comments are needed to explain 
 
 ![](CodeLens-splits-comments.png)
 
-In Visual Studio, CodeLens visually separates comments from code, encouraging developers to overlook comments when updating code. To reduce this effect, I shrink my CodeLens font vertically (Lucida Console size 7 works pretty well.)
+_In Visual Studio, CodeLens visually separates comments from code, encouraging developers to overlook comments when updating code. To reduce this effect, I shrink my CodeLens font vertically (Lucida Console size 7 works pretty well.)_
 
-### 8. Learn about functional programming, and use it ###
+When writing documentation, keep in mind my [#1 tip for technical writers](http://loyc.net/2013/my-1-tip-for-technical-writers.html): use examples. This post uses "for example" and "e.g." over 15 times and I'm still not sure if it's enough to get my ideas across.
+
+### 9. Learn about functional programming, and use it ###
 
 Understanding when and how to use functional programming ideas like immutability, persistent data structures, map/filter/reduce, lambdas, tuples, algebraic data types (or union types, or class hierarchies to simulate union types in C#) and higher-order functions is a crucial skill for intermediate and senior developers. I lament that introductory courses still teach nested for-loops before they teach map/filter, that "blocks" (procedures) in Scratch cannot return values, and that my university still teaches C++ to first-year students.
 
 Traditional procedural and object-oriented programming has its uses, but if I could only choose one programming paradigm to use for everything, functional would be it.
 
-### 9. Know what things cost ###
+### 10. Know what things cost ###
 
 In 1974 Donald Knuth published a paper with the famous line "premature optimization is the root of all evil." Few remember, however, that the title of this paper was "[Structured Programming with `go to` Statements](https://dl.acm.org/doi/pdf/10.1145/356635.356640)", that the paper spoke at some length about optimization techniques, and that it was published at a time when computers were dramatically slower, profiling tools were poor, and overoptimization was a  real problem in the software industry.
 
@@ -280,13 +321,15 @@ Throughout my career I've been mystified by programs that take more than a few s
 
 Except once. I was told that my WinForms-based app looked "too 1990s" and needed to be "upgraded" to WPF. Fast forward a few months, the shiny new WPF version was indeed more visually attractive, but when we shipped it, a customer complained that it took over 45 seconds to start on their ancient hardware (making this especially confusing to them, it had no splash screen.)
 
-I was shocked. _My_ software slow to start? Even on my own machine the startup time wasn't great, at three to four seconds. Luckily when writing the WPF version, I used Update Controls (now known as [Assisticant](https://assisticant.net/)) and adhered strictly to the ideal MVVM separation of concerns between views and ViewModels. As a result, the old WinForms version still basically worked with the same ViewModels and back-end. I had left the WinForms code intact, waiting to be activated by a `--winforms` command-line option. The WinForms version started in about 5 seconds on the customer's machine (and almost instantly on my own machine), so we suggested they  use the WinForms version for the time being. Since virtually all my code was the same between the two versions, I knew that my own code performed well enough, but that WPF itself and the third-party WPF controls we bought somehow took over 40 seconds to initialize.
+I was shocked. _My_ software slow to start? Even on my own machine the startup time wasn't great, at six seconds. Luckily when writing the WPF version, I used Update Controls (now known as [Assisticant](https://assisticant.net/)) and adhered strictly to the ideal MVVM separation of concerns between views and ViewModels. As a result, the old WinForms version still basically worked with the same ViewModels and back-end. I had left the WinForms code intact, waiting to be activated by a `--winforms` command-line option. The WinForms version started in about 5 seconds on the customer's machine (and almost instantly on my own machine), so we suggested they  use the WinForms version for the time being. Since virtually all my code was the same between the two versions, I knew that my own code performed well enough, but that WPF itself and the third-party WPF controls we bought somehow took over 40 seconds to initialize.
 
 The company paid good money for those controls. Why were they so slow? I suspect people have learned the wrong lesson from "premature optimization is the root of all evil." People act like it means "ignore performance completely until the problem is too bad to ignore any more."
 
 The WPF people certainly learned the wrong lesson. I did a test, creating a ListBox with 10,000 items in it, non-virtualized ([for IsSelected bindings to work correctly](https://stackoverflow.com/questions/7097999/wpf-binding-to-listboxitem-isselected-doesnt-work-for-off-screen-items)), with no DataTemplate. Each item was just a string like `"Item #1234"`. WinForms, of course, would never have a problem with such a small list, but in WPF the list consumed 80 megabytes of RAM and the ListBox took four seconds to handle a single press of the down arrow key, on a multi-core machine capable of running billions of instructions per second, per core.
 
-Knuth said "We should forget about small efficiencies, say about 97% of the time: premature optimization is the root of all evil. Yet we should not pass up our opportunities in that critical 3%." This is surely an exaggeration - 10% is a more likely number. When speed-critical code is written badly, 3% of the code might take 50% of CPU time, but once you optimize it, the same 3% is takes only 5% of the time, and now the slowest code is somewhere else and 10% of it is taking 50% of CPU time. But if you're writing a library, like WPF or its 3rd-party controls, which parts of it are speed-critical? Well, the library could be used in thousands of different programs, but each program uses _different parts_ of your library heavily. This implies that library authors should optimize much more than normal applications do, since a lot more of the code will be speed-critical for at least a few users. Likewise, the more users your app has, the more likely that one of your customers is stressing a code path that the others are not. Even if 3% of the code takes half the time, it's not necessarily the same 3% for every customer!
+Knuth said "We should forget about small efficiencies, say about 97% of the time: premature optimization is the root of all evil. Yet we should not pass up our opportunities in that critical 3%." But [premature optimization is not nearly as bad as **not giving a f*ck**](http://loyc.net/2013/the-root-of-all-evil-is-optimization-no.html), which is a far more common practice today. And surely Knuth exaggerates - 10% is a more likely number. When speed-critical code is written badly, 3% of the code might take 50% of CPU time, but once you optimize it, the same 3% is takes only 5% of the time, and now the slowest code is somewhere else and 10% of it is taking 50% of CPU time.
+
+If you're writing a library, like WPF or its 3rd-party controls, which parts of it are speed-critical? Well, the library could be used in thousands of different programs, but each program uses _different parts_ of your library heavily. This implies that library authors should optimize much more than normal applications do, since a lot more of the code will be speed-critical for at least a few users. Likewise, the more users your app has, the more likely that one of your customers is stressing a code path that the others are not. Even if 3% of the code takes half the time, it's not necessarily the same 3% for every customer!
 
 As a library author who grew up at a time when my apps actually had to fit in [640K of RAM](https://quoteinvestigator.com/2011/09/08/640k-enough/), rarely was my program small or fast enough at first, and I learned to care about performance like the folks of 1974. Without good profiling tools I've sometimes optimized the wrong things; still, let me share some lessons I've learned:
 
@@ -306,7 +349,7 @@ When you are contemplating whether to "heavily" optimize a program, you should u
 
 If you know what things cost, you might design a public-facing interface or multi-tier architecture correctly the first time, instead of having to do arduous workarounds and redesigns when it becomes clear that you made a big mistake. If you know what things cost, you hardly need any time at all to choose between `List<>` (array), `Dictionary<,>` (hashtable), `SortedDictionary<,>` (red-black tree), `SortedList<,>` (insertion-sorted array) or LINQ `OrderBy` (quicksort). Such decisions often have no impact on performance, but _sometimes have a big impact_. Better to avoid a slug (slowness bug) on day one, if you ask me.
 
-### 10. Keep improving ###
+### 11. Keep improving ###
 
 Be on the lookout for new and better general-purpose techniques, and then actually use those techniques. For example, I am slightly irritated whenever I see professional developers using strings when they should be using `Symbols`. Why? Do you use strings in C# because it doesn't have Symbols? But you've seen Symbols in Ruby and ES6 - take the lesson you learned in the other language and apply it to C#.
 
