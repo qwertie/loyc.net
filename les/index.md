@@ -72,11 +72,9 @@ The C# code, in turn, looks like this when printed as LES code:
 
 ### Note: A new LES is coming ###
 
-This document describes LESv2. The design of [LESv3 is nearing completion](http://loyc.net/2017/lesv3-update.html) and will be the recommended version going forward. LESv2 looks good - it closely resembles Java/C and is a superset of JSON - but LESv3 is less error-prone to write, mainly because LESv3 uses newline as a terminator so it does not require semicolons after closing braces (or anything else for that matter).
+This document describes LES version 2, but this will be replaced fairly soon. [LES version 3 has been in progress for some time](http://loyc.net/2017/lesv3-update.html), but as of 2020/05 I finally have a solid block of time to dedicate to it. I've decided not to standardize the original LES3 as planned; instead, I intend to split LES3 into two versions, LESC (LES C-style) and LESP (LES Python-style) which will be very similar to each other but treat colons, newlines, and spaces differently. LESC will be simpler than LESP. LESC, like LES2, will be a superset of JSON.
 
-However, because newlines are significant, LESv3 is not a superset of JSON. If you prefer to have a superset of JSON or if you prefer how LESv2 looks, feel free to keep using LESv2 and feel free to voice your opinion on the [issue tracker](https://github.com/qwertie/ecsharp/issues). Both versions of LES are currently available in the .NET NuGet package Loyc.Syntax.dll.
-
-LESv3 doesn't have a spec yet, but the latest blog post is [here](http://loyc.net/2017/lesv3-update.html) and see issue [#52](https://github.com/qwertie/ecsharp/issues/52). As always, help is wanted to write parsers (and printers) for languages other than C#.
+LES2 and LES3 are both available in the C# NuGet package Loyc.Syntax.dll.
 
 ### LES for configuration files ###
 
