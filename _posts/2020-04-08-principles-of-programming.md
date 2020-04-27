@@ -351,7 +351,7 @@ If you know what things cost, you might design a public-facing interface or mult
 
 ### 11. Keep improving ###
 
-Be on the lookout for new and better general-purpose techniques, and then actually use those techniques. For example, I am slightly irritated whenever I see professional developers using strings when they should be using `Symbols`. Why? Do you use strings in C# because it doesn't have Symbols? But you've seen Symbols in Ruby and ES6 - take the lesson you learned in the other language and apply it to C#.
+Be on the lookout for new and better general-purpose techniques, and then actually use those techniques. For example, I am slightly irritated whenever I see professional developers using strings when they should be using `Symbols`. Why? Do you use strings in C# because it doesn't have Symbols? But you've seen Symbols in Ruby and JavaScript (ES6) - take the lesson you learned in the other language and apply it to C# (Loyc.Interfaces on NuGet for C# includes a `Symbol` type.)
 
 Other things I think are broadly useful include 
 
