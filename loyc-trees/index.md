@@ -13,6 +13,9 @@ Loyc trees are a kind of inverted tree structure. They are designed for represen
 
 The term "Loyc tree" refers to the conceptual or in-memory representation of the tree; the standard text representation of Loyc trees is [LES](/les).
 
+<iframe src="https://www.youtube.com/embed/Eqm2Eip884E" 
+    width="600" height="340" frameborder="0" allowfullscreen></iframe>
+
 The goals of LES and Loyc trees are:
 
 - To define a neutral standard syntax for expressions, for use in diverse applications
