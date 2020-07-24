@@ -111,7 +111,7 @@ Sometimes it is useful to view a node as having a single list of children. You c
 Trivia Attributes and Node Styles
 ---------------------------------
 
-A trivia attribute is a Loyc node in an attribute list whose `Name` starts with `%` (**note:** code updates are [pending for this](https://github.com/qwertie/ecsharp/issues/61); the old convention was that trivia nodes have a `Name` that starts with `#trivia_`.) Trivia attributes can be simple identifiers or calls. By convention, trivia attributes have low importance and can be (optionally) dropped when converting a Loyc tree to text.
+A trivia attribute is a Loyc node in an attribute list whose `Name` starts with `%`. Trivia attributes can be simple identifiers or calls. By convention, trivia attributes have low importance, and when a printer converts a Loyc tree to text, it can ignore (drop) trivia that it does not understand.
 
 Probably the most important use of trivia attributes is to denote comments. By convention, comments like
 
@@ -120,7 +120,7 @@ Probably the most important use of trivia attributes is to denote comments. By c
 result = /* in the middle */ Func(); // after
 ~~~
 
-are represented by the following Loyc tree:
+are represented by the following Loyc tree (expressed in LES2 format):
 
 ~~~
 @[@%SLComment(" Before")]
@@ -132,7 +132,7 @@ If you manually insert a trivia attribute in your source code, it may disappear 
 
 The C# implementation of Loyc trees has a concept of "node style", an 8-bit number that represents something stylistic and non-semantic about the source code. For example, `0xC` and `12` are the same integer in two different styles. It is semantically the same—the compiler always produces the same program regardless of which form you choose. But it's a striking visual difference that should be preserved during conversion between languages. In my implementation, this difference is preserved in a node's `NodeStyle` property, using the bit flag `NodeStyle.HexLiteral`.
 
-Style bits do a great job saving memory, but they are an unnecessary flourish, and in the future I'm strongly inclined to drop them and use the [flyweight pattern](https://en.wikipedia.org/wiki/Flyweight_pattern) instead, representing these styles as trivia attributes in shared sublists.
+Style bits do a great job saving memory, but they are an unnecessary flourish, and in the future I'm inclined to [drop them](https://github.com/qwertie/ecsharp/issues/80) and use the [flyweight pattern](https://en.wikipedia.org/wiki/Flyweight_pattern) instead, representing these styles as trivia attributes in shared sublists.
 
 Mappings between Loyc trees and programming languages
 -----------------------------------------------------

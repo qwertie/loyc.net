@@ -21,16 +21,16 @@ LNode fooDecl = F.Fn(F.Void, F.Id("foo"),
                      F.Braces(F.Call(S.Return)));
 ~~~
 
-An easier way to create nodes is to parse LES or EC# code, although this can be costly because it happens at runtime. If you're using EC# then you can use [`quote {...}`](http://ecsharp.net/lemp/ref-other.html#quote) to produce code at compile time that will construct a Loyc tree directly.
+An easier way to create nodes is to parse LES or C#/EC# code, although this can be costly because it happens at runtime. If you're using EC# then you can use [`quote {...}`](http://ecsharp.net/lemp/ref-other.html#quote) to produce code at compile time that will construct a Loyc tree directly.
 
-To parse EC# into a Loyc tree, call `Loyc.Ecs.EcsLanguageService.Value.Parse("your code here;")` (this is an extension method so you'll also need `using Loyc.Syntax;`). To treat a node (or list of nodes) as EC# code and print them with the EC# printer, call `EcsLanguageService.Value.Print(node)`. Don't worry, the EC# printer is fairly reliable at printing Loyc trees that do not represent EC# code; Loyc trees almost always round-trip correctly from a Loyc tree to EC# code and back.
+To parse [EC#](http://ecsharp.net) into a Loyc tree, call `Loyc.Ecs.EcsLanguageService.Value.Parse("your code here;")` (this is an extension method so you'll also need `using Loyc.Syntax;`). To treat a node (or list of nodes) as EC# code and print them with the EC# printer, call `EcsLanguageService.Value.Print(node)`. Don't worry, the EC# printer is fairly reliable at printing Loyc trees that do not represent EC# code; Loyc trees almost always round-trip correctly from a Loyc tree to EC# code and back.
 
-Similarly, to parse LES into a Loyc tree, call `LesLanguageService.Value.Parse("your expression here;")`.
+Similarly, to parse [LES](http://loyc.net/les) into a Loyc tree, call `LesLanguageService.Value.Parse("your expression here;")`.
 
-The LES printer is the default when you call `LNode.ToString()`. To use EC# as the default instead, set `LNode.Printer` to `EcsLanguageService.Value.Printer`, or better yet, use code like this:
+The LES printer is the default when you call `LNode.ToString()`. To print code as C#/EC# instead, use code like this:
 
 ~~~csharp
-    using (LNode.PushPrinter(EcsLanguageService.Value.Printer)) {
+    using (LNode.SetPrinter(EcsLanguageService.Value.Printer)) {
       /* print Loyc trees with `tree.ToString()` here */
     }
 ~~~
@@ -45,7 +45,7 @@ A Loyc tree node (`LNode`) consists of the following main properties:
 * One of: `Value` (the value of a literal node), `Name` (the name of an identifier node), or `Target` and `Args`, which are child `LNode`s (e.g. The `Target` of `f(1, a)` is `f` and the `Args` list contains two nodes `1, a`). Note: the `Name` property is special because it works for simple calls in addition to identifiers, e.g. the name of `foo(x)` is `foo`.
 * The `Kind` property returns the node type: `NodeKind.Literal`, `NodeKind.Id`, or `NodeKind.Call`. However, it's almost always easier to call one of the three test properties `IsLiteral`, `IsId` or `IsCall`.
 * `Range`: indicates the source file that the node came from and location in that source file.
-* `Style` an 8-bit flag value that is used as a hint to the node printer about how the node should be printed. For example, a hex literal like `0x10` has the `NodeStyle.Alternate` style to distinguish it from decimal literals such as 16. Custom display styles that do not fit into the `Style` property should be expressed with trivia attributes.
+* `Style` an 8-bit flag value that is used as a hint to the node printer about how the node should be printed. For example, a hex literal like `0x10` has the `NodeStyle.Alternate` style to distinguish it from decimal literals such as 16. Custom display styles that do not fit into the `Style` property should be expressed with trivia attributes, which are attributes whose `Name` starts with `%`. (Trivia attributes are attributes that printers are allowed to ignore when they are not understood, and affect formatting when they are understood.)
 
 Identifier names are stored in `Symbol`s; a `Symbol` is a singleton string. One purpose of symbols is performance; in order to compare `"foo1" == "foo2"`, the actual characters much be compared one-by-one. `Symbol` comparisons, on the other hand, are lightning-fast reference comparisons. To get a symbol from a string `s` in C#, just use a cast: `(string) s`. To get the string out of a `Symbol`, call the `Symbol.Name` property or `ToString()` which is an alias for `Name`.
 
