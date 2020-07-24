@@ -179,11 +179,11 @@ The regime part holds a number in a special run-length encoding, and the number 
 | 11111111111110  |  14            | 13               |
 | 111111111111110 |  15            | 14               |
 
-If _m_ is the number of identical bits, then _r_ = _m_-1 when the first bit is 1, or -_m_ when the first bit is 0.
+If _m_ is the number of identical bits, then _r_ = _m_-1 when the first bit is 1, or _-m_ when the first bit is 0.
 
 The exponent field _e_ has a fixed size, unless it is too small to fit (for example, if r=14, the exponent field must have a size of zero), and whatever is left over is the fraction bits _f_.
 
-Perhaps the easiest way to explain the "regime" is with a formula. Just like floats, posits have a "location where the first 1 appears", but it works a little differently in posits for two reasons. The first reason is that there is no "bias" parameter. In 16-bit floats you saw that the location to the left of the point was labeled 15, and this is called the "bias". Posits don't use a bias, so we will call the location to the left of the point "zero" instead. Therefore, the first "1" location for π (3.1415... = 11.00100100010...) is 1, and the first-1 location of binary 0.01 (0.25) is -2.
+Perhaps the easiest way to explain the "regime" is with a formula. Just like floats, posits have a "location where the first 1 appears", but it works a little differently in posits for two reasons. The first reason is that there is no "bias" parameter. In 16-bit floats you saw that the location to the left of the point was labeled 15, and this number 15 is called the "bias". Posits don't use a bias, so we will call the location to the left of the point "zero" instead. Therefore, the first "1" location for π (3.1415... = 11.00100100010...) is 1, and the first-1 location of binary 0.01 (0.25) is -2.
 
 Posits use this formula for the first-1 location:
 
