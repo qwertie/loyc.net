@@ -54,12 +54,11 @@ Common symbols for keywords and datatypes are defined in the `Loyc.Syntax.CodeSy
 You should also be aware of these helper methods:
 
 * `IsIdNamed(Symbol name)`: returns true if the node is an identifier with the specified name.
-* `Calls(Symbol name, int argCount)`: returns true if the node calls the specified name with the specified number of arguments, e.g. if I create a call with `c = F.Call("x", F.Literal(123))` then `c.Calls(GSymbol.Get("x"), 1)` is true.
+* `Calls(Symbol name, int argCount)`: returns true if the node calls the specified name with the specified number of arguments, e.g. if I create a call with `c = F.Call("x", F.Literal(123))` then `c.Calls((Symbol) "x", 1)` is true.
 * `CallsMin(Symbol name, int argCount)`: returns true if the node calls the specified name with the specified _minimum_ number of arguments.
 * `HasPAttrs()`: returns true if the node has any "printable", meaning non-trivia, attributes attached to it.
-* `IsParenthesizedExpr()`: checks for a `#trivia_inParens` attribute.
 * `Descendants()`, `DescendantsAndSelf()`: enumerates the children of a node.
-* `ReplaceRecursive(node => {...})` performs a find-and-replace operation, as discussed below.
+* `ReplaceRecursive(node => {...})` performs a find-and-replace operation, as discussed below. You can also use it for searching without replacing.
 
 Node comparisons with `Equals()` test for structural equality rather than reference equality, and tend to be expensive. `GetHashCode()` can be expensive when first called, but the hashcode is cached.
 
@@ -284,24 +283,24 @@ Since `LNode`s are immutable, you don't modify them directly. Instead you'll typ
  // which produces a call node.)
  public virtual  CallNode WithTarget(LNode target);
  public virtual  CallNode WithTarget(Symbol name);
- public abstract CallNode WithArgs(RVList<LNode> args);
- public virtual  CallNode With(LNode target, RVList<LNode> args);
+ public abstract CallNode WithArgs(LNodeList args);
+ public virtual  CallNode With(LNode target, LNodeList args);
  public          CallNode With(Symbol target, params LNode[] args);
  public          LNode PlusArg(LNode arg); // add one parameter
- public          LNode PlusArgs(RVList<LNode> args);
+ public          LNode PlusArgs(LNodeList args);
  public          LNode PlusArgs(IEnumerable<LNode> args);
  public          LNode PlusArgs(params LNode[] args);
  public          LNode WithArgChanged(int index, LNode newValue);
  
  // For modifying the attribute list
  public virtual  LNode WithoutAttrs()
- public abstract LNode WithAttrs(RVList<LNode> attrs);
+ public abstract LNode WithAttrs(LNodeList attrs);
  public          LNode WithAttr(LNode attr)
  public          LNode WithAttrs(params LNode[] attrs)
  public          LNode WithAttrChanged(int index, LNode newValue)
  public          CallNode WithArgs(params LNode[] args)
  public          LNode PlusAttr(LNode attr); // add one attribute
- public          LNode PlusAttrs(RVList<LNode> attrs);
+ public          LNode PlusAttrs(LNodeList attrs);
  public          LNode PlusAttrs(IEnumerable<LNode> attrs);
  public          LNode PlusAttrs(params LNode[] attrs);
  
@@ -388,13 +387,13 @@ while (c) { zero_or_more_statements(); ... }
 The `AsList` extension method helps you treat that single statement as a list:
 
 ~~~csharp
-public static VList<LNode> AsList(this LNode block, Symbol listIdentifier)
+public static LNodeList AsList(this LNode block, Symbol listIdentifier)
 ~~~
 
 If `block` is the second argument to `#while` then `block.AsList(CodeSymbols.Braces)` would return a one-item list containing `single_statement()` in the first example, and in the second example it would return a list containing the contents of the braced block. The inverse operation is `AsLNode`:
 
 ~~~csharp
-public static LNode AsLNode(this VList<LNode> list, Symbol listIdentifier)
+public static LNode AsLNode(this LNodeList list, Symbol listIdentifier)
 ~~~
 
 This returns `list[0]` if the list has one item; otherwise creates a node that calls `listIdentifier` with the specified argument list.
@@ -405,8 +404,8 @@ Occasionally a "splicing" operation is useful:
 
 ~~~csharp
 // in LNodeExt class
-public static VList<LNode> WithSpliced(this VList<LNode> list, LNode node, Symbol listName = CodeSymbols.Splice)
-public static VList<LNode> WithSpliced(this VList<LNode> list, int index, LNode node, Symbol listName = CodeSymbols.Splice)
+public static LNodeList WithSpliced(this LNodeList list, LNode node, Symbol listName = CodeSymbols.Splice)
+public static LNodeList WithSpliced(this LNodeList list, int index, LNode node, Symbol listName = CodeSymbols.Splice)
 ~~~
 
 "Splicing" refers to conditionally inserting the arguments of one node into another node, if the node calls an identifier with a particular `Name`. For example, if you have a list `10, 11, 12` and a node `#splice(1, 2, 3)` then `list.WithSpliced(0, node)` returns the list `1, 2, 3, 10, 11, 12`. But if the node does not call `#splice` then it is simply added to the list, e.g. if the `node` is `foo(1, 2, 3)` then `list.WithSpliced(0, node)` returns the list `foo(1, 2, 3), 10, 11, 12`.
