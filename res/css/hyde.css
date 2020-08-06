@@ -32,16 +32,12 @@
  */
 
 html {
-  font-family: "PT Sans", Helvetica, Arial, sans-serif;
-}
-@media (min-width: 48em) {
-  html {
-    font-size: 16px;
-  }
+  font-family: "Segoe UI",Helvetica,Arial,sans-serif;
+  font-size: 17px;
 }
 @media (min-width: 60em) {
   html {
-    font-size: 18px;
+    font-size: 19px;
   }
 }
 
