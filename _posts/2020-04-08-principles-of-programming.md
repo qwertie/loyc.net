@@ -78,7 +78,7 @@ If you take one thing away from this post, let it be this basic separation: _ima
 
 ![](Tallest-tree-herring-programming.webp)
 
-Often the best way to solve a large problem involves creating a large tool that is fairly elaborate. Often this will not be acceptable to management. They will say they don't have the budget to make a tool. Or they'll say it's not your job and you have to stay on task. Or they'll say we can think about this later, after you've actually done the task. Or if the best approach involves improving an existing open-source tool, they'll say you were hired to write proprietary software, not free software. And sometimes if you want to keep your job, you'll have to put up with this.
+Often the best way to solve a large problem involves creating a large tool that is fairly elaborate. Often this will not be acceptable to management.
 
 But as the example above illustrates, often there are little tools you can make, that will improve your ability to write software without the cost of making a large tool. The little tool might not be as broadly applicable as a bigger, more ideal tool that you can imagine, and it might not even reduce total development time as much as a bigger tool, but the little one will be easier to get through management, the time needed to build it will be more predictable, and by making a small tool, you might learn things that will help you build a larger and better tool later.
 
@@ -99,6 +99,8 @@ Concerns should be separated both "vertically" and "horizontally". Vertical sepa
 You can visualize separation of concerns as a 3-D pyramid of modules, with high-level functionality at the top, and low level functionality at the bottom.
 
 ![Marshmallows](marshmallow-software-dependency-pyramid.webp)
+
+_Diagram is not to scale: I should have chopped the toothpicks in half first._
 
 As the diagram illustrates, it should be possible to arrange all modules in a vertical way so that there are no horizontal or upward connections between them: higher levels only use lower levels.
 
@@ -151,7 +153,7 @@ public struct Address
 
 In C# or Java there is no way to write this code in a shorter way, but I hated code like this so much that I built [LeMP.](http://ecsharp.net/lemp/)
 
-I used to think DRY was my #1 most important principle, because the idea of _organizing code well_, including Separation Of Concerns, was so deeply ingrained in my psyche that it had become invisible to me. Encountering a codebase that was disorganized and mixed concerns all over the place reminded me that Generalized DRY was really #2. But it's still key.
+I used to think DRY was my #1 most important principle, because the idea of _organizing code well_, including Separation Of Concerns, was so deeply ingrained in my psyche that it had become invisible to me. Encountering a codebase that was disorganized and mixed concerns all over the place reminded me that Generalized DRY does not reign supreme... but it's still really important.
 
 Don't. Repeat. Stuff. And if you do repeat stuff, at least slap a `// TODO: This violates DRY, refactor it!` on that sucker.
 
@@ -159,7 +161,7 @@ Don't. Repeat. Stuff. And if you do repeat stuff, at least slap a `// TODO: This
 
 Create functions and abstractions appropriately, but avoid excessive layering/wrapping.
 
-Wrapping is often motivated by prior failure to refactor, or failure to test, leading to brittle code you don't dare touch. But having lots of layers, that basically have the same responsibility, with confusingly similar names... well, it's confusing. You're taking a bad situation and making it worse. Don't do that.
+Wrapping is often motivated by prior failure to refactor, or failure to test, leading to brittle code you don't dare touch. But having lots of layers, that basically have the same responsibility, with confusingly similar names... well, it's confusing. You're taking a bad situation and making it worse. Don't do that (unless required).
 
 Too many abstractions can also occur because you are imagining several use cases that may never materialize, so you write a "framework" for these imaginary use cases. This is where YAGNI comes in: You Ain't Gonna Need It.
 
@@ -173,9 +175,9 @@ Focus mostly on features that you will actually use; considering those imaginary
 
 This is another perspective on #0 and #1, Path of the Tool Writer and Separation of Concerns. Another way to say it is "separate things that change from things that stay the same"; tools change less than the things you build on top of the tools.
 
-Suppose you're adding support for profile pictures of your users, and you want to cache these pictures in memory. **Don't just write a `PictureCache` class to cache pictures!** _Definitely_ don't write a `ProfilePictureCache` that is specifically for profile pictures. Instead, start by writing an `ObjectCache` for caching _anything_, so that you can use it to cache other things later. Also, check the Standard Library of your language to see if it _already_ offers a cache that would meet your needs. If the picture cache has special requirements that somehow only apply to pictures, try to put as much code as possible in `ObjectCache` and then write small a `PictureCache` wrapper that _uses_ `ObjectCache` but also supports the special requirements.
+Suppose you're adding support for profile pictures of your users, and you want to cache these pictures in memory. **Don't just write a `PictureCache` class to cache pictures!** _Definitely_ don't write a `ProfilePictureCache` that is specifically for profile pictures. Instead, start by writing an `ObjectCache` for caching _anything_, so that you can use it to cache other things later. Also, check the Standard Library (and popular packages) for your language to see if there's _already_ a cache that would meet your needs. If the picture cache has special requirements that somehow only apply to pictures, try to put as much code as possible in `ObjectCache` and then write small a `PictureCache` wrapper that _uses_ `ObjectCache` but also supports the special requirements.
 
-The [strategy pattern](https://en.wikipedia.org/wiki/Strategy_pattern) is super useful for promoting reusability. The idea is to write something general and then offer places to "plug in" specific knowledge and functionality. Strategies are usually functions or interfaces. In an Object Cache, for example, a strategy might be a function that figures out the size of each object (assuming your programming language offers no built-in way to do this). This function should typically a constructor parameter of the Object Cache, but it may be a property so that the strategy can be changed after the cache is created. Traditionally, object-oriented inheritance was used for this kind of thing, but the strategy pattern is often better because (1) a single class or component can support multiple kinds of strategy at the same time, and (2) strategies can sometimes be changed _after_ the class is constructed.
+The [strategy pattern](https://en.wikipedia.org/wiki/Strategy_pattern) is super useful for promoting reusability. The idea is to write something general and then offer places to "plug in" specific knowledge and functionality. Strategies are usually functions or interfaces. In an Object Cache, for example, a strategy might be a function that figures out the size of each object (assuming your programming language offers no built-in way to do this). This function should typically be a constructor parameter of the Object Cache, but it may be a property so that the strategy can be changed after the cache is created. Traditionally, object-oriented inheritance was used for this kind of thing, but the strategy pattern is often better because (1) a single class or component can support multiple kinds of strategy at the same time, and (2) strategies can sometimes be changed _after_ the class is constructed.
 
 To put this a third way, design your interfaces, classes, modules and libraries to be **generic, ignorant, and reusable.** If your code isn't separated properly, it will be designed for a _specific_ business use inside the _specific app_ you've been hired to work on. It may seem appealing that you're "working on the problem domain" and "tailoring your code to your employer's needs", but chances are that you're also making a _mess_ that is hard to understand, isn't flexible enough to adapt to new requirements, and can't be taken out of the current app and be plugged into a new app that has a better architecture.
 
@@ -254,7 +256,7 @@ For example, in much of my Enhanced C# test suite, there are **two tests per one
     }
 ~~~
 
-Each line of code ensures that the string on the left corresponds to the syntax tree on the right. I've used some techniques to make the syntax trees compact: `F` is a very short name for the [syntax-tree factory](http://ecsharp.net/doc/code/classLoyc_1_1Syntax_1_1LNodeFactory.html); `a`, `b`, `c` and `Foo` are variables that represent the identifiers "a", "b", "c" and "Foo"; and the `_("var")` function is an abbreviation for `F.Id("var")` which itself is an abbreviation for 'create an object to represent an identifier named "var"' (I called it `_` so that my eyes could easily ignore it - I wanted to emphasize the identifier's name and de-emphasize the fact that a factory was being used to create an identifier object.)
+Each line of code ensures that the string on the left corresponds to the syntax tree on the right. I've used some techniques to make the syntax trees compact: `F` is a very short name for the [syntax-tree factory](http://ecsharp.net/doc/code/classLoyc_1_1Syntax_1_1LNodeFactory.html); `a`, `b`, `c` and `Foo` are variables that represent the identifiers "a", "b", "c" and "Foo"; and the `_("var")` function is a questionable abbreviation for `F.Id("var")` which itself is an abbreviation for 'create an object to represent an identifier named "var"' (I called it `_` so that my eyes could easily ignore it - I wanted to emphasize the identifier's name and de-emphasize the fact that a factory was being used to create an identifier object.)
 
 But the test method is located in a base class where the `Stmt` (statement test) method is abstract. There are two derived classes: one makes sure that the string on the left is parsed into the syntax tree on the right, while the other makes sure that when the syntax tree is printed into a string, it's the string on the left. Thus, each line of code is actually two tests. Of course, there are some tests that only apply to one or the other (e.g. there are tests to check what the parser does in case of syntax errors, and other tests to see what happens when the printer is given a syntax tree that the parser would never produce).
 
