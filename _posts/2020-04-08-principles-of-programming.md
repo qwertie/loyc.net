@@ -263,6 +263,7 @@ But the test method is located in a base class where the `Stmt` (statement test)
 Imagine how inefficent it would be if I didn't use these techniques and needed to write six lines of code for every test:
 
 ~~~cs
+    // Parsing tests!
     [Test]
     public void CsTestVariableDeclaration_Foo_a()
     {
@@ -275,6 +276,7 @@ Imagine how inefficent it would be if I didn't use these techniques and needed t
         var syntaxTree = F.Vars(F.Dot(F.Id("Foo"), F.Id("x")), F.Id("a"));
         Stmt("Foo.x a;", syntaxTree);
     }
+    // TODO: repeat the same tests for converting back to string
 ~~~
 
 Such a clunky way of writing tests would cause me to write fewer tests, so I'd end up with more bugs, and at the same time the code would be longer, so it would be harder to read the code and get a sense of what I have already tested and what I may have missed.
@@ -293,11 +295,11 @@ A lot could be said about naming, but in brief I suggest _spending time_ thinkin
 
 When debugging is done and the code is ready to commit, that's a good time to reconsider the names you chose before. Or, wait three months and see if the meaning of your names is still clear after you've been working on something completely different. The passage of time causes your brain to forget things that seemed obvious at the time, which allows you to read your own code with fresh eyes. Take advantage of this opportunity to notice when your code is more confusing than you thought--and fix it.
 
-### 8. Use comments. Appropriately. ###
+### 8. Use comments appropriately ###
 
 I often write documentation for a class before its code, which leads to clear thinking and good separation of concerns. (However, I must remember to review the documentation during the commit process, because I usually tweak my planned implementation midstream, potentially making the comment wrong from the very beginning!)
 
-Documentation of high-level and large-scale entities (classes, modules) is often more important than documentation of small-scale entities (small functions and code blocks), because these comments don't take long to write and can be extremely helpful to anyone who is new to the codebase (or to this area of the codebase). As you write these comments, make sure they are meaningful by keeping in mind who your audience is: someone who knows **almost nothing** about the code. Documentation of mutable state variables (e.g. invariants) is also a cheap way to help readers understand the code more quickly.
+Documentation of high-level and large-scale entities (classes, modules) is often more important than documentation of small-scale entities (small functions and code blocks), because high-level comments can be extremely helpful to anyone who is new to the codebase (or to this area of the codebase). As you write these comments, make sure they are meaningful by keeping in mind who your audience is: someone who knows **almost nothing** about the code. Documentation of mutable state variables (e.g. invariants) is also a cheap way to help readers understand code more quickly.
 
 A lot of code is self-documenting and doesn't really need comments, although a short comment to summarize a code block can let someone avoid the painstaking work of actually reading the code. This is especially helpful when the reader has _no clue_ what the code is for (e.g. because it encodes non-obvious business rules, or performs non-obvious preparatory steps for work done elsewhere). The reason to avoid comments is that when people update code, they often forget to change the comments to match the new code. But at least experienced readers already know that any given comment may be out-of-date.
 
@@ -305,7 +307,7 @@ However, code can only explain _what code does_. Comments are needed to explain 
 
 ![](CodeLens-splits-comments.png)
 
-_In Visual Studio, CodeLens visually separates comments from code, encouraging developers to overlook comments when updating code. To reduce this effect, I shrink my CodeLens font vertically (Lucida Console size 7 works pretty well.)_
+_In Visual Studio, CodeLens visually separates comments from code, encouraging developers to overlook comments when updating code. To reduce this effect, I shrink my CodeLens font vertically (Lucida Console size 7) but it only helps a little._
 
 When writing documentation, keep in mind my [#1 tip for technical writers](http://loyc.net/2013/my-1-tip-for-technical-writers.html): use examples. This post uses "for example" and "e.g." over 15 times and I'm still not sure if it's enough to get my ideas across.
 
