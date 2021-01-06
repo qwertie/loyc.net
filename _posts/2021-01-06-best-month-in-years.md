@@ -100,7 +100,7 @@ And then I thought "why stop there?" and added a `where` operator too, because I
 
 ~~~cs
 context.Sink.Error(errorLocation, "{0} - in «{1}»"
-        .Localized(e.Message line, lineOfCodeFromOutput));
+        .Localized(e.Message, lineOfCodeFromOutput));
 ~~~
 
 But first, I need to figure out the `errorLocation` and a `lineOfCodeFromOutput` to include in the error message. At this point programmers usually insert code **above** this point to retrieve the desired information. I'm thinking, **no, that harms code readability!** Instead what we should do is write the code in a more natural top-down order:
@@ -108,8 +108,8 @@ But first, I need to figure out the `errorLocation` and a `lineOfCodeFromOutput`
 ~~~cs
 // (I'd prefer the shorter syntax $errorLocation, but 
 // `var` is what I think the Roslyn team would choose)
-context.Sink.Error(var errorLocation, e.Message + "{0} - in «{1}»"
-  .Localized(e.Message line, var lineOfCodeFromOutput)) where
+context.Sink.Error(var errorLocation, "{0} - in «{1}»"
+  .Localized(e.Message, var lineOfCodeFromOutput)) where
 {
     Microsoft.CodeAnalysis.Text.TextSpan range = e.Diagnostics[0].Location.SourceSpan;
     var C#Location = new IndexRange(range.Start, range.Length);
@@ -133,4 +133,4 @@ Anyway, while working on C# 8/9 pattern matching I realized that if I didn't wan
 
 And that's where we are today. In the coming days I'll be producing videos for Future of Coding, figuring out how to write printers more effectively by implementing a printer for TypeScript, and releasing semantic version 29 of [Enhanced C#](http://ecsharp.net/), [LeMP](http://ecsharp.net/lemp/), [LLLPG](http://ecsharp.net/lllpg/) and the [Loyc .NET Libraries](http://core.loyc.net/).
 
-Did I somehow regain my hope — hope that more work would lead to renewed interest in my software and my ideas? Maybe. Hope is a fragile thing. I can feel the despair clawing at my psyche from below. A couple of times in the past month, I remembered the bad times, like when I would write a ten-page article on a new feature, post it to Reddit and get two upvotes and zero traction. So far I've managed to refocus my mind on more positive thoughts. I worry that my success won't last much longer, but I am confident that I will at least manage to post the videos, release v29 and continue work on the web version of LeMP.
+Did I somehow regain my hope — hope that more work would lead to renewed interest in my software and my ideas? Maybe. Hope is a fragile thing. [**Edit:** on second thought, it wasn't fragile when I started the EC# project 8 years ago; time has a way of wearing me down.] I can feel the despair clawing at my psyche from below. A couple of times in the past month, I remembered the bad times, like when I would write a ten-page article on a new feature, post it to Reddit and get two upvotes and zero traction. So far I've managed to refocus my mind on more positive thoughts. I worry that my success won't last much longer, but I am confident that I will at least manage to post the videos, release v29 and continue work on the web version of LeMP.
