@@ -1,8 +1,9 @@
 ---
 title: "My best month in years"
 layout: post
-toc: true
+toc: false
 tagline: "What causes motivation? Damned if I know!"
+commentIssueId: 130
 ---
 
 I've just had the most productive month since I was laid off in April, and the most productive month _without pay_ in years. Why?
@@ -13,7 +14,7 @@ It's hard to say exactly, but a number of factors came together.
 
 First and foremost, moral support by [Maksim Volkau](https://github.com/dadhi) was invaluable. Thank you so much! Sometimes people complain about how users of open-source projects can be demanding and not contribute anything back, but I think that demanding users are not nearly as bad as having no users at all. I make open source software for one reason: I want to make the world a better place. Simple as that. The fact that I have no users and no participants is therefore a massive hole in my life. [Jonathan van der Cruysse](https://github.com/jonathanvdc) used to be a heavy user, but his work tapered off a couple of years back for reasons unknown to me, so it was a big boost to have Maksim come in with some bugs and feature requests. On very, VERY rare occasions I get nice message from a lurker, but only a bug report can prove someone's actually using my software. So, to those rare individuals who step up with a bug report, thank you so much.
 
-Another factor is that I quit looking for a job. Suffice it to say that I am giving up a bunch of EI income in order to create free software.
+Another factor is that I quit looking for a job. Suffice it to say that I am giving up a bunch of EI income in order to do this.
 
 The third factor was that I wanted to make an Blazor version of LeMP, so users could try it online, but first I wanted a macro for building other macros, which the online version would definitely need. For this macro to be as powerful as I wanted it to be, I had to add some new features to LeMP, which was more work than expected - I ended up making a set of related general-purpose classes with names like [`CollectionWithChangeEvents`](http://ecsharp.net/doc/code/classLoyc_1_1Collections_1_1Impl_1_1CollectionWithChangeEvents.html), because I wanted to use _just one_ of those classes for an internal design I thought I wanted to use in LeMP - I decided to also write very similar classes ([`ListWithChangeEvents`](http://ecsharp.net/doc/code/classLoyc_1_1Collections_1_1Impl_1_1ListWithChangeEvents.html) and [`DictionaryWithChangeEvents`](http://ecsharp.net/doc/code/classLoyc_1_1Collections_1_1Impl_1_1DictionaryWithChangeEvents.html) for completeness. But ultimately didn't need these classes in the final design, so basically I wasted my time. Still, the classes I built and unit-tested will no doubt be useful for someone, someday. I hope. And then of course I [added a `macro` macro](https://github.com/qwertie/ecsharp/commit/3e353a6664d92297d40cc66fcc95d29bdad98345?branch=3e353a6664d92297d40cc66fcc95d29bdad98345) - there was already a `define` macro for doing simple syntactic transforms, but `macro` gives you the full power of the C# language. It's been possible since the beginning to define your own macros, but other than Jonathan I don't know of anyone who bothered.
 
@@ -98,7 +99,8 @@ Of course, Enhanced C# is a liberalization of C#, so the obvious question was wh
 And then I thought "why stop there?" and added a `where` operator too, because I think some people (e.g. me) would be interested in writing Haskell-style code where you write your code top-down instead of bottom-up. Take, for instance, the code in `compileTime` for error handling when you give it some invalid code. What I _wanted_ to write was some code to print an error message:
 
 ~~~cs
-context.Sink.Error(errorLocation, e.Message + "{0} - in «{1}»".Localized(e.Message line, lineOfCodeFromOutput));
+context.Sink.Error(errorLocation, "{0} - in «{1}»"
+        .Localized(e.Message line, lineOfCodeFromOutput));
 ~~~
 
 But first, I need to figure out the `errorLocation` and a `lineOfCodeFromOutput` to include in the error message. At this point programmers usually insert code **above** this point to retrieve the desired information. I'm thinking, **no, that harms code readability!** Instead what we should do is write the code in a more natural top-down order:
@@ -127,7 +129,7 @@ context.Sink.Error(var errorLocation, e.Message + "{0} - in «{1}»"
 
 The new release won't actually include the macro necessary to use this feature, but it's a macro that you (or anyone else) could write yourself. You don't even need the new version! Enhanced C# already has a "user-defined operator" feature, you just have to write ``expr `where` {...}`` instead of the slightly better-looking ``expr where {...}``.
 
-Anyway, while working on pattern matching I realized that if I didn't want to write a bunch of ugly custom parser code _again_, I would need some kind of new feature in my [parser generator](http://ecsharp.net/lllpg/) to give me better control over code generation for recognizers. So I spent two days adding new LLLPG operators called `recognizer` and `nonrecognizer` to help me out.
+Anyway, while working on C# 8/9 pattern matching I realized that if I didn't want to write a bunch of ugly custom parser code _again_, I would need some kind of new feature in my [parser generator](http://ecsharp.net/lllpg/) to give me better control over code generation for recognizers. So I spent two days adding new LLLPG operators called `recognizer` and `nonrecognizer` to help me out.
 
 And that's where we are today. In the coming days I'll be producing videos for Future of Coding, figuring out how to write printers more effectively by implementing a printer for TypeScript, and releasing semantic version 29 of [Enhanced C#](http://ecsharp.net/), [LeMP](http://ecsharp.net/lemp/), [LLLPG](http://ecsharp.net/lllpg/) and the [Loyc .NET Libraries](http://core.loyc.net/).
 
