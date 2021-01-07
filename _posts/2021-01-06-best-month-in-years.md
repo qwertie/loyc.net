@@ -37,8 +37,7 @@ macro change_temporarily($lhs = $rhs)
       case $prop.$member:
         // Avoid evaluating a property or function call twice in the output.
         // Also support `ref` attribute: it causes the prop var to be a ref var.
-        var @ref = LNode.List().AddSafe(node.AttrNamed(EcsCodeSymbols.Ref));
-        context.Warning(lhs, "{0}", @ref.Count);
+        var @ref = LNode.List().AddIfNotNull(node.AttrNamed(EcsCodeSymbols.Ref));
         unless (@ref.IsEmpty && prop.IsId && prop.Name.Name.ToLower() == prop.Name.Name)
         {
             var tempProp = LNode.Id(EcsValidators.KeyNameComponentOf(prop).Name
