@@ -16,11 +16,13 @@ First and foremost, moral support by [Maksim Volkau](https://github.com/dadhi) w
 
 Another factor is that I quit looking for a job. Suffice it to say that I am giving up a bunch of EI income in order to do this.
 
-The third factor was that I wanted to make an Blazor version of LeMP, so users could try it online, but first I wanted a macro for building other macros, which the online version would definitely need. For this macro to be as powerful as I wanted it to be, I had to add some new features to LeMP, which was more work than expected - I ended up making a set of related general-purpose classes with names like [`CollectionWithChangeEvents`](http://ecsharp.net/doc/code/classLoyc_1_1Collections_1_1Impl_1_1CollectionWithChangeEvents.html), because I wanted to use _just one_ of those classes for an internal design I thought I wanted to use in LeMP - I decided to also write very similar classes ([`ListWithChangeEvents`](http://ecsharp.net/doc/code/classLoyc_1_1Collections_1_1Impl_1_1ListWithChangeEvents.html) and [`DictionaryWithChangeEvents`](http://ecsharp.net/doc/code/classLoyc_1_1Collections_1_1Impl_1_1DictionaryWithChangeEvents.html) for completeness. But ultimately didn't need these classes in the final design, so basically I wasted my time. Still, the classes I built and unit-tested will no doubt be useful for someone, someday. I hope. And then of course I [added a `macro` macro](https://github.com/qwertie/ecsharp/commit/3e353a6664d92297d40cc66fcc95d29bdad98345?branch=3e353a6664d92297d40cc66fcc95d29bdad98345) - there was already a `define` macro for doing simple syntactic transforms, but `macro` gives you the full power of the C# language. It's been possible since the beginning to define your own macros, but other than Jonathan I don't know of anyone who bothered.
+The third factor was that I wanted to make an Blazor version of LeMP, so users could try it online, but first I wanted a macro for building other macros, which the online version would definitely need. For this macro to be as powerful as I wanted it to be, I had to add some new features to LeMP, which was more work than expected - I ended up making a set of related general-purpose classes with names like [`CollectionWithChangeEvents`](http://ecsharp.net/doc/code/classLoyc_1_1Collections_1_1Impl_1_1CollectionWithChangeEvents.html), because I wanted to use _just one_ of those classes for an internal design I thought I wanted to use in LeMP - I decided to also write very similar classes ([`ListWithChangeEvents`](http://ecsharp.net/doc/code/classLoyc_1_1Collections_1_1Impl_1_1ListWithChangeEvents.html) and [`DictionaryWithChangeEvents`](http://ecsharp.net/doc/code/classLoyc_1_1Collections_1_1Impl_1_1DictionaryWithChangeEvents.html)) for completeness. But ultimately I didn't need these classes in the final design, so basically I wasted my time. Still, the classes I built and unit-tested will no doubt be useful for someone, someday. I hope. And then of course I [added a `macro` macro](https://github.com/qwertie/ecsharp/commit/3e353a6664d92297d40cc66fcc95d29bdad98345?branch=3e353a6664d92297d40cc66fcc95d29bdad98345) - there was already a `define` macro for doing simple syntactic transforms, but `macro` gives you the full power of the C# language. It's been possible since the beginning to define your own macros, but other than Jonathan I don't know of anyone who bothered.
 
-### Old And Busted ###
+### Old And Busted* ###
 
 ![define change_temporarily macro](change_temporarily.png)
+
+(* not actually busted)
 
 ### New Hotness: complex compile-time logic ###
 
@@ -126,7 +128,7 @@ context.Sink.Error(var errorLocation, "{0} - in «{1}»"
 }
 ~~~
 
-The new release won't actually include the macro necessary to use this feature, but it's a macro that you (or anyone else) could write yourself. You don't even need the new version! Enhanced C# already has a "user-defined operator" feature, you just have to write ``expr `where` {...}`` instead of the slightly better-looking ``expr where {...}``.
+The new release won't actually include the macro necessary to use this feature, but it's a macro that you could theoretically write yourself. You don't even need the new version, as Enhanced C# already has a "user-defined operator" feature - you just have to write ``expr `where` {...}`` instead of the slightly better-looking ``expr where {...}``.
 
 Anyway, while working on C# 8/9 pattern matching I realized that if I didn't want to write a bunch of ugly custom parser code _again_, I would need some kind of new feature in my [parser generator](http://ecsharp.net/lllpg/) to give me better control over code generation for recognizers. So I spent two days adding new LLLPG operators called `recognizer` and `nonrecognizer` to help me out.
 
