@@ -28,7 +28,7 @@ The goals of LES and Loyc trees are:
 
 - To provide a textual representation for compilers' intermediate output at various stages.
 
-- To form the foundation of "universal" tools that can manipulate the syntax tree of any language that can be converted to and from Loyc trees. For example, [LeMP](http://ecsharp.net/lemp) is a tool that, in principle, can add a LISP-style macro processor to any programming language.
+- To form the foundation of "universal" tools that can manipulate the syntax tree of any language that can be converted to and from Loyc trees. For example, [LeMP](http://ecsharp.net/lemp) is a tool that, in principle, can add a Lisp-style macro processor to any programming language, while [`AbstractTriviaInjector`](https://github.com/qwertie/ecsharp/blob/master/Core/Loyc.Syntax/Parsing/AbstractTriviaInjector.cs) is a general algorithm for reattaching comments and newlines to a syntax tree after they were discarded by a lexer.
 
 Definition
 ----------
@@ -43,7 +43,7 @@ A Loyc tree, also known as a Loyc node, is one of three things:
 
 Unlike in most programming languages, Loyc identifiers can be any string--any string at all. Even identifiers like `\n\0` (a linefeed and a null character) are supported. This design guarantees that a Loyc tree can represent an identifier from any programming language on Earth. To support WebAssembly, LESv3 takes this a step further, supporting not just _any string_ but _any sequence of bytes_.
 
-Normally, literals can be any value representable in the language in which Loyc trees being used, but this is only true of Loyc trees that exists in memory. When a Loyc tree is serialized to text, some in-memory data may not be representable, although LESv3 has a system for defining "custom" literals.
+Normally, literals can be any value representable in the language in which Loyc trees are being used, but this is only true of Loyc trees that exists in memory. When a Loyc tree is serialized to text, some in-memory data may not be representable, but Loyc trees can store a text form alongside the in-memory form. Also, the .NET version offers an extensible system of parsers and printers, so you can "teach" participating languages to understand new data types.
 
 Each Loyc node also has a list of "attributes" (usually empty), and each attribute is itself a Loyc tree. Loyc nodes also contain position information to keep track of the location within a source file where the node was stored.
 
@@ -100,6 +100,84 @@ Again, `[en]` is an attribute. Whereas plain C# allows attributes only on declar
 In this case, one could imagine writing a compiler extension that helps do internationalization. You could define `[en]` to mean that the text is in English and needs to be translated to all other supported languages. Again, that's not something that EC# will support directly--it's a feature somebody might add. (Note: I'd probably support translations in a different way, using an attribute on the function being called rather than at the call site. But both approaches might be useful.)
 
 Please see the [LES](/les) and [EC#](http://ecsharp.net) pages for more information.
+
+Literal system
+-----------------------
+
+![A diagram showing how a lexer converts source code to tokens, which have a text value and type marker, which is later converted to a Loyc literal node which has a value, text value, and type marker](loyc-literal-system.png)
+
+In 2016 the concept of "custom literals" was introduced in the LES3 language. Custom literals in LES3 are a pair of strings: one represents the value of the literal in string form, and the other is a type marker, which indicates both the data type of a value and its syntax. For example, the byte array `{'H','e','l','l','o','!',0,1,2,3,4,5,6,7,8,9,10}` could be represented in LES3 is with `bais"Hello!\b@PHCA@TFAp`IB`"` which uses Byte Array In String encoding (Here are [Java](https://stackoverflow.com/a/56712198/22820) and  [C#](https://github.com/qwertie/ecsharp/blob/master/Core/Loyc.Essentials/Utilities/ByteArrayInString.cs)) implementation of BAIS). The four-character string "bais" is the type marker, and "Hello, world!\b@PHCA@TFAp`IB`" is the value encoded in a string.
+
+Custom literals are stored without escape sequences, so `\b` is stored as a single character 8 (not as two characters `\` and `b`).
+
+Originally custom literals were stored in the `Value` of the Loyc tree, but in 2020 the standard Loyc tree now formally supports two-string custom literals via two extra properties `TextValue` and `TypeMarker`. In total, there are now three properties specific to literals:
+
+1. `Value`, which is any object (e.g. byte array {'H','e','l','l','o','!',0,1,2,3,4,5,6,7,8,9,10})
+2. `TypeMarker`, which indicates type and syntax (e.g. "bais"). By convention, ordinary strings have a zero-length type marker, and numeric formats begin with an underscore (_). The underscore by itself represents the general number format (as in JSON, it may be integer or floating point).
+3. `TextValue`, which is a string from the original source code with any escape sequences removed (e.g. "Hello, world!\b@PHCA@TFAp`IB`" where `\b` represents character 8)
+
+A literal's `Value` property should always be valid; if an unrecognized `TypeMarker` is used then the `Value` and `TextValue` should refer to the same string.
+
+The `TypeMarker` and `TextValue` are optional, and are typically omitted when creating synthetic nodes. If a node doesn't have a type marker, the `TypeMarker` should be `null`. Languages that do not have a null value can use a different representation (e.g. `Nothing` in Haskell). If there is no `TypeMarker`, the TextValue must be `null`, or empty if null is not permitted by the language.
+
+This system enables preservation of style across participating languages. For example, consider the C# literal `0x001_00F`, which represents the number 4111. The underscore is not part of the number, it's just a stylisic element intended to make the hex number easier to read. This number can be represented as a Loyc tree with Value = 4111, TypeMarker = "_" and TextValue = "0x001_00F". The Julia programming language also supports hex literals that contain underscores; therefore, if someone wrote a printer for Julia, that printer can (and should) print this literal as `0x001_00F` rather than `0x100F` or `4111`.
+
+Type markers are case-sensitive.
+
+### Standard number format
+
+The standard number format supports
+
+- Two different digit separators, `_` and `'`
+- Negative numbers that start with `-` or `−` (Unicode minus `\u2212`)
+- Hex and binary numbers that start with `0x` and `0b`
+- Multiplication by a power of 10 using the `e` suffix and optional sign, e.g. `2e-3` = 0.002
+- Multiplication by a power of 2 using the `p` suffix and optional sign, e.g. `1p+3` = 8
+
+Expressed as a case-insensitive regular expression, the format of an integer is
+
+    /^[\-\u2212]?({Digits}|0x{HexDigits}|0b{BinDigits})$/
+    
+where `{Digits}` means `[_']*[0-9][0-9_']*`, `{HexDigits}` means `[_']*[0-9a-f][0-9a-f_']*`, and `{BinDigits}` means `[_']*[01][01_']*`. For floating-point numbers, the format is one of the following:
+
+    /^[\-\u2212]?({Digits}(\.[0-9_']*)?|\.{Digits})(e[+-]?{Digits})?$/
+    /^[\-\u2212]?0b({BinDigits}(\.[01_']*)?|\.{BinDigits})(p[+-]?{BinDigits})?$/
+    /^[\-\u2212]?0x({HexDigits}(\.[0-9a-f_']*)?|\.{HexDigits})(p[+-]?{HexDigits})?$/
+    /nan|[\-\u2212]?inf/
+
+These formats require that any number contains at least one digit, but this digit can appear after the decimal point (.) if there is one. There can be any quantity of separator characters, but no spaces. The final regex allows NaN and infinities to be parsed and printed.
+
+This format allows more inputs than most programming languages do, e.g. `−0x1_F.8` is a valid `TextValue` in the general number format (TypeMarker = `_`), but in order to print this number in Java, the printer would have to replace `−` (unicode minus) with `-` (dash) and add a `p0` suffix at the end. If a Java printer is told to print this value, there are two reasonable ways to react:
+
+1. It can alter the string to match Java requirements, printing it as `-0x1_F.8p0`
+2. It can ignore the `TextValue` and print the `Value` instead. The value _should_ be 31.5, although there is nothing to prevent you from creating a Loyc literal whose value is incorrect or uninterpreted (e.g. the Value could be the string "−0x1_F.8"). If the value is invalid, the printer should record an error but still produce reasonable output (e.g. it could print `"−0x1_F.8"`).
+
+The following type markers are expected to use the standard number format (except that integer types can only use the integer format, and unsigned numbers cannot be negative):
+
+- `_i8`: 8-bit signed integer
+- `_u8`: 8-bit unsigned integer
+- `_i16`: 16-bit signed integer
+- `_u16`: 16-bit unsigned integer
+- `_i32`: 32-bit signed integer
+- `_u32`: 32-bit unsigned integer
+- `_i64` and `_L`: 64-bit signed integer
+- `_u64` and `_uL`: 64-bit unsigned integer
+- `_z`: integer of unlimited size
+- `_`: integer or floating point number of unspecified size, with data type selected by the environment (equivalent to a JSON number)
+- `_f`: 32-bit IEEE floating-point number. Tentatively, `_r32` is reserved for the same purpose.
+- `_d`: 64-bit IEEE floating-point number. Tentatively, `_r64` is reserved for the same purpose.
+
+### Other standard type markers
+
+- `c`: unicode character between 0 and 0x10FFFF. In Java, C# and JavaScript, characters above 0xFFFF cannot be stored in a single code unit and should be stored as a string of length two as a [surrogate pair](https://stackoverflow.com/questions/5903008/what-is-a-surrogate-pair-in-java).
+- `s`: global symbol, e.g. `s"Food"` in LES would represent `:Food` in Ruby, `Symbol.for('Food')` in JavaScript, and `(Symbol)"Foo"` in C#
+- `void`: the unit value, e.g. `undefined` or `void 0` in JavaScript, `Loyc.@void` in C#, `()` in Haskell. The only legal `TextValue` for this type marker is the empty string. The name `void` is used (rather than `unit` or `undefined`) because of the Loyc tree convention to prefer copying names and patterns from the C family of languages.
+- `bool`: boolean. The `TextValue` of a boolean is case-insensitive and must either be four characters spelling `true`, or five characters spelling `false`. This could be written as `bool"true"` or `bool"false"` in LES, but most languages including LES have special boolean keywords.
+- `bais`: byte array in string (documented [here](https://github.com/qwertie/ecsharp/blob/master/Core/Loyc.Essentials/Utilities/ByteArrayInString.cs))
+
+In LES, a literal that cannot be interpreted (either because its type marker is unrecognized or its syntax is invalid) will be stored exactly as written, e.g. `_i32"hello"` will be stored with TypeMarker = "_i32", TextValue = "hello" and Value = TextValue. This ensures that the literal can be "round-tripped" to its original form, `_i32"hello"`, if it is printed as LES.
+
+Regular expressions do not have the same features, and thus, do not have the same syntax, in different programming languages, so no standard type marker exists for them.
 
 Single-list perspective
 -----------------------
