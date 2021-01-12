@@ -55,7 +55,7 @@ In other words, a Loyc tree (or Loyc "node") is a data structure with these prop
 
 Call nodes are the most interesting. A "call" represents either a function call, or a construct like a "class" or a "for loop". By convention, constructs that are built into a language use a special identifier that starts with `#` or `'`, such as `#class` or `#public` or or `'+` or `'==`. By convention, then, `foo(x, y)` (where `Target` is `foo` and `Args` is a list of two items) would be a normal function call, while `#foo(x, y)` would represent some kind of special construct. For example, `#var(Foo, x)` could represent a declaration for a variable called `x` of type `Foo`. 
 
-![](loyc-tree-diagram.png)
+![Diagram of example Loyc tree](loyc-tree-diagram.png)
 
 The `Target` of a call is also a Loyc tree, so complex targets are possible, e.g. `(f(x))(a, b)`. By convention, call nodes have a `Name` just like identifiers do. The `Name` of a call is defined as the `Name` of the `Target` of the call _if_ the `Target` is an identifier; if the `Target` is not an identifier then the `Name` is the zero-length symbol (string).
 
@@ -105,6 +105,9 @@ Literal system
 -----------------------
 
 ![A diagram showing how a lexer converts source code to tokens, which have a text value and type marker, which is later converted to a Loyc literal node which has a value, text value, and type marker](loyc-literal-system.png)
+
+<iframe src="https://www.youtube.com/embed/ttLc9iuxEro" 
+    width="600" height="340" frameborder="0" allowfullscreen></iframe>
 
 In 2016 the concept of "custom literals" was introduced in the LES3 language. Custom literals in LES3 are a pair of strings: one represents the value of the literal in string form, and the other is a type marker, which indicates both the data type of a value and its syntax. For example, the byte array `{'H','e','l','l','o','!',0,1,2,3,4,5,6,7,8,9,10}` could be represented in LES3 is with `bais"Hello!\b@PHCA@TFAp`IB`"` which uses Byte Array In String encoding (Here are [Java](https://stackoverflow.com/a/56712198/22820) and  [C#](https://github.com/qwertie/ecsharp/blob/master/Core/Loyc.Essentials/Utilities/ByteArrayInString.cs)) implementation of BAIS). The four-character string "bais" is the type marker, and "Hello, world!\b@PHCA@TFAp`IB`" is the value encoded in a string.
 
@@ -171,13 +174,14 @@ The following type markers are expected to use the standard number format (excep
 
 - `c`: unicode character between 0 and 0x10FFFF. In Java, C# and JavaScript, characters above 0xFFFF cannot be stored in a single code unit and should be stored as a string of length two as a [surrogate pair](https://stackoverflow.com/questions/5903008/what-is-a-surrogate-pair-in-java).
 - `s`: global symbol, e.g. `s"Food"` in LES would represent `:Food` in Ruby, `Symbol.for('Food')` in JavaScript, and `(Symbol)"Foo"` in C#
-- `void`: the unit value, e.g. `undefined` or `void 0` in JavaScript, `Loyc.@void` in C#, `()` in Haskell. The only legal `TextValue` for this type marker is the empty string. The name `void` is used (rather than `unit` or `undefined`) because of the Loyc tree convention to prefer copying names and patterns from the C family of languages.
+- `null`: the null value, e.g. `null` in Java, C# and JavaScript, `Nothing` in Visual Basic. The only legal `TextValue` for this type marker is the empty string.
+- `void`: the unit value, e.g. `undefined` or `void 0` in JavaScript, `Loyc.@void` in C#, `()` in Haskell. The only legal `TextValue` for this type marker is the empty string. The name `void` is used rather than `unit` because of the Loyc tree convention to prefer copying names and patterns from the C family of languages.
 - `bool`: boolean. The `TextValue` of a boolean is case-insensitive and must either be four characters spelling `true`, or five characters spelling `false`. This could be written as `bool"true"` or `bool"false"` in LES, but most languages including LES have special boolean keywords.
 - `bais`: byte array in string (documented [here](https://github.com/qwertie/ecsharp/blob/master/Core/Loyc.Essentials/Utilities/ByteArrayInString.cs))
 
 In LES, a literal that cannot be interpreted (either because its type marker is unrecognized or its syntax is invalid) will be stored exactly as written, e.g. `_i32"hello"` will be stored with TypeMarker = "_i32", TextValue = "hello" and Value = TextValue. This ensures that the literal can be "round-tripped" to its original form, `_i32"hello"`, if it is printed as LES.
 
-Regular expressions do not have the same features, and thus, do not have the same syntax, in different programming languages, so no standard type marker exists for them.
+Regular expressions do not have the same features, and thus, do not have the same syntax, in different programming languages, so no standard type marker exists for them. The marker `_m` is being used for the .NET Decimal type.
 
 Single-list perspective
 -----------------------
