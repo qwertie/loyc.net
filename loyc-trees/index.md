@@ -69,6 +69,19 @@ Loyc trees are inspired by LISP trees, but designed for non-LISP languages. If y
 * Each node has a list of attributes. The concept of attributes was inspired by .NET attributes, so naturally a .NET attribute (or Java annotation, or Rust attribute) would be represented in a Loyc tree by an attribute. But also, "trivia" such as comments and blank lines can be represented by attaching attributes to nodes, and modifiers like "public", "private", "override" and "static" are conventionally represented by attributes.
 * Each node has an associated source file and two integers that identify the range of characters that the original construct occupied in source code. If a Loyc tree is created programmatically, a dummy source file and a zero-length range can be used.
 
+They really work
+----------------
+
+In this C# example, `LNode` is a Loyc tree, and this `Calc` function is being used at compile time to compute the value of an expression:
+
+![](ecs_syntax_matching.png)
+
+Maybe this doesn't seem interesting. After all, the C# compiler already knows how to do this. But `Calc` could do more: it could do calculations on expressions written in TypeScript or LES or another language of your choice. It could read files and access databases. And instead of generating a numeric output, it could just as easily generate a piece of code as its output:
+
+![](ecs_syntax_matching2.png)
+
+And if you wanted, you could print that code in a variety of syntactic styles. Only a couple of languages are supported right now, but with help from the open source community, it could support many more.
+
 Loyc trees: text representation
 -------------------------------
 
@@ -109,14 +122,14 @@ Literal system
 <iframe src="https://www.youtube.com/embed/ttLc9iuxEro" 
     width="600" height="340" frameborder="0" allowfullscreen></iframe>
 
-In 2016 the concept of "custom literals" was introduced in the LES3 language. Custom literals in LES3 are a pair of strings: one represents the value of the literal in string form, and the other is a type marker, which indicates both the data type of a value and its syntax. For example, the byte array `{'H','e','l','l','o','!',0,1,2,3,4,5,6,7,8,9,10}` could be represented in LES3 is with `bais"Hello!\b@PHCA@TFAp`IB`"` which uses Byte Array In String encoding (Here are [Java](https://stackoverflow.com/a/56712198/22820) and  [C#](https://github.com/qwertie/ecsharp/blob/master/Core/Loyc.Essentials/Utilities/ByteArrayInString.cs)) implementation of BAIS). The four-character string "bais" is the type marker, and "Hello, world!\b@PHCA@TFAp`IB`" is the value encoded in a string.
+In 2016 the concept of "custom literals" was introduced in the LES3 language. Custom literals in LES3 are a pair of strings: one represents the value of the literal in string form, and the other is a type marker, which indicates both the data type of a value and its syntax. For example, the byte array `{'H','e','l','l','o','!',0,1,2,3,4,5,6,7,8,9,10}` could be represented in LES3 is with ``bais"Hello!\b@PHCA@TFAp`IB`"`` which uses Byte Array In String encoding (Here are [Java](https://stackoverflow.com/a/56712198/22820) and  [C#](https://github.com/qwertie/ecsharp/blob/master/Core/Loyc.Essentials/Utilities/ByteArrayInString.cs) implementation of BAIS). The four-character string "bais" is the type marker, and "Hello, world!\b@PHCA@TFAp`IB`" is the value encoded in a string.
 
 Custom literals are stored without escape sequences, so `\b` is stored as a single character 8 (not as two characters `\` and `b`).
 
 Originally custom literals were stored in the `Value` of the Loyc tree, but in 2020 the standard Loyc tree now formally supports two-string custom literals via two extra properties `TextValue` and `TypeMarker`. In total, there are now three properties specific to literals:
 
 1. `Value`, which is any object (e.g. byte array {'H','e','l','l','o','!',0,1,2,3,4,5,6,7,8,9,10})
-2. `TypeMarker`, which indicates type and syntax (e.g. "bais"). By convention, ordinary strings have a zero-length type marker, and numeric formats begin with an underscore (_). The underscore by itself represents the general number format (as in JSON, it may be integer or floating point).
+2. `TypeMarker`, which indicates type and syntax (e.g. "bais"). By convention, ordinary strings have a zero-length type marker, and numeric formats begin with an underscore (_). The underscore by itself represents the general number format (as in JSON, it may be integer or floating point). As for identifiers, the `TypeMarker` can be any string whatsoever.
 3. `TextValue`, which is a string from the original source code with any escape sequences removed (e.g. "Hello, world!\b@PHCA@TFAp`IB`" where `\b` represents character 8)
 
 A literal's `Value` property should always be valid; if an unrecognized `TypeMarker` is used then the `Value` and `TextValue` should refer to the same string.
