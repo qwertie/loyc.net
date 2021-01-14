@@ -9,7 +9,7 @@ tagline: The universal syntax tree for code
 Introduction
 ------------
 
-Loyc trees are a kind of inverted tree structure. They are designed for representing source code, but are also useful for data in general, particularly if that data includes code-like elements such as "expressions", "commands" or "variables".
+Loyc trees are meant to act as an abstract syntax tree for any programming language. While they are designed to represent source code, they are also useful for data in general, particularly if that data includes code-like elements such as "expressions", "commands" or "variables".
 
 The term "Loyc tree" refers to the conceptual or in-memory representation of the tree; the standard text representation of Loyc trees is [LES](/les).
 
