@@ -66,6 +66,8 @@ Lest you get bored, here's a C# example. `LNode` means "Loyc tree or subtree" an
 
 ![](ecs_syntax_matching.png)
 
+Enhanced C# is a superset of C# that understands C# code not as a _Microsoft_ syntax tree but as a Loyc tree. Here, the `Calc` function is using a macro called `matchCode` to generate C# code that will deconstruct the Loyc tree it received as a parameter. A macro is a function that runs at compile time and transforms code into different code. For example, when `matchCode` sees the Loyc tree `case ($a + $b):`, it generates code that will check whether the input `e` is a Call to `'+` with two parameters. If so, it assigns the first parameter to a new variable called `a` and the second parameter to a new variable called `b`. The words `compileTime`, `precompute` and `quote` all refer to macros that do various tasks: `compileTime` runs C# code immediately and then deletes itself from the output; `precompute` computes something and then replaces itself with the result; and `quote` generates code that creates a Loyc tree.
+
 Maybe this doesn't seem interesting. After all, the C# compiler can already do calculations like this. But `Calc` could do more: it could do calculations on expressions written in TypeScript or LES or another language of your choice. It could read files and access databases. And instead of generating a numeric output, it could just as easily generate a piece of code as its output:
 
 ![](ecs_syntax_matching2.png)
