@@ -62,17 +62,23 @@ The `Target` of a call is also a Loyc tree, so complex targets are possible, e.g
 Loyc trees in action
 ------------------
 
-Lest you get bored, here's a C# example. `LNode` means "Loyc tree or subtree" and this `Calc` function is being used at compile time to compute the value of an expression:
+Lest you get bored, here's a C# example. Here I've created something called a "macro", named `shortest`, that finds the shortest string in a list of options, and returns it:
+
+![](simple_macro_example.png)
+
+This is written in Enhanced C#, a superset of C# that understands C# code not as a _Microsoft_ syntax tree but as a _Loyc_ tree. `shortest` is a _macro_, which is a function that runs at compile time and transforms code into different code. It uses a standard feature of C# called `System.Linq` to order the list of Loyc trees it received by the `Length` of the string form of the `Value` of each one, and then it returns the first item in the list, which must be the shortest.
+
+Here's a fancier example.
 
 ![](ecs_syntax_matching.png)
 
-Enhanced C# is a superset of C# that understands C# code not as a _Microsoft_ syntax tree but as a Loyc tree. Here, the `Calc` function is using a macro called `matchCode` to generate C# code that will deconstruct the Loyc tree it received as a parameter. A macro is a function that runs at compile time and transforms code into different code. For example, when `matchCode` sees the Loyc tree `case ($a + $b):`, it generates code that will check whether the input `e` is a Call to `'+` with two parameters. If so, it assigns the first parameter to a new variable called `a` and the second parameter to a new variable called `b`. The words `compileTime`, `precompute` and `quote` all refer to macros that do various tasks: `compileTime` runs C# code immediately and then deletes itself from the output; `precompute` computes something and then replaces itself with the result; and `quote` generates code that creates a Loyc tree.
+ Here, the `Calc` function is using a macro called `matchCode` to generate C# code that will deconstruct the Loyc tree it received as a parameter. For example, when `matchCode` sees the Loyc tree `case ($a + $b):`, it interprets this as an instruction to generate an `if` statement that will check whether the input `e` is a Call to `'+` with two parameters. If so, it assigns the first parameter to a new variable called `a` and the second parameter to a new variable called `b`. The words `compileTime`, `precompute` and `quote` all refer to macros that do various tasks: `compileTime` runs C# code immediately and then deletes itself (including everything in the braces) from the output; `precompute` runs a calculation and then replaces itself with the result; and `quote` generates code that will create a Loyc tree.
 
-Maybe this doesn't seem interesting. After all, the C# compiler can already do calculations like this. But `Calc` could do more: it could do calculations on expressions written in TypeScript or LES or another language of your choice. It could read files and access databases. And instead of generating a numeric output, it could just as easily generate a piece of code as its output:
+Maybe this doesn't seem interesting. After all, the C# compiler can already do calculations like `4*3.5` at compile-time. But `Calc` could do more: it could do calculations on expressions written in TypeScript or LES or another language of your choice. It could read files and access databases. And instead of generating a numeric output, it could just as easily generate a piece of code as its output. That's what this "reformat" example does:
 
 ![](ecs_syntax_matching2.png)
 
-And if you wanted, you could print that output code in a variety of syntactic styles. Only a couple of languages are supported right now, but with help from the open source community, it could support many more. And this is just the beginning. In the future you'll be able to write a library in one language and have it automatically converted to others. At first there will be primitive transformations, like figuring out that `int x` in C# is `x: number` in TypeScript, but as more people chip in with more code, more advanced transformations will become possible.
+And if you wanted, you could print that output code in a variety of syntactic styles. Only a couple of languages are supported right now, but with help from the open source community, it could support many more. And this is just the beginning. In the future you'll be able to write a library in one language and have it automatically converted to others. At first there will be primitive transformations, like figuring out that `int x = 7` in C# is `x: number = 7` in TypeScript, but as more people chip in with more code, more advanced transformations will become possible.
 
 Loyc trees versus s-expressions
 -------------------------------
