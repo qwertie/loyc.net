@@ -1,7 +1,7 @@
 ---
 layout: page
 title: Loyc trees
-date: Edited Feb 2019
+date: Edited Jan 2021
 toc: true
 tagline: The universal syntax tree for code
 ---
@@ -59,6 +59,19 @@ Call nodes are the most interesting. A "call" represents either a function call,
 
 The `Target` of a call is also a Loyc tree, so complex targets are possible, e.g. `(f(x))(a, b)`. By convention, call nodes have a `Name` just like identifiers do. The `Name` of a call is defined as the `Name` of the `Target` of the call _if_ the `Target` is an identifier; if the `Target` is not an identifier then the `Name` is the zero-length symbol (string).
 
+Loyc trees in action
+------------------
+
+Lest you get bored, here's a C# example. `LNode` means "Loyc tree or subtree" and this `Calc` function is being used at compile time to compute the value of an expression:
+
+![](ecs_syntax_matching.png)
+
+Maybe this doesn't seem interesting. After all, the C# compiler can already do calculations like this. But `Calc` could do more: it could do calculations on expressions written in TypeScript or LES or another language of your choice. It could read files and access databases. And instead of generating a numeric output, it could just as easily generate a piece of code as its output:
+
+![](ecs_syntax_matching2.png)
+
+And if you wanted, you could print that output code in a variety of syntactic styles. Only a couple of languages are supported right now, but with help from the open source community, it could support many more. And this is just the beginning. In the future you'll be able to write a library in one language and have it automatically converted to others. At first there will be primitive transformations, like figuring out that `int x` in C# is `x: number` in TypeScript, but as more people chip in with more code, more advanced transformations will become possible.
+
 Loyc trees versus s-expressions
 -------------------------------
 
@@ -68,19 +81,6 @@ Loyc trees are inspired by LISP trees, but designed for non-LISP languages. If y
 * Each "call" has a "target". Whereas LISP represents a function call with `(funcName arg1 arg2)`, Loyc represents a function call with `funcName(arg1, arg2)`. In LISP, the function name is simply the first item in a list, and there is no way to tell if `(x y z)` is a list of three items or a function call that takes two arguments. In contrast, most other programming languages separate the "target" from the argument list, with the notation `target(arg1, arg2)`. In a Loyc tree, a special target would be used to represent a list (e.g `#tuple(item1, item2)`).
 * Each node has a list of attributes. The concept of attributes was inspired by .NET attributes, so naturally a .NET attribute (or Java annotation, or Rust attribute) would be represented in a Loyc tree by an attribute. But also, "trivia" such as comments and blank lines can be represented by attaching attributes to nodes, and modifiers like "public", "private", "override" and "static" are conventionally represented by attributes.
 * Each node has an associated source file and two integers that identify the range of characters that the original construct occupied in source code. If a Loyc tree is created programmatically, a dummy source file and a zero-length range can be used.
-
-They really work
-----------------
-
-In this C# example, `LNode` is a Loyc tree, and this `Calc` function is being used at compile time to compute the value of an expression:
-
-![](ecs_syntax_matching.png)
-
-Maybe this doesn't seem interesting. After all, the C# compiler already knows how to do this. But `Calc` could do more: it could do calculations on expressions written in TypeScript or LES or another language of your choice. It could read files and access databases. And instead of generating a numeric output, it could just as easily generate a piece of code as its output:
-
-![](ecs_syntax_matching2.png)
-
-And if you wanted, you could print that code in a variety of syntactic styles. Only a couple of languages are supported right now, but with help from the open source community, it could support many more.
 
 Loyc trees: text representation
 -------------------------------
