@@ -6,6 +6,8 @@ tagline: "Fourth draft"
 commentIssueId: 102
 ---
 
+> "For the year 2020, we determined the total Cost of Poor Software Quality (CPSQ) in the US is $2.08 trillion (T)." - [CISQ report](https://www.it-cisq.org/pdf/CPSQ-2020-report.pdf) published after this blog post
+
 So you've got the training: you learned how to use XML, HTML, SQL, Java, Python, hashtables, mutexes, binary search trees, maybe you even took a course in 3D graphics or compiler design. You were told to use constants and unit tests and not to use global variables or `goto`. What's missing from this list? **Only some of the most powerful pinciples and practices of programming!**
 
 This post will teach you to...
