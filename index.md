@@ -30,7 +30,7 @@ Core projects
 <div class="sidebox" markdown="1">![](/loyc-trees/loyc-tree-diagram-sm.png)
 </div>
 
-[Loyc trees](/loyc-trees) are a general-purpose tree structure designed to represent source code. They are comparable to LISP syntax trees, with just enough added complexity to represent programming languages from the Algol family, such as C#.
+[Loyc trees](/loyc-trees) are a general-purpose tree structure designed to represent source code. They are comparable to Lisp syntax trees, with just enough added complexity to represent programming languages from the Algol family, such as C#.
 
 ### LES ###
 
@@ -38,7 +38,7 @@ Core projects
 
 ### LeMP ###
 
-[LeMP](http://ecsharp.net/lemp) is a programming-language agnostic LISP-style lexical macro processor.
+[LeMP](http://ecsharp.net/lemp) is a programming-language agnostic Lisp-style lexical macro processor.
 
 ## Flame ##
 
