@@ -43,9 +43,9 @@ A Loyc tree, also known as a Loyc node, is one of three things:
 
 Unlike in most programming languages, Loyc identifiers can be any string--any string at all. Even identifiers like `\n\0` (a linefeed and a null character) are supported. This design guarantees that a Loyc tree can represent an identifier from any programming language on Earth. To support WebAssembly, LESv3 takes this a step further, supporting not just _any string_ but _any sequence of bytes_.
 
-Normally, literals can be any value representable in the language in which Loyc trees are being used, but this is only true of Loyc trees that exists in memory. When a Loyc tree is serialized to text, some in-memory data may not be representable, but Loyc trees can store a text form alongside the in-memory form. Also, the .NET version offers an extensible system of parsers and printers, so you can "teach" participating languages to understand new data types.
+Normally, literals can be any value representable in the language in which Loyc trees are being used, but this is only true of Loyc trees that exists in memory. When a Loyc tree is serialized to text, some in-memory data may not be representable (for example, a function could be a literal, but in most languages, a function cannot be serialized to text). But the .NET version offers an extensible system of parsers and printers, so you can "teach" serializers and deserializers to understand new data types.
 
-Each Loyc node also has a list of "attributes" (usually empty), and each attribute is itself a Loyc tree. Loyc nodes also contain position information to keep track of the location within a source file where the node was stored.
+Each Loyc node also has a list of "attributes", which is usually empty. Each attribute is itself a Loyc tree. Loyc nodes also contain position information to keep track of the location within a source file where the node was stored.
 
 In other words, a Loyc tree (or Loyc "node") is a data structure with these properties (potential parts):
 
@@ -130,15 +130,15 @@ Literal system
 <iframe src="https://www.youtube.com/embed/ttLc9iuxEro" 
     width="600" height="340" frameborder="0" allowfullscreen></iframe>
 
-In 2016 the concept of "custom literals" was introduced in the LES3 language. Custom literals in LES3 are a pair of strings: one represents the value of the literal in string form, and the other is a type marker, which indicates both the data type of a value and its syntax. For example, the byte array `{'H','e','l','l','o','!',0,1,2,3,4,5,6,7,8,9,10}` could be represented in LES3 is with ``bais"Hello!\b@PHCA@TFAp`IB`"`` which uses Byte Array In String encoding (Here are [Java](https://stackoverflow.com/a/56712198/22820) and  [C#](https://github.com/qwertie/ecsharp/blob/master/Core/Loyc.Essentials/Utilities/ByteArrayInString.cs) implementations of BAIS). The four-character string "bais" is the type marker, and ``"Hello, world!\b@PHCA@TFAp`IB`"`` is the value encoded in a string.
+In 2016 the concept of "custom literals" was introduced in the LES3 language. Custom literals in LES3 are a pair of strings: one represents the value of the literal in string form, and the other is a type marker, which indicates both the data type of a value and its syntax. For example, the byte array `{'H','e','l','l','o','!', 0,1,2,3,4,5,6,7,8,9,10}` could be represented in LES3 with ``bais"Hello!\b@PHCA@TFAp`IB`"`` which uses Byte Array In String encoding (Here are [Java](https://stackoverflow.com/a/56712198/22820) and  [C#](https://github.com/qwertie/ecsharp/blob/master/Core/Loyc.Essentials/Utilities/ByteArrayInString.cs) implementations of BAIS). The four-character string "bais" is the type marker, and ``"Hello, world!\b@PHCA@TFAp`IB`"`` is the value encoded in a string.
 
 Custom literals are stored without escape sequences, so `\b` is stored as a single character 8 (not as two characters `\` and `b`).
 
 Originally custom literals were stored in the `Value` of the Loyc tree, but in 2020 the standard Loyc tree now formally supports two-string custom literals via two extra properties `TextValue` and `TypeMarker`. In total, there are now three properties specific to literals:
 
-1. `Value`, which is any object (e.g. byte array {'H','e','l','l','o','!',0,1,2,3,4,5,6,7,8,9,10})
+1. `Value`, which is any object (e.g. byte array {'H','e','l','l','o','!', 0,1,2,3,4,5,6,7,8,9,10})
 2. `TypeMarker`, which indicates type and syntax (e.g. "bais"). By convention, ordinary strings have a zero-length type marker, and numeric formats begin with an underscore (_). The underscore by itself represents the general number format (as in JSON, it may be integer or floating point). As for identifiers, the `TypeMarker` can be any string whatsoever.
-3. `TextValue`, which is a string from the original source code with any escape sequences removed (e.g. "Hello, world!\b@PHCA@TFAp`IB`" where `\b` represents character 8)
+3. `TextValue`, which is a string from the original source code with any escape sequences removed (e.g. ``Hello, world!\b@PHCA@TFAp`IB` `` where `\b` represents character 8)
 
 A literal's `Value` property should always be valid; if an unrecognized `TypeMarker` is used then the `Value` and `TextValue` should refer to the same string.
 
